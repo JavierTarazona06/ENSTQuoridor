@@ -4,7 +4,7 @@ A strategic board game implementation in C++ with SFML, featuring AI opponents a
 
 ![C++](https://img.shields.io/badge/C%2B%2B-20-blue.svg)
 ![SFML](https://img.shields.io/badge/SFML-2.6-green.svg)
-![License](https://img.shields.io/badge/license-MIT-orange.svg)
+![License](/)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)
 
 ## 📖 About

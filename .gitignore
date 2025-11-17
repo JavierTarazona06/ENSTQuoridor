@@ -40,6 +40,38 @@
 # debug information files
 *.dwo
 
+# CMake build artifacts
+build/
+out/
+bin/
+lib/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps/
+*.cmake
+!CMakeLists.txt
+
+# IDE and editor files
+.vscode/
+.vs/
+*.swp
+*.swo
+*~
+.idea/
+*.user
+
+# Package build artifacts
+_CPack_Packages/
+*.zip
+*.tar.gz
+*.dmg
+*.deb
+*.rpm
+
 # LaTeX build artifacts
 # Based on gitignore.io template for LaTeX
 *.aux
