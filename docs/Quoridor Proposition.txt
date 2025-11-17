@@ -1,0 +1,49 @@
+                                   Chacón José - Meneses Carlos
+                                   Tarazona Javier - Liang Tianyi
+
+                                   Proposition de Projet IN204 :
+
+        Quoridor (C++/SFML) avec IA
+        Heuristique et Architecture POO
+                    Moderne
+Contexte                                                    IA (décision).      Nous utiliserons une
+                                                       recherche de type Minimax (ou Négamax )
+Quoridor est un jeu de stratégie à deux joueurs      avec élagage α–β et profondeur bornée pour
+sur une grille 9×9. À chaque tour, le joueur          évaluer les coups prometteurs, tout en gardant
+avance son pion d’une case ou place un mur             l’approche modulaire afin de tester des vari-
+entre deux cases. Le but est d’atteindre la            antes si nécessaire.
+rangée opposée en respectant la règle clé : tou-        Chemins.         Le calcul d’itinéraires
+jours laisser au moins un chemin possible à           s’appuiera sur A* (et/ou BFS selon le cas)
+l’adversaire.                                          pour estimer efficacement la progression de
+    Objectif. Réaliser un jeu 2D jouable en           chaque joueur et l’impact potentiel des murs.
+C++ avec SFML, présentant une IA simple                    SFML et structure.                 Utilisa-
+mais efficace et une architecture POO claire.          tion de sf::RenderWindow, sf::Event,
+Le projet valorise la conception logicielle, le        sf::Text/Sprite pour le rendu et les in-
+rendu, la gestion d’événements et les tests.         teractions.     Architecture MVC : Modèle
+                                                       (règles & plateau), Vue (rendu 2D), Contrôleur
+                                                       (souris/clavier, boucle de jeu).
+                                                          • POO/encapsulation : Board, Rules,
+                                                            State, Game, AI.
+                                                          • STL et opérateurs : conteneurs stan-
+                                                            dards, opérateurs pour logs et replays.
+                                                          • Gestion des erreurs : validations de
+                                                            coups, exceptions simples si besoin.
+                                                          • Qualité : tests unitaires de règles, clarté
+                                                            du code, documentation courte.
+
+       Plateau de Quoridor (illustration).
+                                                       Résultats attendus
+Approche et algorithmes                                Livrables principaux. (1) Jeu 2D fonction-
+                                                       nel (Humain vs IA/Humain). (2) IA con-
+Les jeux à information parfaite sont prop-            figurable et facile à faire évoluer. (3) Code
+ices à l’étude de la prise de décision et de        C++/SFML structuré avec tests.
+l’évaluation des positions. Quoridor est perti-            Difficulté du CPU. L’utilisateur pourra
+nent car le plateau évolue avec les murs : cela       régler la difficulté (Facile/Normal/Difficile).
+met en avant la modélisation de graphes et            Selon le niveau choisi, le jeu adaptera : (a)
+la recherche de chemins.                               la profondeur et/ou l’étendue de la recherche
+     Idée générale. À chaque tour, choisir         Minimax, (b) la sélection des coups (activa-
+entre progresser vers la ligne d’arrivée ou           tion/désactivation de certains placements de
+placer un mur pour ralentir l’adversaire,              murs), et (c) une légère randomisation en-
+selon des critères simples : distance estimée,       tre coups de score proche, afin de varier le
+disponibilité de chemins et gestion d’un stock        style de jeu et éviter un comportement trop
+de murs limité.                                       déterministe.

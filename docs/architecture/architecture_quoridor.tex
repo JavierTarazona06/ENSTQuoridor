@@ -1,0 +1,215 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{enumitem}
+\usepackage{geometry}
+\usepackage{hyperref}
+% Fuente más estándar y legible (Times-like) con matemáticas a juego
+\usepackage{newtxtext,newtxmath}
+% Mejora de microtipografía (espaciado y justificación)
+\usepackage{microtype}
+
+\geometry{margin=2.5cm}
+
+\title{Proposition d'architecture pour Quoridor (C++/SFML)}
+\author{Équipe Quoridor}
+\date{Novembre 2025}
+
+\begin{document}
+\maketitle
+
+\section*{Objectifs}
+Concevoir une application Quoridor en C++ utilisant SFML avec une architecture \textbf{MVC} claire, portable \textbf{Windows/Linux/macOS}, et livrée sous forme d'exécutable cliquable (Windows : \texttt{.exe}, macOS : \texttt{.app}, Linux : archive AppImage ou \texttt{.tar.gz}).
+
+\section*{Vue d'ensemble MVC}
+\begin{itemize}[leftmargin=1.1cm]
+  \item \textbf{Modèle} (règles \'et état du jeu): gestion du plateau 9\,\texttimes\,9, murs, pions, validations des coups, calculs de chemins (A*/BFS), IA (Minimax/Négamax + élagage \(\alpha\)--\(\beta\), heuristiques).
+  \item \textbf{Vue} (rendu \'et UI): rendu 2D avec SFML (grille, murs, pions, textes), gestion des ressources (textures, polices, sons), feedback visuel.
+  \item \textbf{Contrôleur} (entrée \'et boucle de jeu): gestion clavier/souris, orchestration de la boucle de jeu, machine d'états (menus, partie, pause), intégration IA.
+\end{itemize}
+
+\section*{Modules et classes pressenties}
+\begin{enumerate}[label=M\arabic*., leftmargin=1.6cm]
+  \item \textbf{Modèle}
+    \begin{itemize}[leftmargin=0.9cm]
+      \item \texttt{Board}: représentation du plateau, murs placés, cases, coordonnées.
+      \item \texttt{Rules}: validations complètes (déplacements, sauts, placements de murs, \og chemin restant \fg{}).
+      \item \texttt{State}: état courant (positions des pions, murs restants, joueur actif, historique minimal pour undo/replay optionnel).
+      \item \texttt{Pathfinder}: A* et/ou BFS pour vérification d'existence de chemin et estimation de distance.
+      \item \texttt{AI}: Minimax/Négamax \(+\) élagage \(\alpha\)--\(\beta\), profondeur bornée, génération de coups, heuristiques pluggables; niveaux Facile/Normal/Difficile.
+    \end{itemize}
+  \item \textbf{Vue}
+    \begin{itemize}[leftmargin=0.9cm]
+      \item \texttt{Renderer2D}: encapsulation de SFML (\texttt{sf::RenderWindow}, \texttt{sf::View}, dessins de grille/pions/murs, HUD).
+      \item \texttt{ResourceCache}: chargement p\'er\'enisant (RAII) des polices, textures, sons; clés symboliques; évite rechargements.
+      \item \texttt{UIWidgets} (léger): surlignage de case, info tour, messages d'erreur.
+    \end{itemize}
+  \item \textbf{Contrôleur}
+    \begin{itemize}[leftmargin=0.9cm]
+      \item \texttt{InputHandler}: mapping clavier/souris, états de drag pour murs, clics sur grille.
+      \item \texttt{Game}: boucle principale (poll événements, update, render), cadence; scène de \textit{Partie}.
+      \item \texttt{SceneManager}/\texttt{GameState}: machine d'états (Menu, Partie, Pause, Fin).
+      \item \texttt{Config}: chargement de paramètres (JSON/TOML simple) : taille fenêtre, assets, niveau IA.
+    \end{itemize}
+\end{enumerate}
+
+\section*{Boucle de jeu et flux de données}
+\begin{enumerate}[label=B\arabic*., leftmargin=1.6cm]
+  \item Événements SFML \(\rightarrow\) \texttt{InputHandler} \(\rightarrow\) intentions de jeu (déplacer/placer mur).
+  \item \texttt{Rules} valide l'intention contre \texttt{State} et \texttt{Board}; en cas d'échec, la Vue affiche un message.
+  \item En tour IA: \texttt{AI} demande \`a \texttt{Rules}/\texttt{Pathfinder} l'évaluation/validité; choisit un coup.
+  \item \texttt{State} est mis à jour, \texttt{Renderer2D} dessine la nouvelle scène; boucle continue jusqu'à victoire.
+\end{enumerate}
+
+\section*{Détails d'implémentation clés}
+\begin{itemize}[leftmargin=1.1cm]
+  \item \textbf{Validation des murs}: empêche chevauchements, hors-limites, et bloqueurs de chemin. Vérifie \og un chemin au moins \fg{} via BFS/A* pour chaque joueur après placement hypothétique.
+  \item \textbf{IA configurables}: Facile (profondeur faible, randomisation plus forte), Normal (équilibré), Difficile (profondeur accrue, moins de hasard). Heuristique combine distance propre \textit{vs.} adversaire et valeur des murs.
+  \item \textbf{Rendu}: calques séparés (grille, murs, pions, HUD). Mise à l'échelle selon taille fenêtre; police vectorielle lisible.
+  \item \textbf{Ressources}: \texttt{ResourceCache} garde \`a vie: polices, textures; chemin \texttt{assets/}. Gestion d'erreurs avec messages clairs.
+  \item \textbf{Tests}: tests unitaires sur \texttt{Rules}, \texttt{Pathfinder}, et cas limites de placement; tests IA sur validité des coups générés.
+\end{itemize}
+
+\section*{Structure du dépôt}
+\begin{verbatim}
+ENSTQuoridor/
+|-- CMakeLists.txt
+|-- cmake/                     # Scripts CMake (FindSFML.cmake si besoin, helpers)
+|-- src/
+|   |-- app/                   # main(), initialisation fenêtre, SceneManager
+|   |-- controller/            # InputHandler, Game, GameState/Scene
+|   |-- model/                 # Board, Rules, State, Pathfinder, AI
+|   `-- view/                  # Renderer2D, UIWidgets, ResourceCache
+|-- include/                   # En-têtes publics (si séparation)
+|-- assets/                    # textures/, fonts/, sounds/
+|-- shaders/                   # (optionnel)
+|-- tests/                     # tests unitaires (CTest / Catch2)
+|-- docs/
+|   |-- exigences/
+|   `-- architecture/
+|-- scripts/                   # scripts build/packaging
+|-- packaging/                 # CPack config, icônes, entitlements (macOS)
+|-- .github/workflows/ci.yml   # (optionnel) CI multi-plateforme
+`-- README.md
+\end{verbatim}
+
+\section*{Build multi-plateforme}
+\textbf{Outil}: CMake (>= 3.20), C++20, SFML (\textasciitilde{}2.6). Dépendances via vcpkg ou Conan, ou SFML installé localement.
+
+\subsection*{CMake (extrait minimal)}
+\begin{verbatim}
+cmake_minimum_required(VERSION 3.20)
+project(Quoridor CXX)
+set(CMAKE_CXX_STANDARD 20)
+
+find_package(SFML 2.6 REQUIRED COMPONENTS system window graphics audio)
+
+add_executable(quoridor
+  src/app/main.cpp
+  src/controller/Game.cpp
+  src/controller/InputHandler.cpp
+  src/model/Board.cpp src/model/Rules.cpp src/model/State.cpp
+  src/model/Pathfinder.cpp src/model/AI.cpp
+  src/view/Renderer2D.cpp src/view/ResourceCache.cpp)
+target_include_directories(quoridor PRIVATE include)
+target_link_libraries(quoridor PRIVATE sfml-system sfml-window sfml-graphics sfml-audio)
+
+# Installation simple (Windows/Linux):
+install(TARGETS quoridor RUNTIME DESTINATION bin)
+install(DIRECTORY assets/ DESTINATION bin/assets)
+
+# macOS: produire un .app
+set_target_properties(quoridor PROPERTIES MACOSX_BUNDLE TRUE)
+install(TARGETS quoridor BUNDLE DESTINATION .)
+install(DIRECTORY assets/ DESTINATION Quoridor.app/Contents/Resources/assets)
+\end{verbatim}
+
+\subsection*{Commandes type}
+\begin{verbatim}
+# Générique
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release
+cmake --install build --config Release --prefix out
+\end{verbatim}
+
+\section*{Packaging et exécutables cliquables}
+
+\subsection*{Stratégie de distribution recommandée}
+Pour garantir une expérience utilisateur optimale (\textit{télécharger et double-cliquer}), le projet produira trois artefacts autonomes, un par plateforme:
+
+\begin{enumerate}[leftmargin=1.6cm]
+  \item \textbf{Windows}: \texttt{Quoridor-1.0-Windows.zip}
+  \item \textbf{macOS}: \texttt{Quoridor-1.0-macOS.dmg} (ou \texttt{.zip})
+  \item \textbf{Linux}: \texttt{Quoridor-1.0-Linux-x86\_64.AppImage} (ou \texttt{.tar.gz})
+\end{enumerate}
+
+\subsection*{Windows --- Archive ZIP portable}
+\textbf{Contenu}: \texttt{quoridor.exe}, DLL SFML (\texttt{sfml-system-2.dll}, \texttt{sfml-window-2.dll}, \texttt{sfml-graphics-2.dll}, \texttt{sfml-audio-2.dll}, et dépendances tierces si nécessaires: \texttt{openal32.dll}, \texttt{freetype.dll}), dossier \texttt{assets/}.
+
+\textbf{Workflow utilisateur}:
+\begin{enumerate}[leftmargin=1.2cm]
+  \item Télécharger \texttt{Quoridor-1.0-Windows.zip}.
+  \item Extraire le contenu où souhaité (Bureau, Documents, etc.).
+  \item Double-cliquer sur \texttt{quoridor.exe}.
+\end{enumerate}
+
+\textbf{Build}: Enlace dinámico SFML. Copier automatiquement les DLL via script CMake ou post-build. CPack génère le \texttt{.zip} final.
+
+\textbf{Avantages}: Aucun installeur requis; portable; compatible Windows 10+.
+
+\subsection*{macOS --- Bundle application (.app)}
+\textbf{Contenu}: \texttt{Quoridor.app} (bundle macOS) avec frameworks SFML embarqués, \texttt{assets/} dans \texttt{Contents/Resources/}.
+
+\textbf{Workflow utilisateur}:
+\begin{enumerate}[leftmargin=1.2cm]
+  \item Télécharger \texttt{Quoridor-1.0-macOS.dmg}.
+  \item Ouvrir le \texttt{.dmg} et glisser-déposer \texttt{Quoridor.app} vers \texttt{/Applications} (ou autre dossier).
+  \item Double-cliquer sur \texttt{Quoridor.app}.
+\end{enumerate}
+
+\textbf{Build}: Propriété CMake \texttt{MACOSX\_BUNDLE}; utiliser \texttt{install\_name\_tool} ou \texttt{BundleUtilities} pour fixer les chemins des dylibs SFML. CPack génère le \texttt{.dmg} (générateur \texttt{DragNDrop}).
+
+\textbf{Avantages}: Expérience native macOS; tout autoconténu; distribution via \texttt{.dmg} ou \texttt{.zip}.
+
+\subsection*{Linux --- AppImage (autonome)}
+\textbf{Contenu}: Fichier unique exécutable \texttt{Quoridor-x86\_64.AppImage} contenant le binaire, bibliothèques SFML, et \texttt{assets/}.
+
+\textbf{Workflow utilisateur}:
+\begin{enumerate}[leftmargin=1.2cm]
+  \item Télécharger \texttt{Quoridor-1.0-Linux-x86\_64.AppImage}.
+  \item Rendre exécutable: \texttt{chmod +x Quoridor-1.0-Linux-x86\_64.AppImage}.
+  \item Double-cliquer (ou exécuter via terminal: \texttt{./Quoridor-1.0-Linux-x86\_64.AppImage}).
+\end{enumerate}
+
+\textbf{Build}: Utiliser \texttt{linuxdeploy} + plugin SFML/Qt pour packager dépendances. L'AppImage encapsule tout.
+
+\textbf{Avantages}: Un seul fichier exécutable; fonctionne sur presque toutes les distributions modernes; aucune installation SFML requise.
+
+\textbf{Alternative Linux}: Archive \texttt{.tar.gz} avec binaire, bibliothèques SFML locales (\texttt{lib/}), \texttt{assets/}, et script launcher ajustant \texttt{LD\_LIBRARY\_PATH}. Moins élégant mais viable si AppImage pose problème.
+
+\subsection*{Outillage CPack}
+CMake CPack permet de générer automatiquement les artefacts:
+\begin{itemize}[leftmargin=1.1cm]
+  \item \textbf{Windows}: générateur \texttt{ZIP} (ou \texttt{NSIS} pour installeur optionnel).
+  \item \textbf{macOS}: générateur \texttt{DragNDrop} (\texttt{.dmg}) ou \texttt{ZIP}.
+  \item \textbf{Linux}: générateur \texttt{TGZ}; AppImage via outil externe post-CPack.
+\end{itemize}
+
+Configuration CPack dans \texttt{CMakeLists.txt}: nom de paquet, version, icônes, générateurs spécifiques par OS.
+
+\section*{Critères d'acceptation}
+\begin{itemize}[leftmargin=1.1cm]
+  \item Lancement par double-clic: Windows \texttt{quoridor.exe}, macOS \texttt{Quoridor.app}, Linux binaire ou AppImage.
+  \item Fonctionnement identique sur les trois OS (rendu, règles, IA).
+  \item Arborescence d'installation contient \texttt{assets/} et les dépendances nécessaires.
+\end{itemize}
+
+\section*{Évolutivité et maintenance}
+\begin{itemize}[leftmargin=1.1cm]
+  \item Heuristiques IA interchangeables; profondeurs paramétrables; modes jeu supplémentaires via \texttt{SceneManager}.
+  \item \texttt{ResourceCache} centralise les chargements; ajout d'actifs sans impact code.
+  \item Découplage strict MVC: tests ciblés sur \texttt{Rules}/\texttt{Pathfinder} sans fenêtre.
+\end{itemize}
+
+\end{document}

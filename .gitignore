@@ -39,3 +39,51 @@
 
 # debug information files
 *.dwo
+
+# LaTeX build artifacts
+# Based on gitignore.io template for LaTeX
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.brf
+*.cb
+*.cb2
+*.dvi
+*.fdb_latexmk
+*.fls
+*.fmt
+*.fot
+*.glg
+*.glo
+*.gls
+*.glsdefs
+*.idx
+*.ilg
+*.ind
+*.ist
+*.lof
+*.log
+*.lot
+*.maf
+*.mtc*
+*.nav
+*.nlo
+*.out
+*.pdfsync
+*.pyg
+*.run.xml
+*.snm
+*.synctex
+*.synctex(busy)
+*.synctex.gz
+*.synctex.gz(busy)
+*.thm
+*.toc
+*.upa
+*.upb
+*.vrb
+*.xdv
+_minted*
+texput.log
+latex.out/

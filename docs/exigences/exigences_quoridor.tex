@@ -1,0 +1,86 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{geometry}
+% Fuente más estándar y legible (Times-like) con matemáticas a juego
+\usepackage{newtxtext,newtxmath}
+% Mejora de microtipografía (espaciado y justificación)
+\usepackage{microtype}
+
+
+\geometry{margin=2.5cm}
+
+\title{Exigences du projet Quoridor (C++/SFML)}
+\author{Équipe: Tarazona Javier, Liang Tianyi}
+\date{Novembre 2025}
+
+\begin{document}
+\maketitle
+
+\section*{Introduction}
+Ce document synthétise les exigences fonctionnelles et non fonctionnelles du projet \textit{Quoridor (C++/SFML) avec IA}, telles que décrites dans la proposition. L'objectif est de réaliser un jeu 2D jouable en C++ avec SFML, doté d'une IA simple mais efficace, et d'une architecture objet claire et modulaire.
+
+\section*{Exigences fonctionnelles}
+\begin{enumerate}[label=F\arabic*., leftmargin=1.6cm]
+  \item Plateau de jeu \textbf{9\,\texttimes\,9} cases conforme aux règles de Quoridor.
+  \item \textbf{Tours de jeu} alternés entre deux joueurs.
+  \item À chaque tour, un joueur doit \textbf{soit} déplacer son pion d'une case (orthogonalement, avec sauts autorisés par les règles), \textbf{soit} \textbf{placer un mur} entre deux cases dans le respect des contraintes.
+  \item \textbf{Validation des coups} et des placements de murs:
+    \begin{itemize}[leftmargin=1.2cm]
+      \item Respect des limites du plateau et de l'alignement des murs.
+      \item Interdiction de chevauchement de murs et de placements illégaux.
+      \item \textbf{Règle clé}: toujours laisser au moins \textbf{un chemin possible} à chaque joueur vers sa rangée d'arrivée.
+    \end{itemize}
+  \item \textbf{Condition de victoire}: un joueur gagne lorsqu'il atteint la rangée opposée.
+  \item \textbf{Rendu 2D} avec SFML: affichage de la grille, des pions, des murs, et des informations d'interface (textes/indications).
+  \item \textbf{Gestion des entrées} (souris/clavier) via SFML pour sélectionner, déplacer, et placer des murs.
+  \item \textbf{Boucle de jeu} événementielle: poll des événements, mise à jour de l'état, effacement, dessin, affichage.
+  \item \textbf{IA adverse} jouable (Humain vs IA) en plus du mode \textbf{Humain vs Humain} local.
+  \item \textbf{Algorithme de décision IA}: Minimax (ou Négamax) avec \textbf{élagage \(\alpha\)--\(\beta\)} et \textbf{profondeur bornée}.
+  \item \textbf{Évaluation et chemins}: utilisation de \textbf{A*} et/ou \textbf{BFS} pour estimer les distances, valider l'existence de chemins et guider l'heuristique.
+  \item \textbf{Difficulté IA configurable}: Facile / Normal / Difficile ajustant notamment la profondeur de recherche, l'étendue de la génération de coups et une légère \textbf{randomisation} pour départager des coups de score proche.
+  \item \textbf{Gestion des erreurs}: messages/retours clairs pour coups invalides; refus des actions non conformes.
+  \item \textit{Optionnel -- journalisation/relecture}: opérateurs et structures permettant d'archiver une partie (logs/replay).
+\end{enumerate}
+
+\section*{Exigences non fonctionnelles}
+\begin{enumerate}[label=NF\arabic*., leftmargin=1.6cm]
+  \item \textbf{Architecture POO modulaire} suivant un style \textbf{MVC}:
+    \begin{itemize}[leftmargin=1.2cm]
+      \item \textit{Modèle}: règles, plateau, état (\texttt{Board}, \texttt{Rules}, \texttt{State}).
+      \item \textit{Contrôleur}: boucle de jeu, gestion des entrées.
+      \item \textit{Vue}: rendu SFML (\texttt{sf::RenderWindow}, \texttt{sf::Event}, \texttt{sf::Text}/\texttt{sf::Sprite}).
+    \end{itemize}
+  \item \textbf{Qualité du code}: clarté, documentation courte, usage de STL et surcharge d'opérateurs lorsque pertinent.
+  \item \textbf{Testabilité}: \textbf{tests unitaires} des règles et validations principales.
+  \item \textbf{Performance}: réactivité de l'interface; recherche IA efficace grâce à l'élagage \(\alpha\)--\(\beta\) et heuristiques; calcul de chemins performant (A*/BFS).
+  \item \textbf{Fiabilité}: validations systématiques, gestion d'exceptions simples le cas échéant.
+  \item \textbf{Évolutivité}: IA configurable et \textbf{facile à faire évoluer} (changement d'heuristiques/profondeurs).
+  \item \textbf{Portabilité outillage}: projet standard C++ avec dépendance SFML; compilation prévue dans un environnement Windows équipé de SFML.
+  \item \textbf{Expérience utilisateur}: lisibilité du plateau, interactions simples; éviter un comportement IA trop déterministe via une randomisation contrôlée.
+\end{enumerate}
+
+\section*{Livrables et critères d'acceptation}
+\begin{enumerate}[label=L\arabic*., leftmargin=1.6cm]
+  \item \textbf{Jeu 2D fonctionnel}: modes Humain vs IA et Humain vs Humain; règles appliquées et victoire détectée.
+  \item \textbf{IA configurable}: au moins trois niveaux (Facile/Normal/Difficile) avec effets visibles sur la force et le style de jeu.
+  \item \textbf{Code C++/SFML structuré}: architecture POO claire, tests unitaires de règles, documentation d'usage succincte.
+\end{enumerate}
+
+\section*{Contraintes et hypothèses}
+\begin{itemize}[leftmargin=0.8cm]
+  \item Taille du plateau: 9\,\texttimes\,9; nombre de murs limité par joueur (selon règles usuelles de Quoridor).
+  \item L'IA peut utiliser Minimax ou Négamax indifféremment tant que l'interface reste stable.
+  \item Les chemins sont vérifiés par A* et/ou BFS; l'implémentation choisie doit garantir la règle du chemin restant.
+\end{itemize}
+
+\section*{Notes d'implémentation (informelles)}
+\begin{itemize}[leftmargin=0.8cm]
+  \item Utilisation de SFML: \texttt{sf::RenderWindow}, \texttt{sf::Event}, \texttt{sf::Text}/\texttt{sf::Sprite} pour le rendu et les interactions.
+  \item Classes pressenties: \texttt{Board}, \texttt{Rules}, \texttt{State}, \texttt{Game}, \texttt{AI}.
+\end{itemize}
+
+\end{document}

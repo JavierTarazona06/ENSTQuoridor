@@ -1,0 +1,332 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{enumitem}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{array}
+\usepackage{longtable}
+% Fuente más estándar y legible (Times-like) con matemáticas a juego
+\usepackage{newtxtext,newtxmath}
+% Mejora de microtipografía (espaciado y justificación)
+\usepackage{microtype}
+
+\geometry{margin=2.5cm}
+
+\title{Planification du projet Quoridor (C++/SFML)\\
+\large Développement en 4 itérations}
+\author{Équipe: Tarazona Javier, Liang Tianyi}
+\date{17 novembre 2025 -- 15 janvier 2026}
+
+\begin{document}
+\maketitle
+
+\section*{Vue d'ensemble}
+Le projet Quoridor sera développé selon une méthodologie itérative et incrémentale, avec une soutenance (défense) prévue le \textbf{15 janvier 2026}. Ce document planifie quatre itérations de développement, chacune produisant un incrément fonctionnel et testable du jeu.
+
+\subsection*{Objectif final}
+Jeu de Quoridor 2D jouable (modes Humain vs Humain et Humain vs IA), architecture MVC claire, IA configurable (Facile/Normal/Difficile), exécutables cliquables multi-plateformes (Windows/Linux/macOS), tests unitaires, documentation et présentation de soutenance.
+
+\subsection*{Calendrier global}
+\begin{itemize}[leftmargin=1.2cm]
+  \item \textbf{Itération 1}: 18 novembre -- 1 décembre 2025 (2 semaines)
+  \item \textbf{Itération 2}: 2 décembre -- 15 décembre 2025 (2 semaines)
+  \item \textbf{Itération 3}: 16 décembre -- 5 janvier 2026 (3 semaines, incluant vacances)
+  \item \textbf{Itération 4}: 6 janvier -- 14 janvier 2026 (1 semaine + préparation soutenance)
+  \item \textbf{Soutenance}: 15 janvier 2026
+\end{itemize}
+
+\section*{Itération 1 : Fondations et prototype minimal}
+\textbf{Dates}: 18 novembre -- 1 décembre 2025 (2 semaines)
+
+\subsection*{Objectifs}
+\begin{itemize}[leftmargin=1.2cm]
+  \item Mise en place de l'environnement de développement (CMake, SFML, Git).
+  \item Architecture MVC de base fonctionnelle.
+  \item Plateau 9\texttimes{}9 affiché avec SFML.
+  \item Déplacement de pions (validation simple).
+  \item Tests unitaires pour règles de déplacement.
+\end{itemize}
+
+\subsection*{Livrables}
+\begin{enumerate}[label=L1.\arabic*., leftmargin=1.6cm]
+  \item \textbf{Infrastructure}:
+    \begin{itemize}[leftmargin=1.2cm]
+      \item \texttt{CMakeLists.txt} fonctionnel (compilation, link SFML).
+      \item Structure de dossiers (\texttt{src/}, \texttt{include/}, \texttt{assets/}, \texttt{tests/}).
+      \item Dépôt Git avec branches et commits réguliers.
+    \end{itemize}
+  \item \textbf{Modèle}:
+    \begin{itemize}[leftmargin=1.2cm]
+      \item Classe \texttt{Board}: représentation grille 9\texttimes{}9, positions pions.
+      \item Classe \texttt{State}: état du jeu (positions, joueur actif).
+      \item Classe \texttt{Rules} (partielle): validation déplacements orthogonaux simples.
+    \end{itemize}
+  \item \textbf{Vue}:
+    \begin{itemize}[leftmargin=1.2cm]
+      \item Classe \texttt{Renderer2D}: affichage grille, pions (formes géométriques ou sprites simples).
+      \item Fenêtre SFML 800\texttimes{}600 pixels.
+    \end{itemize}
+  \item \textbf{Contrôleur}:
+    \begin{itemize}[leftmargin=1.2cm]
+      \item Classe \texttt{Game}: boucle principale (poll événements, update, render).
+      \item Classe \texttt{InputHandler}: détection clics souris sur cases.
+    \end{itemize}
+  \item \textbf{Tests}:
+    \begin{itemize}[leftmargin=1.2cm]
+      \item Framework de tests intégré (Catch2 ou équivalent).
+      \item Tests unitaires pour \texttt{Rules::isValidMove} (déplacements de base).
+    \end{itemize}
+  \item \textbf{Fonctionnalité démo}: Déplacer un pion par clics successifs (case source, case cible), alternance joueurs.
+\end{enumerate}
+
+\subsection*{Critères de succès}
+\begin{itemize}[leftmargin=1.2cm]
+  \item Compilation sans erreur sur Windows.
+  \item Fenêtre SFML affiche plateau 9\texttimes{}9 et 2 pions.
+  \item Déplacement de pions validé et reflété visuellement.
+  \item Au moins 5 tests unitaires passent (déplacements valides/invalides).
+\end{itemize}
+
+\subsection*{Risques et mitigations}
+\begin{itemize}[leftmargin=1.2cm]
+  \item \textit{Risque}: Difficultés installation SFML.
+  \item \textit{Mitigation}: Utiliser vcpkg ou Conan; prévoir 2--3 jours pour setup environnement.
+\end{itemize}
+
+\section*{Itération 2 : Règles complètes et placement de murs}
+\textbf{Dates}: 2 décembre -- 15 décembre 2025 (2 semaines)
+
+\subsection*{Objectifs}
+\begin{itemize}[leftmargin=1.2cm]
+  \item Implémenter règles complètes de déplacement (sauts par-dessus adversaire).
+  \item Placement de murs avec validation (chevauchement, limites).
+  \item Vérification chemin restant (BFS ou A*).
+  \item Condition de victoire.
+  \item Interface améliorée (affichage murs, HUD basique).
+\end{itemize}
+
+\subsection*{Livrables}
+\begin{enumerate}[label=L2.\arabic*., leftmargin=1.6cm]
+  \item \textbf{Modèle}:
+    \begin{itemize}[leftmargin=1.2cm]
+      \item \texttt{Board}: gestion murs (horizontaux/verticaux), stock murs par joueur.
+      \item \texttt{Rules} (complet): déplacements avec sauts, validation placement murs, interdiction blocage complet.
+      \item \texttt{Pathfinder}: BFS pour vérifier existence chemin vers ligne d'arrivée.
+    \end{itemize}
+  \item \textbf{Vue}:
+    \begin{itemize}[leftmargin=1.2cm]
+      \item Rendu murs (rectangles colorés).
+      \item HUD: affichage joueur actif, murs restants.
+      \item Messages d'erreur (coup invalide).
+    \end{itemize}
+  \item \textbf{Contrôleur}:
+    \begin{itemize}[leftmargin=1.2cm]
+      \item \texttt{InputHandler}: mode placement mur (sélection position + orientation via clavier/souris).
+      \item Basculement déplacement/placement mur (touche ou bouton UI).
+    \end{itemize}
+  \item \textbf{Tests}:
+    \begin{itemize}[leftmargin=1.2cm]
+      \item Tests placement murs (validations, chevauchements).
+      \item Tests sauts (configurations adversaire bloquant).
+      \item Tests pathfinding (cas limites: 1 seul chemin, plusieurs chemins).
+    \end{itemize}
+  \item \textbf{Fonctionnalité démo}: Partie Humain vs Humain complète jusqu'à victoire.
+\end{enumerate}
+
+\subsection*{Critères de succès}
+\begin{itemize}[leftmargin=1.2cm]
+  \item Partie jouable de A à Z en mode local (2 humains).
+  \item Victoire détectée et affichée.
+  \item Tous les cas de règles validés par tests unitaires (\textgreater{}20 tests).
+  \item Aucun placement de mur ne peut bloquer définitivement un joueur.
+\end{itemize}
+
+\subsection*{Risques et mitigations}
+\begin{itemize}[leftmargin=1.2cm]
+  \item \textit{Risque}: Complexité validation murs + pathfinding.
+  \item \textit{Mitigation}: Implémenter BFS simple d'abord; tester cas par cas; prévoir debug intensif.
+\end{itemize}
+
+\section*{Itération 3 : Intelligence artificielle et configurabilité}
+\textbf{Dates}: 16 décembre 2025 -- 5 janvier 2026 (3 semaines)
+
+\subsection*{Objectifs}
+\begin{itemize}[leftmargin=1.2cm]
+  \item Implémenter IA Minimax/Négamax avec élagage \(\alpha\)--\(\beta\).
+  \item Heuristiques pour évaluation positions (distance à l'arrivée, murs adversaire).
+  \item Trois niveaux de difficulté (Facile/Normal/Difficile).
+  \item Mode Humain vs IA fonctionnel.
+  \item Amélioration UI/UX (menus, animations simples).
+\end{itemize}
+
+\subsection*{Livrables}
+\begin{enumerate}[label=L3.\arabic*., leftmargin=1.6cm]
+  \item \textbf{Modèle}:
+    \begin{itemize}[leftmargin=1.2cm]
+      \item Classe \texttt{AI}: Minimax/Négamax + élagage \(\alpha\)--\(\beta\), profondeur paramétrable.
+      \item Heuristique: combinaison distance joueur/adversaire (A*), valeur murs.
+      \item Randomisation légère pour coups de score proche.
+      \item \texttt{Pathfinder}: A* pour estimation distance (optimisation heuristique IA).
+    \end{itemize}
+  \item \textbf{Vue}:
+    \begin{itemize}[leftmargin=1.2cm]
+      \item Écran menu: sélection mode (HvH, HvIA), difficulté IA.
+      \item Feedback visuel coup IA (surlignage case/mur joué).
+      \item Animation simple déplacement pions (optionnel).
+    \end{itemize}
+  \item \textbf{Contrôleur}:
+    \begin{itemize}[leftmargin=1.2cm]
+      \item \texttt{SceneManager}: gestion états (Menu, Partie, Pause, Fin).
+      \item \texttt{Config}: chargement paramètres (fichier JSON ou constantes): difficulté IA, résolution fenêtre.
+      \item Tour IA: appel \texttt{AI::getBestMove()}, application coup, update Vue.
+    \end{itemize}
+  \item \textbf{Tests}:
+    \begin{itemize}[leftmargin=1.2cm]
+      \item Tests génération coups valides par IA.
+      \item Tests heuristique (scores positions connues).
+      \item Tests Minimax (profondeur 1--2, résultats attendus).
+    \end{itemize}
+  \item \textbf{Fonctionnalité démo}: Partie Humain vs IA (difficulté Normal), IA joue en \textless{}2 secondes par coup.
+\end{enumerate}
+
+\subsection*{Critères de succès}
+\begin{itemize}[leftmargin=1.2cm]
+  \item IA niveau Normal bat un joueur occasionnel.
+  \item IA niveau Difficile termine partie en \textless{}30 coups contre joueur moyen.
+  \item IA niveau Facile commet erreurs visibles (profondeur faible, randomisation forte).
+  \item Temps réponse IA acceptable (\textless{}3 secondes par coup, profondeur 3--4).
+\end{itemize}
+
+\subsection*{Risques et mitigations}
+\begin{itemize}[leftmargin=1.2cm]
+  \item \textit{Risque}: Performance IA trop lente (explosion combinatoire).
+  \item \textit{Mitigation}: Limiter profondeur (3--4); élagage \(\alpha\)--\(\beta\) strict; optimiser génération coups; cache positions si temps disponible.
+  \item \textit{Risque}: Période vacances (moins de disponibilité).
+  \item \textit{Mitigation}: Planifier tâches modulaires; commits réguliers; travail asynchrone possible.
+\end{itemize}
+
+\section*{Itération 4 : Packaging, polish et préparation soutenance}
+\textbf{Dates}: 6 janvier -- 14 janvier 2026 (1 semaine)
+
+\subsection*{Objectifs}
+\begin{itemize}[leftmargin=1.2cm]
+  \item Packaging multi-plateforme (Windows ZIP, macOS DMG/ZIP, Linux AppImage/tar.gz).
+  \item Polissage UI (textures/sprites, polices, sons optionnels).
+  \item Documentation complète (README, guide utilisateur, commentaires code).
+  \item Préparation diaporama soutenance.
+  \item Tests finaux et corrections bugs.
+\end{itemize}
+
+\subsection*{Livrables}
+\begin{enumerate}[label=L4.\arabic*., leftmargin=1.6cm]
+  \item \textbf{Packaging}:
+    \begin{itemize}[leftmargin=1.2cm]
+      \item \texttt{CMakeLists.txt} avec installation assets, copie DLL (Windows), bundle macOS.
+      \item CPack configuré: générateurs ZIP (Windows), DragNDrop/ZIP (macOS), TGZ (Linux).
+      \item Script packaging AppImage (Linux) ou alternative tar.gz + launcher.
+      \item Artefacts finaux: \texttt{Quoridor-1.0-Windows.zip}, \texttt{Quoridor-1.0-macOS.dmg}, \texttt{Quoridor-1.0-Linux.tar.gz}.
+    \end{itemize}
+  \item \textbf{Assets et polish}:
+    \begin{itemize}[leftmargin=1.2cm]
+      \item Textures/sprites pour plateau, pions, murs (ou maintien formes géométriques épurées).
+      \item Police lisible pour HUD et messages.
+      \item Icône application (Windows .ico, macOS .icns).
+      \item Sons optionnels (déplacement, placement mur, victoire).
+    \end{itemize}
+  \item \textbf{Documentation}:
+    \begin{itemize}[leftmargin=1.2cm]
+      \item \texttt{README.md}: description, prérequis, compilation, exécution, modes de jeu.
+      \item Guide utilisateur (PDF ou Markdown): règles Quoridor, commandes, captures d'écran.
+      \item Commentaires code (Doxygen-style ou minimal clair).
+      \item Diagramme classes UML (optionnel mais recommandé pour soutenance).
+    \end{itemize}
+  \item \textbf{Tests finaux}:
+    \begin{itemize}[leftmargin=1.2cm]
+      \item Tests intégration: scénarios partie complète (HvH, HvIA).
+      \item Tests plateformes: vérifier exécutables Windows/macOS/Linux (si accès machines).
+      \item Corrections bugs identifiés.
+    \end{itemize}
+  \item \textbf{Soutenance}:
+    \begin{itemize}[leftmargin=1.2cm]
+      \item Diaporama (15--20 slides): contexte, architecture MVC, IA (Minimax/A*), démo, résultats tests, packaging, rétrospective.
+      \item Démo live: partie HvIA niveau Difficile, montrer UI/animations.
+      \item Répétition orale (timing 10--15 minutes + questions).
+    \end{itemize}
+\end{enumerate}
+
+\subsection*{Critères de succès}
+\begin{itemize}[leftmargin=1.2cm]
+  \item Exécutables cliquables fonctionnels sur au moins 2 plateformes (Windows + macOS ou Linux).
+  \item README complet permet à un utilisateur externe de compiler et jouer.
+  \item Soutenance fluide, démo sans crash, questions anticipées.
+  \item Code source propre, commenté, tests \textgreater{}90\% passent.
+\end{itemize}
+
+\subsection*{Risques et mitigations}
+\begin{itemize}[leftmargin=1.2cm]
+  \item \textit{Risque}: Bugs de dernière minute.
+  \item \textit{Mitigation}: Geler fonctionnalités le 10 janvier; jours 11--14 janvier réservés bug fixes et répétitions.
+  \item \textit{Risque}: Packaging complexe (macOS bundle, AppImage).
+  \item \textit{Mitigation}: Prioriser Windows ZIP (simple); macOS/Linux en best-effort; documenter limitations si nécessaire.
+\end{itemize}
+
+\section*{Tableau récapitulatif des jalons}
+
+\begin{center}
+\begin{tabular}{|>{\bfseries}p{3.5cm}|p{2.5cm}|p{7.5cm}|}
+\hline
+\textbf{Itération} & \textbf{Dates} & \textbf{Jalons clés} \\
+\hline
+\textbf{Itération 1} & 18 nov -- 1 déc & Infrastructure CMake/SFML, plateau affiché, déplacements pions simples, tests unitaires de base. \\
+\hline
+\textbf{Itération 2} & 2 déc -- 15 déc & Règles complètes (sauts, murs, pathfinding BFS), victoire détectée, partie HvH jouable. \\
+\hline
+\textbf{Itération 3} & 16 déc -- 5 jan & IA Minimax + \(\alpha\)--\(\beta\), 3 niveaux difficulté, mode HvIA, menus, A* pour heuristique. \\
+\hline
+\textbf{Itération 4} & 6 jan -- 14 jan & Packaging multi-plateforme, polish UI/assets, documentation complète, préparation soutenance. \\
+\hline
+\textbf{Soutenance} & 15 janvier 2026 & Présentation + démo + questions. \\
+\hline
+\end{tabular}
+\end{center}
+
+\section*{Recommandations de gestion de projet}
+
+\subsection*{Pratiques de développement}
+\begin{itemize}[leftmargin=1.2cm]
+  \item \textbf{Git}: Commits fréquents (au moins quotidiens), messages descriptifs. Branches pour features majeures (ex: \texttt{feature/ai}, \texttt{feature/walls}).
+  \item \textbf{Revue de code}: Relecture croisée avant merge vers \texttt{main}. Pair programming pour composants critiques (IA, pathfinding).
+  \item \textbf{Tests}: Écrire tests avant ou en parallèle du code (TDD light). Objectif couverture \textgreater{}80\% pour \texttt{Model}.
+  \item \textbf{Intégration continue (optionnel)}: GitHub Actions pour build automatique multi-plateforme + tests (si temps disponible).
+\end{itemize}
+
+\subsection*{Communication et coordination}
+\begin{itemize}[leftmargin=1.2cm]
+  \item \textbf{Réunions hebdomadaires}: Point équipe (30 min) début de semaine: bilan itération, répartition tâches.
+  \item \textbf{Kanban/Trello}: Board avec colonnes \textit{À faire}, \textit{En cours}, \textit{Terminé}, \textit{Bloqué}.
+  \item \textbf{Documentation}: Wiki ou \texttt{docs/} pour décisions architecture, API internes, FAQ technique.
+\end{itemize}
+
+\subsection*{Gestion des risques généraux}
+\begin{itemize}[leftmargin=1.2cm]
+  \item \textbf{Scope creep}: Éviter ajout fonctionnalités non essentielles (ex: réseau, replay sophistiqué) durant itérations 1--3. Liste \textit{nice-to-have} pour post-soutenance.
+  \item \textbf{Indisponibilité membre}: Répartition tâches modulaires; documentation claire pour reprise travail.
+  \item \textbf{Problèmes techniques bloquants}: Timeboxing (max 4h recherche); escalade vers enseignant/forum si non résolu.
+\end{itemize}
+
+\section*{Conclusion}
+
+Cette planification en 4 itérations assure une progression incrémentale du projet Quoridor, avec des jalons vérifiables et une montée en complexité maîtrisée. Chaque itération produit un livrable fonctionnel, permettant tests et ajustements continus. La semaine finale est dédiée au polish et à la préparation soutenance, maximisant les chances de présentation réussie le 15 janvier 2026.
+
+\textbf{Prochaines étapes immédiates} (semaine du 18 novembre):
+\begin{enumerate}[leftmargin=1.2cm]
+  \item Créer dépôt Git et structure dossiers.
+  \item Installer SFML (via vcpkg ou Conan).
+  \item Écrire \texttt{CMakeLists.txt} minimal et tester compilation.
+  \item Implémenter classes \texttt{Board}, \texttt{State}, \texttt{Renderer2D} (squelettes).
+  \item Afficher plateau vide dans fenêtre SFML.
+\end{enumerate}
+
+\end{document}
