@@ -1,6 +1,5 @@
 # Prerequisites
 *.d
-*.vcpkg
 
 # Compiled Object files
 *.slo
@@ -64,6 +63,7 @@ _deps/
 *~
 .idea/
 *.user
+.vcpkg/
 
 # Package build artifacts
 _CPack_Packages/
