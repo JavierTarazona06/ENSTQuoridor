@@ -1,4 +1,4 @@
-# Running the Application
+# Running the Game
 
 This guide explains how to build and run the ENSTQuoridor application.
 
