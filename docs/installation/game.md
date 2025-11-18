@@ -79,6 +79,8 @@ Executable location depends on your platform and configuration:
 
 **macOS:**
 ```bash
+./build/arm64-osx/hello_sfml
+# Or try 
 ./build/x64-osx/hello_sfml
 ```
 
