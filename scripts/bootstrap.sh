@@ -23,7 +23,7 @@ echo "Using VCPKG_ROOT=$VCPKG_ROOT"
 UNAME_OUT="$(uname -s)"
 case "$UNAME_OUT" in
   Linux*)  PRESET="x64-linux" ;;
-  Darwin*) PRESET="x64-osx" ;;
+  Darwin*) PRESET="arm64-osx" ;;
   *) echo "Unsupported platform: $UNAME_OUT"; exit 1 ;;
  esac
 
