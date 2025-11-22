@@ -22,6 +22,13 @@ namespace Quoridor {
         }
     };
 
+    // Color struct for pawn colors (RGB)
+    struct Color {
+        unsigned char r;
+        unsigned char g;
+        unsigned char b;
+    };
+
     // Wall orientation
     enum class Orientation {
         Horizontal, 
@@ -85,6 +92,13 @@ namespace Quoridor {
         Position getPawnPosition(int playerIndex) const;
 
         /**
+         * @brief Gets the color of the specified player's pawn.
+         * @param playerIndex Player index (0 or 1)
+         * @return Color Pawn's color
+         */
+        Color getPawnColor(int playerIndex) const;
+
+        /**
          * @brief Gets all placed walls.
          * @return const std::vector<Wall>& Constant reference to the list of walls
          */
@@ -109,6 +123,9 @@ namespace Quoridor {
 
         // Stores the positions of the two players' pawns
         std::array<Position, NUM_PLAYERS> pawnPositions_; 
+        
+        // Stores the colors of the two players' pawns
+        std::array<Color, NUM_PLAYERS> pawnColors_;
         
         // Stores the placed walls
         std::vector<Wall> placedWalls_;

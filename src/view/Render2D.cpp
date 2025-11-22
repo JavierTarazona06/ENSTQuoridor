@@ -51,6 +51,30 @@ void Render2D::drawGrid() {
     }
 }
 
+void Render2D::drawPawn(const Board& board, int playerNumber) {
+    // Get pawn position from board
+    Position pawnPos = board.getPawnPosition(playerNumber);
+    
+    // Get pawn color from board
+    Color pawnColor = board.getPawnColor(playerNumber);
+    
+    // Calculate screen position (center of cell)
+    float screenX = GRID_OFFSET_X + pawnPos.x * CELL_SIZE + CELL_SIZE / 2.0f;
+    float screenY = GRID_OFFSET_Y + pawnPos.y * CELL_SIZE + CELL_SIZE / 2.0f;
+    
+    // Create circle for pawn
+    sf::CircleShape pawn(PAWN_RADIUS);
+    pawn.setOrigin({PAWN_RADIUS, PAWN_RADIUS}); // Center the circle
+    pawn.setPosition({screenX, screenY});
+    
+    // Set color from board model
+    pawn.setFillColor(sf::Color(pawnColor.r, pawnColor.g, pawnColor.b));
+    pawn.setOutlineColor(sf::Color::Black);
+    pawn.setOutlineThickness(2.0f);
+    
+    window.draw(pawn);
+}
+
 sf::RenderWindow& Render2D::getWindow() {
     return window;
 }

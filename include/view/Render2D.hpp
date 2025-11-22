@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include "model/Board.hpp"
 
 namespace Quoridor {
 
@@ -20,6 +21,7 @@ public:
 
     // Rendering methods
     void drawGrid();
+    void drawPawn(const Board& board, int playerNumber);
 
     // Get window reference
     sf::RenderWindow& getWindow();
@@ -32,6 +34,7 @@ private:
     static constexpr float CELL_SIZE = 60.0f;
     static constexpr float GRID_OFFSET_X = 180.0f;
     static constexpr float GRID_OFFSET_Y = 180.0f;
+    static constexpr float PAWN_RADIUS = 20.0f;
 };
 
 } // namespace Quoridor

@@ -3,6 +3,7 @@
 int main()
 {
     Quoridor::Render2D render;
+    Quoridor::Board board;
 
     // Main loop
     while (render.isOpen())
@@ -18,6 +19,8 @@ int main()
         // Clear, draw grid, display
         render.clear();
         render.drawGrid();
+        render.drawPawn(board, 0); // Draw player 0's pawn for demonstration
+        render.drawPawn(board, 1); // Draw player 1's pawn for demonstration
         render.display();
     }
 
