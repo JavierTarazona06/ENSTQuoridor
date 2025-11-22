@@ -14,7 +14,7 @@ add_library(quoridor_model
     src/model/State.cpp
     src/model/Rules.cpp
     src/view/Render2D.cpp
-    src/view/startView.cpp
+    src/view/GameView.cpp
     src/controller/server.cpp
 )
 # Define FONT_DIR for font assets

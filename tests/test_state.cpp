@@ -4,7 +4,8 @@
 using namespace Quoridor;
 
 TEST_CASE("State initialization", "[state]") {
-    State state;
+    Board board;
+    State state(board);
     
     SECTION("Initial player is 0") {
         REQUIRE(state.getCurrentPlayer() == 0);
@@ -16,7 +17,8 @@ TEST_CASE("State initialization", "[state]") {
 }
 
 TEST_CASE("Player switching", "[state]") {
-    State state;
+    Board board;
+    State state(board);
     
     SECTION("Switch from player 0 to 1") {
         state.switchPlayer();
@@ -31,7 +33,8 @@ TEST_CASE("Player switching", "[state]") {
 }
 
 TEST_CASE("Board integration", "[state][board]") {
-    State state;
+    Board board;
+    State state(board);
     
     SECTION("Board is accessible and initialized") {
         Position p0 = state.getBoard().getPawnPosition(0);

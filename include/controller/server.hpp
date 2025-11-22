@@ -1,6 +1,7 @@
 #pragma once
 
 #include "model/Board.hpp"
+#include "model/State.hpp"
 #include "view/Render2D.hpp"
 #include "view/View.hpp"
 #include <memory>
@@ -17,6 +18,7 @@ public:
 
 private:
     Board board_;
+    State state_;
     Render2D render_;
     std::unique_ptr<View> current_view_;
 

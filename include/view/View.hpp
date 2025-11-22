@@ -2,6 +2,7 @@
 
 #include "view/Render2D.hpp"
 #include "model/Board.hpp"
+#include "model/State.hpp"
 
 namespace Quoridor {
 
@@ -11,7 +12,7 @@ public:
     virtual ~View() = default;
     
     // Pure virtual method that all views must implement
-    virtual void render(Render2D& render, const Board& board) = 0;
+    virtual void render(Render2D& render, const Board& board, const State& state) = 0;
 };
 
 } // namespace Quoridor

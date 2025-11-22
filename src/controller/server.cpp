@@ -1,11 +1,11 @@
 #include "controller/server.hpp"
-#include "view/StartView.hpp"
+#include "view/GameView.hpp"
 #include <memory>
 
 namespace Quoridor {
 
 Server::Server() 
-    : board_(), render_(), current_view_(std::make_unique<StartView>()) {
+    : board_(), state_(board_), render_(), current_view_(std::make_unique<GameView>()) {
 }
 
 Server::~Server() {
@@ -40,7 +40,7 @@ void Server::render() {
     render_.clear();
     
     // Draw using current view
-    current_view_->render(render_, board_);
+    current_view_->render(render_, board_, state_);
     
     // Display everything
     render_.display();

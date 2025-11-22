@@ -35,6 +35,7 @@ public:
     static constexpr unsigned int getWindowHeight() { return WINDOW_HEIGHT; }
     static constexpr float getGridOffsetX() { return GRID_OFFSET_X; }
     static constexpr float getGridOffsetY() { return GRID_OFFSET_Y; }
+    static constexpr float getCellSize() { return CELL_SIZE; }
 
 private:
     sf::RenderWindow window;

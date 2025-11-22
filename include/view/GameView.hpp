@@ -4,10 +4,10 @@
 
 namespace Quoridor {
 
-class StartView : public View {
+class GameView : public View {
 public:
     // Override the render method from View base class
-    void render(Render2D& render, const Board& board) override;
+    void render(Render2D& render, const Board& board, const State& state) override;
 };
 
 } // namespace Quoridor
