@@ -30,3 +30,7 @@ case "$UNAME_OUT" in
 # Configure and build
 cmake --preset "$PRESET"
 cmake --build --preset "$PRESET" --config "$CONFIG"
+
+# Run tests
+echo "Running tests../tests."
+ctest --test-dir "build/$PRESET/tests" -C "$CONFIG" --output-on-failure
