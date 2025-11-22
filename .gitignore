@@ -63,6 +63,7 @@ _deps/
 *~
 .idea/
 *.user
+.vcpkg/
 
 # Package build artifacts
 _CPack_Packages/

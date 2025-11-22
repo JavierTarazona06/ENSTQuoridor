@@ -60,31 +60,7 @@ This project is a modern C++ implementation featuring:
 
 ### Build Instructions
 
-#### Windows (PowerShell)
-```powershell
-# Install SFML via vcpkg (recommended)
-vcpkg install sfml:x64-windows
-
-# Build
-cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=[path-to-vcpkg]/scripts/buildsystems/vcpkg.cmake
-cmake --build build --config Release
-
-# Run
-.\build\Release\quoridor.exe
-```
-
-#### Linux / macOS
-```bash
-# Install SFML (example for Ubuntu)
-sudo apt install libsfml-dev
-
-# Build
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build
-
-# Run
-./build/quoridor
-```
+See the complete platform-specific guide here: `docs/installations/game.md`.
 
 ---
 
