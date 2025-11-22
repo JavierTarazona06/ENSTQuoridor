@@ -14,7 +14,12 @@ add_library(quoridor_model
     src/model/State.cpp
     src/model/Rules.cpp
     src/view/Render2D.cpp
+    src/view/startView.cpp
+    src/controller/server.cpp
 )
+# Define FONT_DIR for font assets
+target_compile_definitions(quoridor_model PUBLIC FONT_DIR=\"${CMAKE_SOURCE_DIR}/assets/fonts\")
+
 target_include_directories(quoridor_model PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(quoridor_model PUBLIC 
     SFML::Graphics 
