@@ -1,30 +1,24 @@
-#include <SFML/Graphics.hpp>
+#include "view/Render2D.hpp"
 
 int main()
 {
-    // Create a window
-    sf::RenderWindow window(sf::VideoMode({800, 600}), "Hello SFML!");
-
-    // Create a circle shape
-    sf::CircleShape circle(50.f); // Radius of 50 pixels
-    circle.setFillColor(sf::Color::Green);
-    circle.setPosition({375.f, 275.f}); // 0,0 is at upper left corner
+    Quoridor::Render2D render;
 
     // Main loop
-    while (window.isOpen())
+    while (render.isOpen())
     {
         // Handle events
-        while (const std::optional event = window.pollEvent())
+        while (const std::optional event = render.pollEvent())
         {
-            // If user requests to close the window, it closes (event)
-            if (event -> is<sf::Event::Closed>())
-                window.close();
+            // If user requests to close the window, it closes
+            if (event->is<sf::Event::Closed>())
+                render.close();
         }
 
-        // Clear, draw, display
-        window.clear(sf::Color::Black);
-        window.draw(circle);
-        window.display();
+        // Clear, draw grid, display
+        render.clear();
+        render.drawGrid();
+        render.display();
     }
 
     return 0;

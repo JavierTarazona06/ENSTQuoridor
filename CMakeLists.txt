@@ -13,8 +13,14 @@ add_library(quoridor_model
     src/model/Board.cpp
     src/model/State.cpp
     src/model/Rules.cpp
+    src/view/Render2D.cpp
 )
 target_include_directories(quoridor_model PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(quoridor_model PUBLIC 
+    SFML::Graphics 
+    SFML::Window 
+    SFML::System
+)
 
 # Create executable for the game
 add_executable(quoridor_game src/app/main.cpp)
