@@ -38,3 +38,6 @@ cmake --preset x64-windows | Out-Host
 
 Write-Host 'Building ...' -ForegroundColor Cyan
 cmake --build --preset x64-windows --config $Config | Out-Host
+
+Write-Host 'Running tests ...' -ForegroundColor Cyan
+ctest --test-dir build/x64-windows/tests -C $Config --output-on-failure | Out-Host

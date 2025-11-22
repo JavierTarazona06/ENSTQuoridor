@@ -8,12 +8,22 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Find SFML package
 find_package(SFML COMPONENTS Graphics Window System REQUIRED)
 
-# Create executable
-add_executable(hello_sfml src/app/main.cpp)
+# Library for the model
+add_library(quoridor_model 
+    src/model/Board.cpp
+    src/model/State.cpp
+    src/model/Rules.cpp
+)
+target_include_directories(quoridor_model PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
-# Link SFML libraries
-target_link_libraries(hello_sfml PRIVATE 
+# Create executable for the game
+add_executable(quoridor_game src/app/main.cpp)
+target_link_libraries(quoridor_game PRIVATE 
+    quoridor_model
     SFML::Graphics 
     SFML::Window 
     SFML::System
 )
+
+# Add tests directory
+add_subdirectory(tests)
