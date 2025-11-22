@@ -2,8 +2,8 @@
 
 namespace Quoridor {
 
-    State::State() 
-        : board_(), 
+    State::State(Board& board) 
+        : board_(board), 
           currentPlayer_(0), 
           status_(GameStatus::Playing) {
     }
