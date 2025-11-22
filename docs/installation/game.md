@@ -73,12 +73,13 @@ Executable location depends on your platform and configuration:
 
 # Run all tests:
 ctest --test-dir build/x64-windows/tests -C Debug
+# or
+.\build\x64-windows\tests\Debug\test_all.exe
 
+# View individual test:
+.\build\x64-windows\tests\Debug\test_all.exe --list-tests
 # Run individual test:
-.\build\x64-windows\tests\Debug\test_board.exe
-.\build\x64-windows\tests\Debug\test_state.exe
-.\build\x64-windows\tests\Debug\test_rules.exe
-.\build\x64-windows\tests\Debug\test_name.exe
+.\build\x64-windows\tests\Debug\test_all.exe [tags]
 ```
 
 **Linux:**
@@ -87,12 +88,13 @@ ctest --test-dir build/x64-windows/tests -C Debug
 
 # Run all tests:
 ctest --test-dir build/x64-linux/tests -C Debug
+# or
+./build/x64-linux/tests/test_all
 
+# View individual test:
+./build/x64-linux/tests/test_all --list-tests
 # Run individual test:
-./build/x64-linux/tests/test_board
-./build/x64-linux/tests/test_state
-./build/x64-linux/tests/test_rules
-./build/x64-linux/tests/test_name
+./build/x64-linux/tests/test_all [tags]
 ```
 
 **macOS:**
@@ -103,19 +105,20 @@ ctest --test-dir build/x64-linux/tests -C Debug
 
 # Run all tests:
 ctest --test-dir build/arm64-osx/tests -C Debug
+  # or
+  ./build/arm64-osx/tests/test_all
 # Or for x64:
 ctest --test-dir build/x64-osx/tests -C Debug
+  # or
+  ./build/x64-osx/tests/test_all
 
+# View individual test:
+./build/arm64-osx/tests/test_all --list-tests
 # Run individual test:
-./build/arm64-osx/tests/test_board
-./build/arm64-osx/tests/test_state
-./build/arm64-osx/tests/test_rules
-./build/arm64-osx/tests/test_name
+./build/arm64-osx/tests/test_all [tags]
 # Or for x64:
-./build/x64-osx/tests/test_board
-./build/x64-osx/tests/test_state
-./build/x64-osx/tests/test_rules
-./build/x64-osx/tests/test_name
+./build/x64-osx/tests/test_all --list-tests
+./build/x64-osx/tests/test_all [tags]
 ```
 
 ## Troubleshooting

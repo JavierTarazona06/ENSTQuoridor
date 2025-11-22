@@ -2,6 +2,7 @@
   "name": "enstquoridor",
   "version-string": "0.1.0",
   "dependencies": [
-    "sfml"
+    "sfml",
+    "catch2"
   ]
 }
