@@ -41,7 +41,7 @@ scripts\bootstrap.ps1 -Config Debug
 
 4. **Run the application:**
 ```powershell
-.\build\x64-windows\Debug\hello_sfml.exe
+.\build\x64-windows\Debug\quoridor_game.exe
 ```
 
 ### Cross-Platform One-Command Bootstrap
@@ -67,21 +67,55 @@ Executable location depends on your platform and configuration:
 
 **Windows:**
 ```powershell
-.\build\x64-windows\Debug\hello_sfml.exe
+.\build\x64-windows\Debug\quoridor_game.exe
 # Or for Release:
-.\build\x64-windows\Release\hello_sfml.exe
+.\build\x64-windows\Release\quoridor_game.exe
+
+# Run all tests:
+ctest --test-dir build/x64-windows/tests -C Debug
+
+# Run individual test:
+.\build\x64-windows\tests\Debug\test_board.exe
+.\build\x64-windows\tests\Debug\test_state.exe
+.\build\x64-windows\tests\Debug\test_rules.exe
+.\build\x64-windows\tests\Debug\test_name.exe
 ```
 
 **Linux:**
 ```bash
-./build/x64-linux/hello_sfml
+./build/x64-linux/quoridor_game
+
+# Run all tests:
+ctest --test-dir build/x64-linux/tests -C Debug
+
+# Run individual test:
+./build/x64-linux/tests/test_board
+./build/x64-linux/tests/test_state
+./build/x64-linux/tests/test_rules
+./build/x64-linux/tests/test_name
 ```
 
 **macOS:**
 ```bash
-./build/arm64-osx/hello_sfml
+./build/arm64-osx/quoridor_game
 # Or try 
-./build/x64-osx/hello_sfml
+./build/x64-osx/quoridor_game
+
+# Run all tests:
+ctest --test-dir build/arm64-osx/tests -C Debug
+# Or for x64:
+ctest --test-dir build/x64-osx/tests -C Debug
+
+# Run individual test:
+./build/arm64-osx/tests/test_board
+./build/arm64-osx/tests/test_state
+./build/arm64-osx/tests/test_rules
+./build/arm64-osx/tests/test_name
+# Or for x64:
+./build/x64-osx/tests/test_board
+./build/x64-osx/tests/test_state
+./build/x64-osx/tests/test_rules
+./build/x64-osx/tests/test_name
 ```
 
 ## Troubleshooting
