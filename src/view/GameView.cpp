@@ -102,6 +102,36 @@ void GameView::render(Render2D& render, const Board& board, const State& state) 
             break;
     }
     render.drawText(statusText, boxX + boxWidth * 0.5f, section2Y + 35.0f, 18, sf::Color::White, 3);
+
+    // Draw Victory Overlay if game is over
+    if (state.getGameStatus() != GameStatus::Playing) {
+        // Semi-transparent overlay
+        sf::RectangleShape overlay({(float)Render2D::getWindowWidth(), (float)Render2D::getWindowHeight()});
+        overlay.setFillColor(sf::Color(0, 0, 0, 150));
+        render.getWindow().draw(overlay);
+
+        // Victory Text
+        std::string victoryText;
+        sf::Color victoryColor;
+        
+        if (state.getGameStatus() == GameStatus::Player1Won) {
+            victoryText = "PLAYER 1 WINS!";
+            victoryColor = sf::Color::Red;
+        } else {
+            victoryText = "PLAYER 2 WINS!";
+            victoryColor = sf::Color::Blue;
+        }
+
+        float windowCenterX = Render2D::getWindowWidth() * 0.5f;
+        float windowCenterY = Render2D::getWindowHeight() * 0.5f;
+
+        // Draw shadow
+        render.drawText(victoryText, windowCenterX + 4.0f, windowCenterY + 4.0f, 60, sf::Color::Black, 0);
+        // Draw text
+        render.drawText(victoryText, windowCenterX, windowCenterY, 60, victoryColor, 0);
+        
+        render.drawText("Press X to quit", windowCenterX, windowCenterY + 80.0f, 30, sf::Color::White, 1);
+    }
 }
 
 } // namespace Quoridor

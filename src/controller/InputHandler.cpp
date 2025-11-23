@@ -38,6 +38,11 @@ bool InputHandler::pixelToGrid(int pixelX, int pixelY, int& row, int& col) const
 }
 
 void InputHandler::handleMouseClick(int pixelX, int pixelY) {
+    // If game is over, ignore input
+    if (state.getGameStatus() != GameStatus::Playing) {
+        return;
+    }
+
     int row, col;
     if (!pixelToGrid(pixelX, pixelY, row, col)) {
         // Clicked outside the grid
@@ -68,7 +73,19 @@ void InputHandler::handleMouseClick(int pixelX, int pixelY) {
         if (Rules::isValidMove(board, currentPlayer, currentPos.y, currentPos.x, clickedPos.y, clickedPos.x)) {
             // Valid move
             board.movePawn(currentPlayer, clickedPos);
-            state.switchPlayer();
+            
+            // Check for victory
+            if (Rules::checkVictory(board, currentPlayer)) {
+                if (currentPlayer == 0) {
+                    state.setGameStatus(GameStatus::Player1Won);
+                } else {
+                    state.setGameStatus(GameStatus::Player2Won);
+                }
+            } else {
+                // Only switch player if no one has won yet
+                state.switchPlayer();
+            }
+            
             state.setSelectedPawn(std::nullopt);
         } else {
             // Invalid move - just reject (do nothing)
