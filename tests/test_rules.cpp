@@ -8,11 +8,26 @@ TEST_CASE("Basic movement validation", "[rules][movement]") {
     Board board;
     
     SECTION("Valid move down") {
+        // Player 0 starts at (4, 0)
         REQUIRE(Rules::isValidMove(board, 0, 0, 4, 1, 4) == true);
+    }
+
+    SECTION("Valid move up") {
+        // Move Player 0 to (4, 1) first
+        board.setPawnPosition(0, 1, 4);
+        REQUIRE(Rules::isValidMove(board, 0, 1, 4, 0, 4) == true);
     }
     
     SECTION("Valid move left") {
-        REQUIRE(Rules::isValidMove(board, 0, 0, 4, 0, 3) == true);
+        // Move Player 0 to (4, 1) first
+        board.setPawnPosition(0, 1, 4);
+        REQUIRE(Rules::isValidMove(board, 0, 1, 4, 1, 3) == true);
+    }
+
+    SECTION("Valid move right") {
+        // Move Player 0 to (4, 1) first
+        board.setPawnPosition(0, 1, 4);
+        REQUIRE(Rules::isValidMove(board, 0, 1, 4, 1, 5) == true);
     }
     
     SECTION("Invalid diagonal move") {
@@ -25,6 +40,31 @@ TEST_CASE("Basic movement validation", "[rules][movement]") {
     
     SECTION("Invalid out of bounds") {
         REQUIRE(Rules::isValidMove(board, 0, 0, 4, -1, 4) == false);
+        REQUIRE(Rules::isValidMove(board, 0, 0, 4, 0, 9) == false);
+    }
+
+    SECTION("Invalid stationary move") {
+        REQUIRE(Rules::isValidMove(board, 0, 0, 4, 0, 4) == false);
+    }
+
+    SECTION("Corner movement validation (Top-Left)") {
+        board.setPawnPosition(0, 0, 0);
+        // Valid moves
+        REQUIRE(Rules::isValidMove(board, 0, 0, 0, 0, 1) == true); // Right
+        REQUIRE(Rules::isValidMove(board, 0, 0, 0, 1, 0) == true); // Down
+        // Invalid moves (out of bounds)
+        REQUIRE(Rules::isValidMove(board, 0, 0, 0, 0, -1) == false); // Left
+        REQUIRE(Rules::isValidMove(board, 0, 0, 0, -1, 0) == false); // Up
+    }
+
+    SECTION("Corner movement validation (Bottom-Right)") {
+        board.setPawnPosition(0, 8, 8);
+        // Valid moves
+        REQUIRE(Rules::isValidMove(board, 0, 8, 8, 8, 7) == true); // Left
+        REQUIRE(Rules::isValidMove(board, 0, 8, 8, 7, 8) == true); // Up
+        // Invalid moves (out of bounds)
+        REQUIRE(Rules::isValidMove(board, 0, 8, 8, 8, 9) == false); // Right
+        REQUIRE(Rules::isValidMove(board, 0, 8, 8, 9, 8) == false); // Down
     }
 }
 
@@ -81,14 +121,28 @@ TEST_CASE("Victory condition", "[rules][victory]") {
         board.setPawnPosition(0, 8, 4);
         REQUIRE(Rules::checkVictory(board, 0) == true);
     }
+
+    SECTION("Player 0 at row 8, different column has won") {
+        board.setPawnPosition(0, 8, 0);
+        REQUIRE(Rules::checkVictory(board, 0) == true);
+    }
     
     SECTION("Player 0 at row 7 has not won") {
         board.setPawnPosition(0, 7, 4);
         REQUIRE(Rules::checkVictory(board, 0) == false);
     }
 
+    SECTION("Player 1 at start position has not won") {
+        REQUIRE(Rules::checkVictory(board, 1) == false);
+    }
+
     SECTION("Player 1 at row 0 has won") {
         board.setPawnPosition(1, 0, 4);
         REQUIRE(Rules::checkVictory(board, 1) == true);
+    }
+
+    SECTION("Player 1 at row 1 has not won") {
+        board.setPawnPosition(1, 1, 4);
+        REQUIRE(Rules::checkVictory(board, 1) == false);
     }
 }

@@ -16,6 +16,8 @@ add_library(quoridor_model
     src/view/Render2D.cpp
     src/view/GameView.cpp
     src/controller/server.cpp
+    src/controller/InputHandler.cpp
+    src/controller/Game.cpp
 )
 # Define FONT_DIR for font assets
 target_compile_definitions(quoridor_model PUBLIC FONT_DIR=\"${CMAKE_SOURCE_DIR}/assets/fonts\")

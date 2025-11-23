@@ -24,7 +24,7 @@ TEST_CASE("Board initialization and positions", "[board]") {
     }
 }
 
-TEST_CASE("Pawn movement", "[board][pawn]") {
+TEST_CASE("Pawn movement and access", "[board][pawn]") {
     Board board;
     
     SECTION("Move player 0 to valid position") {
@@ -39,8 +39,19 @@ TEST_CASE("Pawn movement", "[board][pawn]") {
         REQUIRE_THROWS_AS(board.movePawn(0, {9, 5}), std::invalid_argument);
     }
     
-    SECTION("Invalid player index throws exception") {
+    SECTION("Invalid player index throws exception on move") {
         REQUIRE_THROWS_AS(board.movePawn(-1, {4, 4}), std::out_of_range);
+        REQUIRE_THROWS_AS(board.movePawn(2, {4, 4}), std::out_of_range);
+    }
+
+    SECTION("Invalid player index throws exception on get position") {
+        REQUIRE_THROWS_AS(board.getPawnPosition(-1), std::out_of_range);
+        REQUIRE_THROWS_AS(board.getPawnPosition(2), std::out_of_range);
+    }
+
+    SECTION("Invalid player index throws exception on get color") {
+        REQUIRE_THROWS_AS(board.getPawnColor(-1), std::out_of_range);
+        REQUIRE_THROWS_AS(board.getPawnColor(2), std::out_of_range);
     }
 }
 
@@ -60,8 +71,17 @@ TEST_CASE("Wall placement", "[board][wall]") {
     }
     
     SECTION("Place wall in invalid area throws exception") {
+        // Wall placement is 0-7, so 8 is invalid
         REQUIRE_THROWS_AS(
             board.placeWall({{8, 5}, Orientation::Horizontal}),
+            std::invalid_argument
+        );
+        REQUIRE_THROWS_AS(
+            board.placeWall({{5, 8}, Orientation::Horizontal}),
+            std::invalid_argument
+        );
+        REQUIRE_THROWS_AS(
+            board.placeWall({{-1, 0}, Orientation::Horizontal}),
             std::invalid_argument
         );
     }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "model/Board.hpp"
+#include <optional>
 
 namespace Quoridor {
 
@@ -48,10 +49,15 @@ namespace Quoridor {
         Board& getBoard();
         const Board& getBoard() const;
 
+        // Selection state for UI
+        void setSelectedPawn(std::optional<Position> pos);
+        std::optional<Position> getSelectedPawn() const;
+
     private:
         Board& board_;
         int currentPlayer_; // 0 or 1
         GameStatus status_;
+        std::optional<Position> selectedPawn_;
     };
 
 } // namespace Quoridor

@@ -1,11 +1,12 @@
 #include "controller/server.hpp"
 #include "view/GameView.hpp"
 #include <memory>
+#include <optional>
 
 namespace Quoridor {
 
 Server::Server() 
-    : board_(), state_(board_), render_(), current_view_(std::make_unique<GameView>()) {
+    : board_(), state_(board_), rules_(), inputHandler_(board_, state_, rules_), render_(), current_view_(std::make_unique<GameView>()) {
 }
 
 Server::~Server() {
@@ -26,7 +27,9 @@ void Server::handleEvents() {
         if (event->is<sf::Event::Closed>()) {
             render_.close();
         }
-        // Add more event handling here (mouse clicks, keyboard input, etc.)
+        
+        // Pass event to input handler
+        inputHandler_.handleInput(*event, render_.getWindow());
     }
 }
 
