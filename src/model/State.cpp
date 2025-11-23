@@ -32,4 +32,12 @@ namespace Quoridor {
         return board_;
     }
 
+    void State::setSelectedPawn(std::optional<Position> pos) {
+        selectedPawn_ = pos;
+    }
+
+    std::optional<Position> State::getSelectedPawn() const {
+        return selectedPawn_;
+    }
+
 } // namespace Quoridor
