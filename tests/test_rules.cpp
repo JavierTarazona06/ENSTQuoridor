@@ -46,6 +46,26 @@ TEST_CASE("Basic movement validation", "[rules][movement]") {
     SECTION("Invalid stationary move") {
         REQUIRE(Rules::isValidMove(board, 0, 0, 4, 0, 4) == false);
     }
+
+    SECTION("Corner movement validation (Top-Left)") {
+        board.setPawnPosition(0, 0, 0);
+        // Valid moves
+        REQUIRE(Rules::isValidMove(board, 0, 0, 0, 0, 1) == true); // Right
+        REQUIRE(Rules::isValidMove(board, 0, 0, 0, 1, 0) == true); // Down
+        // Invalid moves (out of bounds)
+        REQUIRE(Rules::isValidMove(board, 0, 0, 0, 0, -1) == false); // Left
+        REQUIRE(Rules::isValidMove(board, 0, 0, 0, -1, 0) == false); // Up
+    }
+
+    SECTION("Corner movement validation (Bottom-Right)") {
+        board.setPawnPosition(0, 8, 8);
+        // Valid moves
+        REQUIRE(Rules::isValidMove(board, 0, 8, 8, 8, 7) == true); // Left
+        REQUIRE(Rules::isValidMove(board, 0, 8, 8, 7, 8) == true); // Up
+        // Invalid moves (out of bounds)
+        REQUIRE(Rules::isValidMove(board, 0, 8, 8, 8, 9) == false); // Right
+        REQUIRE(Rules::isValidMove(board, 0, 8, 8, 9, 8) == false); // Down
+    }
 }
 
 TEST_CASE("Collision validation", "[rules][collision]") {
