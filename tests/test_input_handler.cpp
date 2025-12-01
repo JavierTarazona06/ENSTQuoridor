@@ -26,7 +26,7 @@ void gridToPixel(int row, int col, int& x, int& y) {
 
 TEST_CASE("InputHandler pixel to grid conversion", "[input][conversion]") {
     Board board;
-    State state(board);
+    State state;
     Rules rules;
     InputHandler inputHandler(board, state, rules);
     
@@ -59,7 +59,7 @@ TEST_CASE("InputHandler pixel to grid conversion", "[input][conversion]") {
 
 TEST_CASE("InputHandler invalid moves", "[input][logic]") {
     Board board;
-    State state(board);
+    State state;
     Rules rules;
     InputHandler inputHandler(board, state, rules);
     
@@ -89,7 +89,7 @@ TEST_CASE("InputHandler invalid moves", "[input][logic]") {
 
 TEST_CASE("InputHandler click outside grid", "[input][bounds]") {
     Board board;
-    State state(board);
+    State state;
     Rules rules;
     InputHandler inputHandler(board, state, rules);
     
@@ -104,7 +104,7 @@ TEST_CASE("InputHandler click outside grid", "[input][bounds]") {
 
 TEST_CASE("InputHandler deselect logic", "[input][logic]") {
     Board board;
-    State state(board);
+    State state;
     Rules rules;
     InputHandler inputHandler(board, state, rules);
     
@@ -143,7 +143,7 @@ sf::Event createKeyEvent(sf::Keyboard::Key key) {
 
 TEST_CASE("InputHandler R key resets game when finished", "[input][reset]") {
     Board board;
-    State state(board);
+    State state;
     Rules rules;
     InputHandler inputHandler(board, state, rules);
     sf::RenderWindow window;
