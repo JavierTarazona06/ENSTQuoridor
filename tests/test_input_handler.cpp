@@ -26,7 +26,7 @@ void gridToPixel(int row, int col, int& x, int& y) {
 
 TEST_CASE("InputHandler pixel to grid conversion", "[input][conversion]") {
     Board board;
-    State state(board);
+    State state;
     Rules rules;
     InputHandler inputHandler(board, state, rules);
     
@@ -59,7 +59,7 @@ TEST_CASE("InputHandler pixel to grid conversion", "[input][conversion]") {
 
 TEST_CASE("InputHandler invalid moves", "[input][logic]") {
     Board board;
-    State state(board);
+    State state;
     Rules rules;
     InputHandler inputHandler(board, state, rules);
     
@@ -89,7 +89,7 @@ TEST_CASE("InputHandler invalid moves", "[input][logic]") {
 
 TEST_CASE("InputHandler click outside grid", "[input][bounds]") {
     Board board;
-    State state(board);
+    State state;
     Rules rules;
     InputHandler inputHandler(board, state, rules);
     
@@ -104,7 +104,7 @@ TEST_CASE("InputHandler click outside grid", "[input][bounds]") {
 
 TEST_CASE("InputHandler deselect logic", "[input][logic]") {
     Board board;
-    State state(board);
+    State state;
     Rules rules;
     InputHandler inputHandler(board, state, rules);
     
@@ -128,4 +128,88 @@ TEST_CASE("InputHandler deselect logic", "[input][logic]") {
     Position pos = board.getPawnPosition(0);
     REQUIRE(pos.x == 4);
     REQUIRE(pos.y == 0);
+}
+
+// Helper to create a key pressed event
+sf::Event createKeyEvent(sf::Keyboard::Key key) {
+    sf::Event::KeyPressed keyEvent;
+    keyEvent.code = key;
+    keyEvent.alt = false;
+    keyEvent.control = false;
+    keyEvent.shift = false;
+    keyEvent.system = false;
+    return sf::Event(keyEvent);
+}
+
+TEST_CASE("InputHandler R key resets game when finished", "[input][reset]") {
+    Board board;
+    State state;
+    Rules rules;
+    InputHandler inputHandler(board, state, rules);
+    sf::RenderWindow window;
+    
+    SECTION("R key resets game when Player1 won") {
+        // Set game status to Player1Won
+        state.setGameStatus(GameStatus::Player1Won);
+        
+        // Move pawn to a different position to verify reset
+        board.movePawn(0, {5, 3});
+        board.movePawn(1, {2, 6});
+        state.switchPlayer(); // Player 1's turn
+        
+        // Verify game is finished
+        REQUIRE(state.getGameStatus() == GameStatus::Player1Won);
+        REQUIRE(board.getPawnPosition(0).x == 5);
+        REQUIRE(board.getPawnPosition(0).y == 3);
+        
+        // Press R key
+        inputHandler.handleInput(createKeyEvent(sf::Keyboard::Key::R), window);
+        
+        // Verify game is reset
+        REQUIRE(state.getGameStatus() == GameStatus::Playing);
+        REQUIRE(state.getCurrentPlayer() == 0);
+        
+        // Verify pawns are back to initial positions
+        Position p0 = board.getPawnPosition(0);
+        Position p1 = board.getPawnPosition(1);
+        REQUIRE(p0.x == BOARD_SIZE / 2);
+        REQUIRE(p0.y == 0);
+        REQUIRE(p1.x == BOARD_SIZE / 2);
+        REQUIRE(p1.y == BOARD_SIZE - 1);
+    }
+    
+    SECTION("R key resets game when Player2 won") {
+        // Set game status to Player2Won
+        state.setGameStatus(GameStatus::Player2Won);
+        
+        // Verify game is finished
+        REQUIRE(state.getGameStatus() == GameStatus::Player2Won);
+        
+        // Press R key
+        inputHandler.handleInput(createKeyEvent(sf::Keyboard::Key::R), window);
+        
+        // Verify game is reset
+        REQUIRE(state.getGameStatus() == GameStatus::Playing);
+        REQUIRE(state.getCurrentPlayer() == 0);
+    }
+    
+    SECTION("R key does NOT reset game while playing") {
+        // Game is already in Playing state by default
+        REQUIRE(state.getGameStatus() == GameStatus::Playing);
+        
+        // Move pawn to a different position
+        board.movePawn(0, {5, 3});
+        state.switchPlayer();
+        
+        // Press R key
+        inputHandler.handleInput(createKeyEvent(sf::Keyboard::Key::R), window);
+        
+        // Game should NOT be reset (pawn should still be at moved position)
+        Position p0 = board.getPawnPosition(0);
+        REQUIRE(p0.x == 5);
+        REQUIRE(p0.y == 3);
+        
+        // Player should still be 1 (not reset to 0)
+        REQUIRE(state.getCurrentPlayer() == 1);
+    }
 }

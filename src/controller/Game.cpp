@@ -4,7 +4,7 @@ namespace Quoridor {
 
 Game::Game()
     : board(),
-      state(board),
+      state(),
       rules(),
       renderer(),
       gameView(),

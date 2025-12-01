@@ -130,7 +130,9 @@ void GameView::render(Render2D& render, const Board& board, const State& state) 
         // Draw text
         render.drawText(victoryText, windowCenterX, windowCenterY, 60, victoryColor, 0);
         
-        render.drawText("Press X to quit", windowCenterX, windowCenterY + 80.0f, 30, sf::Color::White, 1);
+        //render.drawText("Press X to quit", windowCenterX, windowCenterY + 80.0f, 30, sf::Color::White, 1);
+
+        render.drawText("Press R to restart", windowCenterX, windowCenterY + 80.0f, 30, sf::Color::White, 1);
     }
 }
 

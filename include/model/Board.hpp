@@ -64,6 +64,11 @@ namespace Quoridor {
         Board();
 
         /**
+         * @brief Resets the board to the initial state.
+         */
+        void resetGame();
+
+        /**
          * @brief Moves a pawn to a new position.
          * @param playerIndex Player index (0 or 1)
          * @param newPos New position

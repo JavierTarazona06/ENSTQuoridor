@@ -2,10 +2,15 @@
 
 namespace Quoridor {
 
-    State::State(Board& board) 
-        : board_(board), 
-          currentPlayer_(0), 
+    State::State() 
+        : currentPlayer_(0), 
           status_(GameStatus::Playing) {
+    }
+
+    void State::resetGame() {
+        currentPlayer_ = 0;
+        status_ = GameStatus::Playing;
+        selectedPawn_.reset();
     }
 
     int State::getCurrentPlayer() const {
@@ -22,14 +27,6 @@ namespace Quoridor {
 
     void State::setGameStatus(GameStatus status) {
         status_ = status;
-    }
-
-    Board& State::getBoard() {
-        return board_;
-    }
-
-    const Board& State::getBoard() const {
-        return board_;
     }
 
     void State::setSelectedPawn(std::optional<Position> pos) {

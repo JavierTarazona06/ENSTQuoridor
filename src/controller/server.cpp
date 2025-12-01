@@ -6,7 +6,7 @@
 namespace Quoridor {
 
 Server::Server() 
-    : board_(), state_(board_), rules_(), inputHandler_(board_, state_, rules_), render_(), current_view_(std::make_unique<GameView>()) {
+    : board_(), state_(), rules_(), inputHandler_(board_, state_, rules_), render_(), current_view_(std::make_unique<GameView>()) {
 }
 
 Server::~Server() {

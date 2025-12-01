@@ -4,8 +4,7 @@
 using namespace Quoridor;
 
 TEST_CASE("State initialization", "[state]") {
-    Board board;
-    State state(board);
+    State state;
     
     SECTION("Initial player is 0") {
         REQUIRE(state.getCurrentPlayer() == 0);
@@ -17,8 +16,7 @@ TEST_CASE("State initialization", "[state]") {
 }
 
 TEST_CASE("Player switching", "[state]") {
-    Board board;
-    State state(board);
+    State state;
     
     SECTION("Switch from player 0 to 1") {
         state.switchPlayer();
@@ -32,20 +30,18 @@ TEST_CASE("Player switching", "[state]") {
     }
 }
 
-TEST_CASE("Board integration", "[state][board]") {
-    Board board;
-    State state(board);
+TEST_CASE("State reset", "[state]") {
+    State state;
     
-    SECTION("Board is accessible and initialized") {
-        Position p0 = state.getBoard().getPawnPosition(0);
-        REQUIRE(p0.x == 4);
-        REQUIRE(p0.y == 0);
-    }
-    
-    SECTION("Board can be modified through State") {
-        state.getBoard().setPawnPosition(0, 1, 1);
-        Position p0_new = state.getBoard().getPawnPosition(0);
-        REQUIRE(p0_new.x == 1);
-        REQUIRE(p0_new.y == 1);
+    SECTION("Reset restores initial state") {
+        state.switchPlayer();
+        state.setGameStatus(GameStatus::Player1Won);
+        state.setSelectedPawn(Position{3, 3});
+        
+        state.resetGame();
+        
+        REQUIRE(state.getCurrentPlayer() == 0);
+        REQUIRE(state.getGameStatus() == GameStatus::Playing);
+        REQUIRE(!state.getSelectedPawn().has_value());
     }
 }

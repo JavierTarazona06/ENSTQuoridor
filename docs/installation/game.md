@@ -52,6 +52,9 @@ These scripts set up vcpkg (if needed), select the right CMake preset, and build
 ```powershell
 # From repo root
 scripts\bootstrap.ps1 -Config Debug
+
+# Just program. From repo root
+cmake --build build/x64-windows --config Debug
 ```
 
 - Linux/macOS (Bash):
