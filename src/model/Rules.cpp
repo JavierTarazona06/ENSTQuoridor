@@ -5,37 +5,123 @@
 
 namespace Quoridor {
 
+    // Helper to check if an opponent is at a specific position
+    static bool isOpponentAt(const Board& board, int currentPlayer, int row, int col) {
+        for (int p = 0; p < NUM_PLAYERS; ++p) {
+            if (p == currentPlayer) continue;
+            Position pos = board.getPawnPosition(p);
+            if (pos.x == col && pos.y == row) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     bool Rules::isValidMove(const Board& board, int player, int fromRow, int fromCol, int toRow, int toCol) {
         // 1. Check bounds
         if (!Board::isInBounds(toRow, toCol)) {
             return false;
         }
 
-        // 2. Check orthogonal movement (step size 1)
-        int dRow = std::abs(toRow - fromRow);
-        int dCol = std::abs(toCol - fromCol);
-        
-        if ((dRow + dCol) != 1) {
-            // Diagonal or >1 step not allowed in basic validation (ignoring jumps for now)
-            return false; 
-        }
-
-        // 3. Check if target cell is occupied
-        // Iterate over all players to see if anyone is at (toCol, toRow)
-        // Note: Board uses (x, y) -> (col, row)
+        // 2. Check if target cell is occupied
         for (int p = 0; p < NUM_PLAYERS; ++p) {
             Position pos = board.getPawnPosition(p);
             if (pos.x == toCol && pos.y == toRow) {
                 return false; // Target occupied
             }
         }
+
+        int dRow = std::abs(toRow - fromRow);
+        int dCol = std::abs(toCol - fromCol);
+        int dist = dRow + dCol;
+
+        // Simple orthogonal move (1 step)
+        if (dist == 1) {
+            return !isPathBlockedByWall(board, fromRow, fromCol, toRow, toCol);
+        }
         
-        // 4. Check for walls blocking the path
-        if (isPathBlockedByWall(board, fromRow, fromCol, toRow, toCol)) {
-            return false;
+        // Jump moves (distance 2, either straight 2+0 or diagonal 1+1)
+        if (dist == 2) {
+            // Straight Jump
+            if ((dRow == 2 && dCol == 0) || (dRow == 0 && dCol == 2)) {
+                int midRow = (fromRow + toRow) / 2;
+                int midCol = (fromCol + toCol) / 2;
+                
+                // Must jump over an opponent
+                if (!isOpponentAt(board, player, midRow, midCol)) {
+                    return false;
+                }
+                
+                // Check walls: from->mid and mid->to
+                if (isPathBlockedByWall(board, fromRow, fromCol, midRow, midCol)) return false;
+                if (isPathBlockedByWall(board, midRow, midCol, toRow, toCol)) return false;
+                
+                return true;
+            }
+            // Diagonal Jump
+            else if (dRow == 1 && dCol == 1) {
+                // We can jump diagonally ONLY if the straight jump is blocked
+                
+                // Option 1: Opponent is horizontally adjacent (at fromRow, toCol)
+                if (isOpponentAt(board, player, fromRow, toCol)) {
+                    // Check if the straight jump behind this opponent is blocked
+                    // Straight jump destination would be (fromRow, toCol + (toCol - fromCol))
+                    int jumpCol = toCol + (toCol - fromCol);
+                    bool straightBlocked = false;
+                    
+                    if (!Board::isInBounds(fromRow, jumpCol)) {
+                        straightBlocked = true; // Blocked by board edge
+                    } else if (isPathBlockedByWall(board, fromRow, toCol, fromRow, jumpCol)) {
+                        straightBlocked = true; // Blocked by wall behind opponent
+                    } else {
+                        // Check if jump destination is occupied (unlikely in 2p if opponent is at mid)
+                        for(int p=0; p<NUM_PLAYERS; ++p) {
+                            Position pos = board.getPawnPosition(p);
+                            if(pos.x == jumpCol && pos.y == fromRow) straightBlocked = true;
+                        }
+                    }
+
+                    if (straightBlocked) {
+                         // Valid diagonal if path not blocked by walls
+                         // Path: (fromRow, fromCol) -> (fromRow, toCol) -> (toRow, toCol)
+                         if (!isPathBlockedByWall(board, fromRow, fromCol, fromRow, toCol) && 
+                             !isPathBlockedByWall(board, fromRow, toCol, toRow, toCol)) {
+                             return true;
+                         }
+                    }
+                }
+                
+                // Option 2: Opponent is vertically adjacent (at toRow, fromCol)
+                if (isOpponentAt(board, player, toRow, fromCol)) {
+                    // Check if straight jump behind opponent is blocked
+                    // Straight jump destination would be (toRow + (toRow - fromRow), fromCol)
+                    int jumpRow = toRow + (toRow - fromRow);
+                    bool straightBlocked = false;
+                    
+                    if (!Board::isInBounds(jumpRow, fromCol)) {
+                        straightBlocked = true; // Blocked by board edge
+                    } else if (isPathBlockedByWall(board, toRow, fromCol, jumpRow, fromCol)) {
+                        straightBlocked = true; // Blocked by wall behind opponent
+                    } else {
+                         for(int p=0; p<NUM_PLAYERS; ++p) {
+                            Position pos = board.getPawnPosition(p);
+                            if(pos.x == fromCol && pos.y == jumpRow) straightBlocked = true;
+                        }
+                    }
+
+                    if (straightBlocked) {
+                        // Valid diagonal if path not blocked by walls
+                        // Path: (fromRow, fromCol) -> (toRow, fromCol) -> (toRow, toCol)
+                         if (!isPathBlockedByWall(board, fromRow, fromCol, toRow, fromCol) && 
+                             !isPathBlockedByWall(board, toRow, fromCol, toRow, toCol)) {
+                             return true;
+                         }
+                    }
+                }
+            }
         }
 
-        return true;
+        return false;
     }
 
     bool Rules::isValidWallPlacement(const Board& board, const Wall& wall, int playerIndex) {

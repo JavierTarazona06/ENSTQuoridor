@@ -1,6 +1,6 @@
-# Rapport des modifications Modèle (T2.1 & T2.2)
+# Rapport des modifications Modèle (T2.1 & T2.2 & T2.4)
 
-Ce document détaille l'état d'avancement des tâches T2.1 et T2.2 de l'Itération 2, concernant la gestion et la validation des murs dans le modèle.
+Ce document détaille l'état d'avancement des tâches de l'Itération 2, concernant la gestion des murs et les règles de déplacement (sauts).
 
 ## T2.1 - Gestion des murs dans `Board`
 
@@ -59,6 +59,32 @@ Une suite de tests complète a été ajoutée pour vérifier :
 
 ---
 
+## T2.4 - Règles de déplacement avec sauts (`Rules`)
+
+**Statut : Terminée et Testée**
+
+Cette tâche consistait à étendre `Rules::isValidMove()` pour supporter les sauts par-dessus l'adversaire selon les règles officielles de Quoridor.
+
+### Implémentation (`src/model/Rules.cpp`) :
+- **Extension de `isValidMove`** : Support des déplacements de distance 2 (Manhattan distance).
+- **Logique de Saut Droit (Straight Jump)** :
+  - Autorisé si un adversaire se trouve sur la case adjacente (intermédiaire).
+  - Vérifie que la case d'atterrissage est libre et dans les limites.
+  - Vérifie qu'aucun mur ne bloque le chemin (entre le départ et l'adversaire, et entre l'adversaire et l'arrivée).
+- **Logique de Saut Diagonal (Diagonal Jump)** :
+  - Autorisé **uniquement** si le saut droit est impossible (bloqué par un mur derrière l'adversaire ou par le bord du plateau).
+  - Vérifie la présence de l'adversaire sur une case adjacente.
+  - Vérifie qu'aucun mur ne bloque le chemin diagonal vers la case cible.
+
+### Tests (`tests/test_jumps.cpp`) :
+Un nouveau fichier de test a été créé pour couvrir spécifiquement ces scénarios (T2.13) :
+- Saut droit valide.
+- Saut diagonal valide (cas mur bloquant).
+- Saut diagonal valide (cas bord de plateau).
+- Sauts invalides (pas d'adversaire, chemin bloqué, saut diagonal sans blocage droit).
+
+---
+
 ## Guide d'intégration pour l'équipe
 
 ### Vue (`Render2D`)
@@ -73,3 +99,6 @@ Lorsqu'un joueur tente de poser un mur :
 2. **Action** :
    - Si `true` : Appelez `board.placeWall(wall, player)`. Le coup est valide, passez au tour suivant.
    - Si `false` : Refusez le coup, affichez un message d'erreur (ex: "Mur invalide" ou "Bloque le chemin"), et ne changez pas de tour.
+
+Lorsqu'un joueur tente un déplacement (y compris un saut) :
+1. **Validation** : `Rules::isValidMove` gère automatiquement la logique des sauts. Le contrôleur n'a pas besoin de logique spécifique pour les sauts, il suffit de passer les coordonnées de la case cliquée.

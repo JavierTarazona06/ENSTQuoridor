@@ -13,6 +13,7 @@ add_executable(test_all
     test_walls.cpp
     test_view.cpp
     test_input_handler.cpp
+    test_jumps.cpp
 )
 
 target_link_libraries(test_all 
