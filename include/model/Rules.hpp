@@ -19,6 +19,16 @@ namespace Quoridor {
         static bool isValidMove(const Board& board, int player, int fromRow, int fromCol, int toRow, int toCol);
 
         /**
+         * @brief Checks if a wall placement is valid.
+         * Validates bounds, wall count, overlaps, and that it doesn't block players completely.
+         * @param board The current board state.
+         * @param wall The wall to be placed.
+         * @param playerIndex The player attempting to place the wall.
+         * @return true if valid, false otherwise.
+         */
+        static bool isValidWallPlacement(const Board& board, const Wall& wall, int playerIndex);
+
+        /**
          * @brief Checks if the specified player has won.
          * @param board The current board state.
          * @param player The player index.
@@ -28,7 +38,11 @@ namespace Quoridor {
 
     private:
         // Helper to check if a wall blocks the path between two adjacent cells
-        static bool isPathBlockedByWall(const Board& board, int fromRow, int fromCol, int toRow, int toCol);
+        // Optional extraWall parameter to simulate a new wall placement
+        static bool isPathBlockedByWall(const Board& board, int fromRow, int fromCol, int toRow, int toCol, const Wall* extraWall = nullptr);
+        
+        // Helper to check if a path exists for a player to their goal
+        static bool pathExists(const Board& board, int player, const Wall* extraWall = nullptr);
     };
 
 } // namespace Quoridor
