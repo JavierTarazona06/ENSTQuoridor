@@ -110,23 +110,6 @@ ENSTQuoridor/
 
 ---
 
-## 🧪 Testing
-
-Run unit tests to verify game logic:
-
-```bash
-# Build with tests enabled
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
-cmake --build build
-
-# Run tests
-ctest --test-dir build --output-on-failure
-```
-
-**Test coverage**: Rules validation, pathfinding algorithms, AI move generation, board state management.
-
----
-
 ## 📦 Packaging for Distribution
 
 Generate platform-specific executable packages:
@@ -213,5 +196,5 @@ This project is developed as part of the IN204 course at ENSTA Paris. All rights
 
 ---
 
-**Project Status**: 🚧 In Development (Iteration 1)  
-**Last Updated**: November 17, 2025
+**Project Status**: 🚧 In Development (Iteration 2)  
+**Last Updated**: December 2, 2025
