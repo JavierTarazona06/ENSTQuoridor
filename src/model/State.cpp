@@ -8,6 +8,12 @@ namespace Quoridor {
           status_(GameStatus::Playing) {
     }
 
+    void State::resetGame() {
+        currentPlayer_ = 0;
+        status_ = GameStatus::Playing;
+        selectedPawn_.reset();
+    }
+
     int State::getCurrentPlayer() const {
         return currentPlayer_;
     }

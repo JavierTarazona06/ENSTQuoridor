@@ -24,6 +24,15 @@ namespace Quoridor {
         std::cout << "Board initialized." << std::endl;
     }
 
+    void Board::resetGame() {
+        // Reset pawn positions
+        pawnPositions_[0] = {BOARD_SIZE / 2, 0}; 
+        pawnPositions_[1] = {BOARD_SIZE / 2, BOARD_SIZE - 1}; 
+
+        // Clear placed walls
+        placedWalls_.clear();
+    }
+
     // --- Helper Validation Methods ---
     bool Board::isPositionValid(const Position& pos) {
         return pos.x >= 0 && pos.x < BOARD_SIZE &&

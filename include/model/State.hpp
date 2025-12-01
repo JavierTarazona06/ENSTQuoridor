@@ -20,6 +20,11 @@ namespace Quoridor {
         State(Board& board);
 
         /**
+         * @brief Resets the game state to initial conditions.
+         */
+        void resetGame();
+
+        /**
          * @brief Gets the current active player index (0 or 1).
          * @return int Player index
          */

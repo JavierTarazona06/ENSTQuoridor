@@ -8,12 +8,24 @@ InputHandler::InputHandler(Board& board, State& state, Rules& rules)
     : board(board), state(state), rules(rules) {}
 
 void InputHandler::handleInput(const sf::Event& event, const sf::RenderWindow& window) {
+    // Handle mouse button pressed events
     if (event.is<sf::Event::MouseButtonPressed>()) {
         const auto& mousePressed = event.getIf<sf::Event::MouseButtonPressed>();
         if (mousePressed->button == sf::Mouse::Button::Left) {
             handleMouseClick(mousePressed->position.x, mousePressed->position.y);
         }
     }
+
+    // Handle key pressed events
+    if (event.is<sf::Event::KeyPressed>()) {
+            if (event.getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::R)
+                {// Solo reiniciar si el juego terminó
+                if (state.getGameStatus() != GameStatus::Playing) {
+                    board.resetGame();
+                    state.resetGame();
+                }
+            }
+        }
 }
 
 bool InputHandler::pixelToGrid(int pixelX, int pixelY, int& row, int& col) const {
