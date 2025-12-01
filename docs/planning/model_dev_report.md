@@ -1,4 +1,4 @@
-# Rapport des modifications Modèle (T2.1 & T2.2 & T2.4)
+# Rapport des modifications Modèle (T2.1 & T2.2 & T2.3 & T2.4)
 
 Ce document détaille l'état d'avancement des tâches de l'Itération 2, concernant la gestion des murs et les règles de déplacement (sauts).
 
@@ -49,13 +49,35 @@ Cette tâche visait à implémenter la logique métier complète pour valider un
    - Vérifie qu'aucun mur de même orientation ne chevauche partiellement (recouvrement).
 4. **Anti-blocage (Pathfinding)** :
    - Vérifie que **chaque joueur** conserve au moins un chemin vers sa ligne d'arrivée.
-   - **Note technique** : Pour satisfaire cette exigence de T2.2, un algorithme BFS (`pathExists`) a été implémenté directement dans `Rules.cpp`. Cela anticipe partiellement la tâche **T2.3 (Pathfinder)**, mais garantit que la validation est fonctionnelle dès maintenant. Une refactorisation vers une classe `Pathfinder` dédiée reste possible pour T2.3.
+   - **Note technique** : La logique de pathfinding a été extraite dans la classe `Pathfinder` (voir T2.3). `Rules` utilise maintenant `Pathfinder::hasPathToGoal`.
 
 ### Tests (`tests/test_rules.cpp`) :
 Une suite de tests complète a été ajoutée pour vérifier :
 - Tous les cas de validité (placement libre).
 - Tous les cas d'invalidité (hors limites, chevauchements variés).
 - Le cas critique d'enfermement d'un joueur (le placement doit être refusé).
+
+---
+
+## T2.3 - Pathfinder avec BFS
+
+**Statut : Terminée et Testée**
+
+Création d'une classe dédiée pour vérifier l'accessibilité des lignes d'arrivée, utilisée pour valider les placements de murs.
+
+### Implémentation (`include/model/Pathfinder.hpp` & `src/model/Pathfinder.cpp`) :
+- **Classe `Pathfinder`** :
+  - `static bool hasPathToGoal(const Board& board, int playerIndex, const Wall& hypotheticalWall)`
+- **Algorithme** :
+  - Utilise une recherche en largeur (BFS) pour trouver le chemin le plus court (ou au moins un chemin existant).
+  - Prend en compte les murs existants ET un mur "hypothétique" (celui que le joueur tente de poser).
+  - Gère correctement les blocages partiels par les murs (horizontaux et verticaux).
+
+### Tests (`tests/test_pathfinder.cpp`) :
+- Vérifie qu'un chemin existe sur un plateau vide.
+- Vérifie qu'un chemin existe malgré des obstacles simples.
+- Vérifie qu'aucun chemin n'existe si le joueur est totalement encerclé.
+- Vérifie la navigation dans un labyrinthe complexe.
 
 ---
 
@@ -96,6 +118,7 @@ Un nouveau fichier de test a été créé pour couvrir spécifiquement ces scén
 ### Contrôleur (`InputHandler` / `Server`)
 Lorsqu'un joueur tente de poser un mur :
 1. **Pré-validation** : Appelez `Rules::isValidWallPlacement(board, wall, player)`.
+   - Cette méthode appelle désormais automatiquement `Pathfinder` pour vérifier l'anti-blocage.
 2. **Action** :
    - Si `true` : Appelez `board.placeWall(wall, player)`. Le coup est valide, passez au tour suivant.
    - Si `false` : Refusez le coup, affichez un message d'erreur (ex: "Mur invalide" ou "Bloque le chemin"), et ne changez pas de tour.

@@ -14,6 +14,7 @@ add_executable(test_all
     test_view.cpp
     test_input_handler.cpp
     test_jumps.cpp
+    test_pathfinder.cpp
 )
 
 target_link_libraries(test_all 

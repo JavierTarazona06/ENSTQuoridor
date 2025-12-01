@@ -40,9 +40,6 @@ namespace Quoridor {
         // Helper to check if a wall blocks the path between two adjacent cells
         // Optional extraWall parameter to simulate a new wall placement
         static bool isPathBlockedByWall(const Board& board, int fromRow, int fromCol, int toRow, int toCol, const Wall* extraWall = nullptr);
-        
-        // Helper to check if a path exists for a player to their goal
-        static bool pathExists(const Board& board, int player, const Wall* extraWall = nullptr);
     };
 
 } // namespace Quoridor

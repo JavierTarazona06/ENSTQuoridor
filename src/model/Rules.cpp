@@ -1,4 +1,5 @@
 #include "model/Rules.hpp"
+#include "model/Pathfinder.hpp"
 #include <cmath>
 #include <queue>
 #include <set>
@@ -161,8 +162,8 @@ namespace Quoridor {
         }
 
         // 4. Check if wall blocks all paths for any player
-        if (!pathExists(board, 0, &wall)) return false;
-        if (!pathExists(board, 1, &wall)) return false;
+        if (!Pathfinder::hasPathToGoal(board, 0, wall)) return false;
+        if (!Pathfinder::hasPathToGoal(board, 1, wall)) return false;
 
         return true;
     }
@@ -237,56 +238,5 @@ namespace Quoridor {
         return false;
     }
 
-    bool Rules::pathExists(const Board& board, int player, const Wall* extraWall) {
-        Position startPos = board.getPawnPosition(player);
-        int targetRow = (player == 0) ? (BOARD_SIZE - 1) : 0;
-        
-        // BFS
-        std::queue<Position> q;
-        q.push(startPos);
-        
-        std::vector<std::vector<bool>> visited(BOARD_SIZE, std::vector<bool>(BOARD_SIZE, false));
-        visited[startPos.y][startPos.x] = true;
-        
-        // Directions: Up, Down, Left, Right
-        const int dr[] = {-1, 1, 0, 0};
-        const int dc[] = {0, 0, -1, 1};
-        
-        while (!q.empty()) {
-            Position curr = q.front();
-            q.pop();
-            
-            if (curr.y == targetRow) {
-                return true;
-            }
-            
-            for (int i = 0; i < 4; ++i) {
-                int nextRow = curr.y + dr[i];
-                int nextCol = curr.x + dc[i];
-                
-                // Check bounds
-                if (!Board::isInBounds(nextRow, nextCol)) {
-                    continue;
-                }
-                
-                if (visited[nextRow][nextCol]) {
-                    continue;
-                }
-                
-                // Check if blocked by walls (existing or extra)
-                // Note: We use isPathBlockedByWall here, which logic is shared with isValidMove
-                // We do NOT check isValidMove because that checks for pawn collisions, 
-                // but path existence ignores pawns (they can move).
-                if (isPathBlockedByWall(board, curr.y, curr.x, nextRow, nextCol, extraWall)) {
-                    continue;
-                }
-                
-                visited[nextRow][nextCol] = true;
-                q.push({nextCol, nextRow});
-            }
-        }
-        
-        return false;
-    }
 
 } // namespace Quoridor
