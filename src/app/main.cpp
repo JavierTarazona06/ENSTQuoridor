@@ -1,31 +1,18 @@
-#include <SFML/Graphics.hpp>
+#include "controller/Game.hpp"
+#include <iostream>
+#include <exception>
 
-int main()
-{
-    // Create a window
-    sf::RenderWindow window(sf::VideoMode({800, 600}), "Hello SFML!");
-
-    // Create a circle shape
-    sf::CircleShape circle(50.f); // Radius of 50 pixels
-    circle.setFillColor(sf::Color::Green);
-    circle.setPosition({375.f, 275.f}); // 0,0 is at upper left corner
-
-    // Main loop
-    while (window.isOpen())
-    {
-        // Handle events
-        while (const std::optional event = window.pollEvent())
-        {
-            // If user requests to close the window, it closes (event)
-            if (event -> is<sf::Event::Closed>())
-                window.close();
-        }
-
-        // Clear, draw, display
-        window.clear(sf::Color::Black);
-        window.draw(circle);
-        window.display();
+int main() {
+    try {
+        Quoridor::Game game;
+        game.run();
+    } catch (const std::exception& e) {
+        std::cerr << "An error occurred: " << e.what() << std::endl;
+        return EXIT_FAILURE;
+    } catch (...) {
+        std::cerr << "An unknown error occurred." << std::endl;
+        return EXIT_FAILURE;
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }

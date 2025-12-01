@@ -16,8 +16,12 @@ namespace Quoridor {
         // Player 1 (bottom row, center column)
         pawnPositions_[1] = {BOARD_SIZE / 2, BOARD_SIZE - 1}; 
         
+        // Initialize pawn colors
+        pawnColors_[0] = {255, 0, 0};   // Red for player 0
+        pawnColors_[1] = {0, 0, 255};   // Blue for player 1
+        
         placedWalls_.clear();
-        std::cout << "Board initialized. Player 0 at (" << pawnPositions_[0].x << ", " << pawnPositions_[0].y << ")." << std::endl;
+        std::cout << "Board initialized." << std::endl;
     }
 
     // --- Helper Validation Methods ---
@@ -72,6 +76,13 @@ namespace Quoridor {
             throw std::out_of_range("Invalid player index.");
         }
         return pawnPositions_[playerIndex];
+    }
+
+    Color Board::getPawnColor(int playerIndex) const {
+        if (playerIndex < 0 || playerIndex >= NUM_PLAYERS) {
+            throw std::out_of_range("Invalid player index.");
+        }
+        return pawnColors_[playerIndex];
     }
 
     const std::vector<Wall>& Board::getWalls() const {

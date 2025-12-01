@@ -1,6 +1,7 @@
 #pragma once
 
 #include "model/Board.hpp"
+#include <optional>
 
 namespace Quoridor {
 
@@ -13,9 +14,10 @@ namespace Quoridor {
     class State {
     public:
         /**
-         * @brief Constructor: Initializes the game state with a fresh board and player 0 starting.
+         * @brief Constructor: Initializes the game state with a given board and player 0 starting.
+         * @param board Reference to the Board instance to use
          */
-        State();
+        State(Board& board);
 
         /**
          * @brief Gets the current active player index (0 or 1).
@@ -47,10 +49,15 @@ namespace Quoridor {
         Board& getBoard();
         const Board& getBoard() const;
 
+        // Selection state for UI
+        void setSelectedPawn(std::optional<Position> pos);
+        std::optional<Position> getSelectedPawn() const;
+
     private:
-        Board board_;
+        Board& board_;
         int currentPlayer_; // 0 or 1
         GameStatus status_;
+        std::optional<Position> selectedPawn_;
     };
 
 } // namespace Quoridor

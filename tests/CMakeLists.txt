@@ -10,6 +10,8 @@ add_executable(test_all
     test_board.cpp
     test_state.cpp
     test_rules.cpp
+    test_view.cpp
+    test_input_handler.cpp
 )
 
 target_link_libraries(test_all 
