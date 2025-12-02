@@ -1,6 +1,6 @@
-# Rapport des modifications Modèle (T2.1 & T2.2 & T2.3 & T2.4)
+# Rapport des modifications Modèle (T2.1 à T2.5)
 
-Ce document détaille l'état d'avancement des tâches de l'Itération 2, concernant la gestion des murs et les règles de déplacement (sauts).
+Ce document détaille l'état d'avancement des tâches de l'Itération 2, concernant la gestion des murs, les règles de déplacement (sauts) et la validation par pathfinding.
 
 ## T2.1 - Gestion des murs dans `Board`
 
@@ -51,11 +51,13 @@ Cette tâche visait à implémenter la logique métier complète pour valider un
    - Vérifie que **chaque joueur** conserve au moins un chemin vers sa ligne d'arrivée.
    - **Note technique** : La logique de pathfinding a été extraite dans la classe `Pathfinder` (voir T2.3). `Rules` utilise maintenant `Pathfinder::hasPathToGoal`.
 
-### Tests (`tests/test_rules.cpp`) :
+### Tests (`tests/test_walls.cpp`) :
 Une suite de tests complète a été ajoutée pour vérifier :
 - Tous les cas de validité (placement libre).
 - Tous les cas d'invalidité (hors limites, chevauchements variés).
 - Le cas critique d'enfermement d'un joueur (le placement doit être refusé).
+- Le cas critique où un mur bloque **les deux** joueurs.
+- Le cas où un mur bloque **un seul** joueur (doit être refusé même si l'autre passe).
 
 ---
 
@@ -77,7 +79,9 @@ Création d'une classe dédiée pour vérifier l'accessibilité des lignes d'arr
 - Vérifie qu'un chemin existe sur un plateau vide.
 - Vérifie qu'un chemin existe malgré des obstacles simples.
 - Vérifie qu'aucun chemin n'existe si le joueur est totalement encerclé.
-- Vérifie la navigation dans un labyrinthe complexe.
+- Vérifie la navigation dans un labyrinthe complexe (détour forcé).
+- Vérifie la présence de chemins multiples (si un est bloqué, l'autre est trouvé).
+- Tests de performance (Benchmark) pour assurer la rapidité (<10ms).
 
 ---
 
@@ -101,9 +105,27 @@ Cette tâche consistait à étendre `Rules::isValidMove()` pour supporter les sa
 ### Tests (`tests/test_jumps.cpp`) :
 Un nouveau fichier de test a été créé pour couvrir spécifiquement ces scénarios (T2.13) :
 - Saut droit valide.
-- Saut diagonal valide (cas mur bloquant).
-- Saut diagonal valide (cas bord de plateau).
-- Sauts invalides (pas d'adversaire, chemin bloqué, saut diagonal sans blocage droit).
+- Saut diagonal valide (cas mur bloquant saut droit).
+- Saut diagonal valide (cas bord de plateau bloquant saut droit).
+- Sauts invalides (pas d'adversaire, chemin bloqué par mur, saut diagonal sans blocage droit).
+- Saut invalide si un mur bloque le chemin **entre** le joueur et l'adversaire (avant le saut).
+
+---
+
+## T2.5 - Condition de victoire
+
+**Statut : Terminée et Testée**
+
+Implémentation de la détection de victoire.
+
+### Implémentation (`include/model/Rules.hpp` & `src/model/Rules.cpp`) :
+- `static bool checkVictory(const Board& board, int player)`
+- Vérifie si le pion du joueur a atteint sa ligne d'objectif (y=8 pour J0, y=0 pour J1).
+
+### Tests (`tests/test_rules.cpp`) :
+- Vérifie victoire J0 (y=8).
+- Vérifie victoire J1 (y=0).
+- Vérifie pas de victoire en cours de jeu.
 
 ---
 

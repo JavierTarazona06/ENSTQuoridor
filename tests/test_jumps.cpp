@@ -55,6 +55,24 @@ TEST_CASE("Straight Jump Rules", "[rules][jump]") {
         bool isValid = Rules::isValidMove(board, 0, 4, 4, 6, 4);
         REQUIRE(isValid == false);
     }
+
+    SECTION("Invalid Straight Jump: Blocked by Wall between players") {
+        // P0(4,4), P1(4,5). Wall between P0 and P1.
+        // Wall between (4,4) and (4,5).
+        // Horizontal wall at (4,4).
+        
+        Wall w{{4, 4}, Orientation::Horizontal};
+        board.placeWall(w, 1);
+        
+        // Check straight jump
+        bool isValid = Rules::isValidMove(board, 0, 4, 4, 6, 4);
+        REQUIRE(isValid == false);
+        
+        // P0 shouldn't be able to move to P1's position either (simple move)
+        // Rules::isValidMove handles simple move dist=1.
+        // But jump is dist=2.
+        // The jump logic checks both steps.
+    }
 }
 
 TEST_CASE("Diagonal Jump Rules", "[rules][jump]") {

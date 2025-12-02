@@ -186,4 +186,75 @@ TEST_CASE("Path blocking validation (Anti-blocking)", "[wall][pathfinding]") {
         // This makes P0 go around, but not blocked.
         REQUIRE(Rules::isValidWallPlacement(board, w, 1));
     }
+
+    SECTION("Wall blocks BOTH players") {
+        // Encase P0 at (4,0)
+        // Walls: V(3,0), V(4,0) -> blocks Left/Right of (4,0)
+        // H(4,0) -> blocks Down.
+        
+        board.placeWall({{3, 0}, Orientation::Vertical}, 0);
+        board.placeWall({{4, 0}, Orientation::Vertical}, 0);
+        
+        // P1 at (4,8). Encase P1.
+        // Walls: V(3,7), V(4,7) -> blocks Left/Right of (4,8).
+        // H(4,7) -> blocks Up.
+        
+        board.placeWall({{3, 7}, Orientation::Vertical}, 0);
+        board.placeWall({{4, 7}, Orientation::Vertical}, 0);
+        
+        // We have used 4 walls. P0 placed them all.
+        // Now try to place H(4,7) to block P1. 
+        // But H(4,7) blocks ONLY P1.
+        // P0 is partially encased (Left/Right blocked). But Down is open.
+        // So P0 path is open. P1 path is blocked.
+        // This should be invalid.
+        
+        Wall blockP1 = {{4, 7}, Orientation::Horizontal};
+        REQUIRE_FALSE(Rules::isValidWallPlacement(board, blockP1, 0));
+        
+        // Now block P0 Down as well.
+        // Wall H(4,0).
+        // This would block P0.
+        // P1 is already blocked (if we assume blockP1 was placed? No, it wasn't valid).
+        
+        // Let's create a scenario where ONE wall blocks BOTH.
+        // Hard to do with single wall unless they are close or share path.
+        // But we can create a scenario where P0 and P1 are in small areas and one wall closes both.
+        // E.g. P0 at (0,0), P1 at (0,1). Wall between (0,1) and rest?
+        
+        // Let's stick to "Blocking P0 and P1 separately is invalid".
+        // We verified "Simple cage for P0" (blocks P0).
+        // We verified "Simple cage for P1" (blocks P1).
+        // "Wall blocks BOTH" implies one wall action blocks both.
+        // E.g. P0 needs to pass (4,4), P1 needs to pass (4,4).
+        // Block (4,4).
+        // Let's create a corridor.
+        
+        board.resetGame();
+        // Manually place walls to create a corridor at col 4.
+        // Left side walls (x=3)
+        board.placeWall({{3, 0}, Orientation::Vertical}, 0);
+        board.placeWall({{3, 2}, Orientation::Vertical}, 0);
+        board.placeWall({{3, 4}, Orientation::Vertical}, 0);
+        board.placeWall({{3, 6}, Orientation::Vertical}, 0);
+        
+        // Right side walls (x=4)
+        board.placeWall({{4, 0}, Orientation::Vertical}, 1);
+        board.placeWall({{4, 2}, Orientation::Vertical}, 1);
+        board.placeWall({{4, 4}, Orientation::Vertical}, 1);
+        board.placeWall({{4, 6}, Orientation::Vertical}, 1);
+        
+        // P0 (4,0) and P1 (4,8) are trapped in column 4 (except at row 8, P1 can exit, and row 0 P0 can exit).
+        // But they must cross to the other side.
+        // P0 needs to go Down. P1 needs to go Up.
+        
+        // Place a blocking wall at (4,3) Horizontal.
+        // Blocks (4,3)<->(4,4) and (5,3)<->(5,4).
+        // This cuts the corridor in half.
+        // P0 cannot pass row 3. P1 cannot pass row 4.
+        // So BOTH are blocked.
+        
+        Wall blockBoth = {{4, 3}, Orientation::Horizontal};
+        REQUIRE_FALSE(Rules::isValidWallPlacement(board, blockBoth, 0));
+    }
 }

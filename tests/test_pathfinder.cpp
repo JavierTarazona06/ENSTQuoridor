@@ -1,4 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/benchmark/catch_benchmark.hpp>
 #include "model/Board.hpp"
 #include "model/Pathfinder.hpp"
 
@@ -89,4 +90,59 @@ TEST_CASE("Pathfinder with Walls", "[pathfinder]") {
         // Path should be blocked
         REQUIRE(Pathfinder::hasPathToGoal(board, 0, w) == false);
     }
+
+    SECTION("Multiple paths available, one blocked") {
+        // P0 at (4,0). Goal Row 8.
+        // Paths: Go Left then Down, or Go Right then Down.
+        // Block Left path.
+        board.placeWall({{3, 0}, Orientation::Vertical}, 1); // Blocks (3,0)-(4,0) and (3,1)-(4,1)
+        // Now Left is blocked.
+        // Block Down path.
+        board.placeWall({{4, 0}, Orientation::Horizontal}, 1); // Blocks Down.
+        
+        // But Right path is open. (no wall at {{4, 0}, Vertical})
+        
+        // Hypothetical wall blocking far Left?
+        Wall w = {{0, 0}, Orientation::Horizontal};
+        
+        REQUIRE(Pathfinder::hasPathToGoal(board, 0, w) == true);
+    }
+
+    SECTION("Wall blocks ONE player but not other") {
+        // P0 at (4,0). Goal Row 8.
+        // P1 at (4,8). Goal Row 0.
+        // Encase P0.
+        board.placeWall({{3, 0}, Orientation::Vertical}, 1);
+        board.placeWall({{4, 0}, Orientation::Vertical}, 1);
+        
+        // Hypothetical wall encasing P0 fully.
+        Wall w = {{4, 0}, Orientation::Horizontal};
+        
+        // P0 blocked.
+        REQUIRE(Pathfinder::hasPathToGoal(board, 0, w) == false);
+        
+        // P1 not blocked (can reach row 0 via many paths).
+        REQUIRE(Pathfinder::hasPathToGoal(board, 1, w) == true);
+    }
+    
+    BENCHMARK("Pathfinding on empty board") {
+        return Pathfinder::hasPathToGoal(board, 0);
+    };
+    
+    // Setup maze board for benchmark
+    // Use fewer walls to stay within limit (10 per player)
+    // Or alternate players.
+    // 16 walls needed. P0 takes 8, P1 takes 8.
+    Board mazeBoard;
+    for(int r=0; r<8; r+=2) {
+        int p = (r/2) % 2; // Alternate 0 and 1
+        mazeBoard.placeWall({{0, r}, Orientation::Horizontal}, p); 
+        mazeBoard.placeWall({{2, r}, Orientation::Horizontal}, p);
+        mazeBoard.placeWall({{4, r}, Orientation::Horizontal}, 1-p);
+        mazeBoard.placeWall({{6, r}, Orientation::Horizontal}, 1-p);
+    }
+
+    BENCHMARK("Pathfinding on maze board") {
+        return Pathfinder::hasPathToGoal(mazeBoard, 0);
+    };
 }
