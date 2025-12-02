@@ -27,4 +27,4 @@ target_link_libraries(test_all
 include(CTest)
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(Catch)
-catch_discover_tests(test_all)
+catch_discover_tests(test_all EXTRA_ARGS --benchmark-samples 10)
