@@ -1,10 +1,8 @@
-# Rapport des modifications Modèle (T2.1 à T2.5)
+# Model features (T2.1 à T2.5)
 
 Ce document détaille l'état d'avancement des tâches de l'Itération 2, concernant la gestion des murs, les règles de déplacement (sauts) et la validation par pathfinding.
 
 ## T2.1 - Gestion des murs dans `Board`
-
-**Statut : Terminée et Testée**
 
 Cette tâche consistait à étendre la classe `Board` pour supporter le stockage et la gestion basique des murs.
 
@@ -32,7 +30,6 @@ Les tests couvrent :
 
 ## T2.2 - Règles de validation des murs (`Rules`)
 
-**Statut : Terminée et Testée**
 
 Cette tâche visait à implémenter la logique métier complète pour valider un coup "poser un mur" avant de l'appliquer.
 
@@ -63,7 +60,6 @@ Une suite de tests complète a été ajoutée pour vérifier :
 
 ## T2.3 - Pathfinder avec BFS
 
-**Statut : Terminée et Testée**
 
 Création d'une classe dédiée pour vérifier l'accessibilité des lignes d'arrivée, utilisée pour valider les placements de murs.
 
@@ -81,13 +77,12 @@ Création d'une classe dédiée pour vérifier l'accessibilité des lignes d'arr
 - Vérifie qu'aucun chemin n'existe si le joueur est totalement encerclé.
 - Vérifie la navigation dans un labyrinthe complexe (détour forcé).
 - Vérifie la présence de chemins multiples (si un est bloqué, l'autre est trouvé).
-- Tests de performance (Benchmark) pour assurer la rapidité (<10ms).
+- **Tests de performance (Benchmark) pour assurer la rapidité (<10ms).**
 
 ---
 
 ## T2.4 - Règles de déplacement avec sauts (`Rules`)
 
-**Statut : Terminée et Testée**
 
 Cette tâche consistait à étendre `Rules::isValidMove()` pour supporter les sauts par-dessus l'adversaire selon les règles officielles de Quoridor.
 
@@ -114,22 +109,19 @@ Un nouveau fichier de test a été créé pour couvrir spécifiquement ces scén
 
 ## T2.5 - Condition de victoire
 
-**Statut : Terminée et Testée**
 
 Implémentation de la détection de victoire.
+
+### Déjà fini dans Itération 1
 
 ### Implémentation (`include/model/Rules.hpp` & `src/model/Rules.cpp`) :
 - `static bool checkVictory(const Board& board, int player)`
 - Vérifie si le pion du joueur a atteint sa ligne d'objectif (y=8 pour J0, y=0 pour J1).
 
-### Tests (`tests/test_rules.cpp`) :
-- Vérifie victoire J0 (y=8).
-- Vérifie victoire J1 (y=0).
-- Vérifie pas de victoire en cours de jeu.
 
 ---
 
-## Guide d'intégration pour l'équipe
+## Guide d'intégration
 
 ### Vue (`Render2D`)
 - Utilisez `board.getWalls()` pour récupérer la liste des murs à dessiner.
