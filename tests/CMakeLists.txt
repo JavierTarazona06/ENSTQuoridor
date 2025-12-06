@@ -10,8 +10,11 @@ add_executable(test_all
     test_board.cpp
     test_state.cpp
     test_rules.cpp
+    test_walls.cpp
     test_view.cpp
     test_input_handler.cpp
+    test_jumps.cpp
+    test_pathfinder.cpp
 )
 
 target_link_libraries(test_all 
@@ -24,4 +27,4 @@ target_link_libraries(test_all
 include(CTest)
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(Catch)
-catch_discover_tests(test_all)
+catch_discover_tests(test_all EXTRA_ARGS --benchmark-samples 10)

@@ -10,6 +10,7 @@ namespace Quoridor {
     // Define board dimensions
     constexpr int BOARD_SIZE = 9;
     constexpr int NUM_PLAYERS = 2;
+    constexpr int MAX_WALLS_PER_PLAYER = 10;
     
     // Pawn position struct (x: column [0-8], y: row [0-8])
     struct Position {
@@ -84,10 +85,26 @@ namespace Quoridor {
         void setPawnPosition(int player, int row, int col);
 
         /**
-         * @brief Places a wall on the board.
+         * @brief Places a wall on the board for a specific player.
          * @param wall Wall struct (position and orientation)
+         * @param playerIndex The index of the player placing the wall
          */
-        void placeWall(const Wall& wall);
+        void placeWall(const Wall& wall, int playerIndex);
+
+        /**
+         * @brief Gets the number of walls remaining for a player.
+         * @param playerIndex Player index (0 or 1)
+         * @return Number of walls remaining
+         */
+        int getWallsRemaining(int playerIndex) const;
+
+        /**
+         * @brief Checks if there is a wall at the specified position and orientation.
+         * @param pos Position of the wall
+         * @param orientation Orientation of the wall
+         * @return true if a wall exists at the location, false otherwise
+         */
+        bool isWallAt(const Position& pos, Orientation orientation) const;
 
         /**
          * @brief Gets the current position of the specified player's pawn.
@@ -134,6 +151,9 @@ namespace Quoridor {
         
         // Stores the placed walls
         std::vector<Wall> placedWalls_;
+
+        // Stores the number of walls remaining for each player
+        std::array<int, NUM_PLAYERS> wallsRemaining_;
 
         // Helper method: checks if wall position is within the valid 8x8 wall placement boundaries
         static bool isWallPlacementValid(const Position& pos);
