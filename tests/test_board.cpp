@@ -22,6 +22,11 @@ TEST_CASE("Board initialization and positions", "[board]") {
         REQUIRE(p1_start.x == 4);
         REQUIRE(p1_start.y == 8);
     }
+
+    SECTION("Players start with 10 walls") {
+        REQUIRE(board.getWallsRemaining(0) == 10);
+        REQUIRE(board.getWallsRemaining(1) == 10);
+    }
 }
 
 TEST_CASE("Pawn movement and access", "[board][pawn]") {
@@ -55,34 +60,112 @@ TEST_CASE("Pawn movement and access", "[board][pawn]") {
     }
 }
 
-TEST_CASE("Wall placement", "[board][wall]") {
+TEST_CASE("Wall placement and management", "[board][wall]") {
     Board board;
     
     SECTION("Place valid horizontal wall") {
         Wall wall1 = {{3, 3}, Orientation::Horizontal};
-        board.placeWall(wall1);
+        board.placeWall(wall1, 0);
         REQUIRE(board.getWalls().size() == 1);
+        REQUIRE(board.getWallsRemaining(0) == 9);
+        REQUIRE(board.isWallAt({3, 3}, Orientation::Horizontal) == true);
     }
 
     SECTION("Place valid vertical wall") {
         Wall wall2 = {{0, 0}, Orientation::Vertical};
-        board.placeWall(wall2);
+        board.placeWall(wall2, 1);
         REQUIRE(board.getWalls().size() == 1);
+        REQUIRE(board.getWallsRemaining(1) == 9);
+        REQUIRE(board.isWallAt({0, 0}, Orientation::Vertical) == true);
     }
     
     SECTION("Place wall in invalid area throws exception") {
         // Wall placement is 0-7, so 8 is invalid
         REQUIRE_THROWS_AS(
-            board.placeWall({{8, 5}, Orientation::Horizontal}),
+            board.placeWall({{8, 5}, Orientation::Horizontal}, 0),
             std::invalid_argument
         );
         REQUIRE_THROWS_AS(
-            board.placeWall({{5, 8}, Orientation::Horizontal}),
+            board.placeWall({{5, 8}, Orientation::Horizontal}, 0),
             std::invalid_argument
         );
         REQUIRE_THROWS_AS(
-            board.placeWall({{-1, 0}, Orientation::Horizontal}),
+            board.placeWall({{-1, 0}, Orientation::Horizontal}, 0),
             std::invalid_argument
+        );
+    }
+
+    SECTION("Overlap detection: Exact position") {
+        board.placeWall({{3, 3}, Orientation::Horizontal}, 0);
+        REQUIRE_THROWS_AS(
+            board.placeWall({{3, 3}, Orientation::Horizontal}, 1),
+            std::invalid_argument
+        );
+        // Crossing walls
+        REQUIRE_THROWS_AS(
+            board.placeWall({{3, 3}, Orientation::Vertical}, 1),
+            std::invalid_argument
+        );
+    }
+
+    SECTION("Overlap detection: Horizontal overlap") {
+        board.placeWall({{3, 3}, Orientation::Horizontal}, 0); // Covers (3,3) and (4,3)
+        // Overlap left
+        REQUIRE_THROWS_AS(
+            board.placeWall({{2, 3}, Orientation::Horizontal}, 1),
+            std::invalid_argument
+        );
+        // Overlap right
+        REQUIRE_THROWS_AS(
+            board.placeWall({{4, 3}, Orientation::Horizontal}, 1),
+            std::invalid_argument
+        );
+        // Valid non-overlapping
+        REQUIRE_NOTHROW(board.placeWall({{5, 3}, Orientation::Horizontal}, 1));
+        REQUIRE_NOTHROW(board.placeWall({{1, 3}, Orientation::Horizontal}, 1));
+    }
+
+    SECTION("Overlap detection: Vertical overlap") {
+        board.placeWall({{3, 3}, Orientation::Vertical}, 0); // Covers (3,3) and (3,4)
+        // Overlap up
+        REQUIRE_THROWS_AS(
+            board.placeWall({{3, 2}, Orientation::Vertical}, 1),
+            std::invalid_argument
+        );
+        // Overlap down
+        REQUIRE_THROWS_AS(
+            board.placeWall({{3, 4}, Orientation::Vertical}, 1),
+            std::invalid_argument
+        );
+        // Valid non-overlapping
+        REQUIRE_NOTHROW(board.placeWall({{3, 5}, Orientation::Vertical}, 1));
+        REQUIRE_NOTHROW(board.placeWall({{3, 1}, Orientation::Vertical}, 1));
+    }
+
+    SECTION("Wall limit enforcement") {
+        // Place 10 walls for player 0
+        for (int i = 0; i < 10; ++i) {
+            // Place walls in separate columns to avoid overlap
+            // 0,0; 1,0; ...
+            // But horizontal wall at x,0 overlaps x+1,0.
+            // So we need to space them out or use vertical/horizontal mix.
+            // Let's just use vertical walls in row 0, spaced out? No, wall grid is 0-7.
+            // Vertical wall at (0,0) covers (0,0) and (0,1).
+            // Vertical wall at (1,0) covers (1,0) and (1,1). No overlap.
+            // We can place 8 vertical walls at (0,0) to (7,0).
+            // We need 2 more. (0,2), (1,2).
+            if (i < 8) {
+                board.placeWall({{i, 0}, Orientation::Vertical}, 0);
+            } else {
+                board.placeWall({{i - 8, 2}, Orientation::Vertical}, 0);
+            }
+        }
+        REQUIRE(board.getWallsRemaining(0) == 0);
+        
+        // Try to place 11th wall
+        REQUIRE_THROWS_AS(
+            board.placeWall({{5, 5}, Orientation::Horizontal}, 0),
+            std::runtime_error
         );
     }
 }

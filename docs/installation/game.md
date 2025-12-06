@@ -62,6 +62,13 @@ cmake --build build/x64-windows --config Debug
 # From repo root
 chmod +x scripts/bootstrap.sh
 scripts/bootstrap.sh Debug
+
+# Just program. From repo root
+# For macOS (Apple Silicon):
+cmake --build build/arm64-osx --config Debug
+# For macOS (Intel) or Linux (adjust preset name as needed):
+# cmake --build build/x64-osx --config Debug
+# cmake --build build/x64-linux --config Debug
 ```
 
 ## Output

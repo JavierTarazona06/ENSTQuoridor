@@ -11,6 +11,7 @@ find_package(SFML COMPONENTS Graphics Window System REQUIRED)
 # Library for the model
 add_library(quoridor_model 
     src/model/Board.cpp
+    src/model/Pathfinder.cpp
     src/model/State.cpp
     src/model/Rules.cpp
     src/view/Render2D.cpp
