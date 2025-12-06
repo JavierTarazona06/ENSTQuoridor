@@ -127,6 +127,45 @@ void Render2D::drawText(const std::string& text, float x, float y, unsigned int 
     window.draw(sfText);
 }
 
+void Render2D::drawWalls(const Board& board) {
+    
+    const std::vector<Wall>& walls = board.getWalls();
+    
+    for (const Wall& wall : walls) {
+        sf::RectangleShape wallShape;
+        
+        if (wall.orientation == Orientation::Horizontal) {
+            // Horizontal wall: width = 2 * CELL_SIZE (covers 2 cells), height = WALL_THICKNESS
+            // Position: between rows, centered on the bottom edge of the cell
+            wallShape.setSize({2 * CELL_SIZE, WALL_THICKNESS});
+            
+            // Wall is positioned at the bottom edge of the cell (wall.pos.y, wall.pos.x)
+            // and extends 2 cells horizontally
+            float screenX = GRID_OFFSET_X + wall.pos.x * CELL_SIZE;
+            float screenY = GRID_OFFSET_Y + (wall.pos.y + 1) * CELL_SIZE - WALL_THICKNESS / 2.0f;
+            
+            wallShape.setPosition({screenX, screenY});
+        } else {
+            // Vertical wall: width = WALL_THICKNESS, height = 2 * CELL_SIZE (covers 2 cells)
+            // Position: between columns, centered on the right edge of the cell
+            wallShape.setSize({WALL_THICKNESS, 2 * CELL_SIZE});
+            
+            // Wall is positioned at the right edge of the cell (wall.pos.y, wall.pos.x)
+            // and extends 2 cells vertically
+            float screenX = GRID_OFFSET_X + (wall.pos.x + 1) * CELL_SIZE - WALL_THICKNESS / 2.0f;
+            float screenY = GRID_OFFSET_Y + wall.pos.y * CELL_SIZE;
+            
+            wallShape.setPosition({screenX, screenY});
+        }
+        
+        wallShape.setFillColor(WALL_COLOR);
+        wallShape.setOutlineColor(WALL_OUTLINE_COLOR);
+        wallShape.setOutlineThickness(1.0f);
+        
+        window.draw(wallShape);
+    }
+}
+
 sf::RenderWindow& Render2D::getWindow() {
     return window;
 }

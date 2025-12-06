@@ -26,6 +26,7 @@ public:
     void drawGrid();
     void drawPawn(const Board& board, int playerNumber);
     void drawText(const std::string& text, float x, float y, unsigned int fontSize, const sf::Color& color, int fontType = 3);
+    void drawWalls(const Board& board);
 
     // Font management
     bool loadFont(const std::string& fontPath, int fontType);
@@ -53,6 +54,10 @@ private:
     static constexpr float GRID_OFFSET_Y = 180.0f;
     static constexpr float PAWN_RADIUS = 20.0f;
     static constexpr sf::Color BOARD_COLOR = sf::Color(240, 217, 181); //Beige
+
+    static constexpr float WALL_THICKNESS = 6.0f;  // Wall thickness (~3px on each side)
+    static constexpr sf::Color WALL_COLOR = sf::Color(139, 69, 19); // Brown (SaddleBrown)
+    static constexpr sf::Color WALL_OUTLINE_COLOR = sf::Color(80, 40, 10); // Darker outline
 };
 
 } // namespace Quoridor
