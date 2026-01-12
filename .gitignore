@@ -105,6 +105,7 @@ _CPack_Packages/
 *.nlo
 *.out
 *.pdfsync
+*.pdf
 *.pyg
 *.run.xml
 *.snm

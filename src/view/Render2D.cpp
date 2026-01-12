@@ -166,6 +166,104 @@ void Render2D::drawWalls(const Board& board) {
     }
 }
 
+void Render2D::drawWallPreview(const std::optional<Wall>& previewWall) {
+    if (!previewWall.has_value()) {
+        return;
+    }
+    
+    const Wall& wall = previewWall.value();
+    sf::RectangleShape wallShape;
+    
+    if (wall.orientation == Orientation::Horizontal) {
+        wallShape.setSize({2 * CELL_SIZE, WALL_THICKNESS});
+        float screenX = GRID_OFFSET_X + wall.pos.x * CELL_SIZE;
+        float screenY = GRID_OFFSET_Y + (wall.pos.y + 1) * CELL_SIZE - WALL_THICKNESS / 2.0f;
+        wallShape.setPosition({screenX, screenY});
+    } else {
+        wallShape.setSize({WALL_THICKNESS, 2 * CELL_SIZE});
+        float screenX = GRID_OFFSET_X + (wall.pos.x + 1) * CELL_SIZE - WALL_THICKNESS / 2.0f;
+        float screenY = GRID_OFFSET_Y + wall.pos.y * CELL_SIZE;
+        wallShape.setPosition({screenX, screenY});
+    }
+    
+    // Use semi-transparent version of wall colors from header constants
+    sf::Color previewColor = WALL_PREVIEW_COLOR;
+    sf::Color previewOutline(WALL_OUTLINE_COLOR.r, WALL_OUTLINE_COLOR.g, WALL_OUTLINE_COLOR.b, 100); // Last is transparency
+    
+    wallShape.setFillColor(previewColor);
+    wallShape.setOutlineColor(previewOutline);
+    wallShape.setOutlineThickness(1.0f);
+    
+    window.draw(wallShape);
+}
+
+// TODO: Acomodar mejor el cuadro de HUD y su informacion
+void Render2D::drawHUD(const Board& board, const State& state) {
+    // HUD position: top-left corner, outside the grid
+    float hudX = GRID_OFFSET_X - HUD_BOX_WIDTH - 20.0f;
+    float hudY = GRID_OFFSET_Y;
+    
+    // Draw HUD background box
+    sf::RectangleShape hudBox({HUD_BOX_WIDTH, HUD_BOX_HEIGHT});
+    hudBox.setPosition({hudX, hudY});
+    hudBox.setFillColor(HUD_BACKGROUND_COLOR);
+    hudBox.setOutlineColor(HUD_BORDER_COLOR);
+    hudBox.setOutlineThickness(HUD_BORDER_THICKNESS);
+    window.draw(hudBox);
+    
+    // Get current player info
+    int currentPlayer = state.getCurrentPlayer();
+    Color playerColor = board.getPawnColor(currentPlayer);
+    sf::Color sfPlayerColor(playerColor.r, playerColor.g, playerColor.b);
+    
+    // Section 1: Player Title
+    float section1Y = hudY + 15.0f;
+    drawText("PLAYER", hudX + HUD_BOX_WIDTH * 0.5f, section1Y, 18, sf::Color::White, 2);
+    
+    // Section 2: Player Number with color indicator
+    float section2Y = hudY + 40.0f;
+    std::string playerNum = std::to_string(currentPlayer + 1);
+    drawText(playerNum, hudX + HUD_BOX_WIDTH * 0.5f, section2Y, 40, sfPlayerColor, 2);
+    
+    // Section 3: Walls remaining
+    float section3Y = hudY + 90.0f;
+    drawText("WALLS", hudX + HUD_BOX_WIDTH * 0.5f, section3Y, 14, sf::Color::White, 2);
+    
+    int wallsRemaining = board.getWallsRemaining(currentPlayer);
+    std::string wallsText = std::to_string(wallsRemaining) + "/10";
+    
+    // Color code walls: Green if plenty, Yellow if medium, Red if few
+    sf::Color wallsColor = sf::Color::Green;
+    if (wallsRemaining <= 3) wallsColor = sf::Color::Red;
+    else if (wallsRemaining <= 5) wallsColor = sf::Color::Yellow;
+    
+    drawText(wallsText, hudX + HUD_BOX_WIDTH * 0.5f, section3Y + 28.0f, 28, wallsColor, 2);
+    
+    // Section 4: Game Status
+    float section4Y = hudY + 145.0f;
+    drawText("STATUS", hudX + HUD_BOX_WIDTH * 0.5f, section4Y, 12, sf::Color::White, 2);
+    
+    std::string statusText;
+    sf::Color statusColor = sf::Color::Green;
+    
+    switch (state.getGameStatus()) {
+        case GameStatus::Playing:
+            statusText = "PLAYING";
+            statusColor = sf::Color::Green;
+            break;
+        case GameStatus::Player1Won:
+            statusText = "P1 WINS";
+            statusColor = sf::Color::Red;
+            break;
+        case GameStatus::Player2Won:
+            statusText = "P2 WINS";
+            statusColor = sf::Color::Blue;
+            break;
+    }
+    
+    drawText(statusText, hudX + HUD_BOX_WIDTH * 0.5f, section4Y + 22.0f, 16, statusColor, 2);
+}
+
 sf::RenderWindow& Render2D::getWindow() {
     return window;
 }
