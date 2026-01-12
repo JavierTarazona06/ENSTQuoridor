@@ -17,64 +17,59 @@
 
 ### Modèle (IA & Logique)
 
-#### **TASK 3.1: Infrastructure IA et Bot Aléatoire (Niveau Facile)**
-
-- **Estimation**: 4 heures
+#### **TASK 23: Infrastructure IA et Bot Aléatoire (Niveau Facile)**
+- **Estimation**: 6 heures
 - **Description**:
   Créer la classe de base `AI` et implémenter une stratégie simple pour le niveau "Facile". L'IA doit être capable de générer tous les coups valides et d'en choisir un (aléatoirement pour commencer).
 - **Critères d'acceptation**:
-  - [ ] Classe `AI` créée dans `src/model/AI.cpp`
-  - [ ] Méthode `getBestMove(Board, State, Difficulty)` implémentée
-  - [ ] Niveau Facile : Choisit un coup valide aléatoire (déplacement ou mur)
-  - [ ] L'IA ne joue jamais de coup invalide
-  - [ ] Tests unitaires : vérifier que le coup retourné est valide
+  - [ ] Infrastructure: Créer la classe `AI` (`src/model/AI.cpp`)
+  - [ ] Implémentation: Méthode `getBestMove(Board, State, Difficulty)` retournant un `Move` ou `Wall`
+  - [ ] Logique: Générer la liste complète des coups valides (déplacements et murs)
+  - [ ] Validation: L'IA instanciée ne fait pas crasher le programme
+  - [ ] Validation: Niveau Facile joue des coups aléatoires mais légaux
 
 ---
 
-#### **TASK 3.2: Fonction d'Évaluation Heuristique**
-
-- **Estimation**: 6 heures
+#### **TASK 24: Fonction d'Évaluation Heuristique**
+- **Estimation**: 8 heures
 - **Description**:
   Implémenter une fonction d'évaluation `evaluate(Board, Player)` pour estimer la qualité d'une position. Cette fonction est cruciale pour le Minimax.
 - **Critères d'acceptation**:
-  - [ ] Calcul de la distance du chemin le plus court vers l'objectif (pour soi et l'adversaire)
-  - [ ] Score basé sur : `(Distance Adversaire - Distance Soi)`
-  - [ ] Bonus/Malus pour le nombre de murs restants
-  - [ ] Tests : vérifier que les positions gagnantes ont un score maximal et perdantes minimal
+  - [ ] Implémentation: Calculer la distance BFS/A* vers l'objectif pour les deux joueurs
+  - [ ] Algorithme: Score = (Distance Adversaire - Distance Soi) + Bonus Murs
+  - [ ] Validation: Une position gagnante retourne un score maximal
+  - [ ] Validation: Avancer vers l'objectif augmente le score
 
 ---
 
-#### **TASK 3.3: Algorithme Minimax avec Alpha-Beta**
-
-- **Estimation**: 10 heures
+#### **TASK 25: Algorithme Minimax avec Alpha-Beta**
+- **Estimation**: 12 heures
 - **Description**:
   Implémenter l'algorithme Minimax récursif avec élagage Alpha-Beta pour optimiser la recherche de coups.
 - **Critères d'acceptation**:
-  - [ ] Algorithme Minimax implémenté
-  - [ ] Élagage Alpha-Beta fonctionnel (réduction du nombre de nœuds visités)
-  - [ ] Profondeur de recherche configurable (ex: 2 pour Normal, 4 pour Difficile)
-  - [ ] Tests : L'IA bloque une victoire immédiate de l'adversaire
-  - [ ] Tests : L'IA trouve une victoire immédiate si disponible
+  - [ ] Implémentation: Algorithme Minimax récursif
+  - [ ] Optimisation: Intégrer l'élagage Alpha-Beta
+  - [ ] Validation: À profondeur 1, l'IA prend une victoire immédiate
+  - [ ] Validation: À profondeur 2, l'IA bloque une victoire immédiate de l'adversaire
+  - [ ] Fonctionnalité: Les niveaux Moyen (prof 2) et Difficile (prof 4) sont jouables
 
 ---
 
-#### **TASK 3.4: Optimisation Pathfinder (A*)**
-
+#### **TASK 26: Optimisation Pathfinder (A*)**
 - **Estimation**: 4 heures
 - **Description**:
   Améliorer le Pathfinder (actuellement BFS) vers A* (A-Star) ou optimiser le BFS existant pour qu'il soit très rapide, car il sera appelé des milliers de fois par l'IA.
 - **Critères d'acceptation**:
-  - [ ] Classe `Pathfinder` optimisée
-  - [ ] Utilisation de la distance de Manhattan comme heuristique pour A*
-  - [ ] Performance : < 1ms par appel de recherche de chemin
-  - [ ] Vérifier que cela n'introduit pas de régression sur la validation des murs
+  - [ ] Implémentation: Algorithme A* utilisant la distance de Manhattan comme heuristique
+  - [ ] Validation: A* trouve toujours le chemin le plus court (comparaison avec BFS)
+  - [ ] Performance: A* est plus rapide que BFS sur un plateau vide
+  - [ ] Intégrité: Vérifier qu'il n'y a aucune régression sur la validation des placements de murs
 
 ---
 
 ### Contrôleur (Logique de Jeu)
 
-#### **TASK 3.5: SceneManager (Gestion des États)**
-
+#### **TASK 27: SceneManager (Gestion des États)**
 - **Estimation**: 6 heures
 - **Description**:
   Introduire un `SceneManager` pour gérer les transitions entre les différents écrans : Menu Principal, Jeu, Fin de Partie.
@@ -86,8 +81,7 @@
 
 ---
 
-#### **TASK 3.6: Intégration Tour de l'IA**
-
+#### **TASK 28: Intégration Tour de l'IA**
 - **Estimation**: 4 heures
 - **Description**:
   Intégrer l'IA dans la boucle de jeu `Game`. Lorsque c'est le tour de l'IA, le jeu doit demander un coup à l'IA, attendre (ou calculer), puis appliquer le coup.
@@ -99,8 +93,7 @@
 
 ---
 
-#### **TASK 3.7: Configuration et Difficulté**
-
+#### **TASK 29: Configuration et Difficulté**
 - **Estimation**: 2 heures
 - **Description**:
   Ajouter une structure pour stocker les paramètres de la partie avant le lancement (Mode de jeu, Difficulté IA).
@@ -114,8 +107,7 @@
 
 ### Vue (Interface Graphique)
 
-#### **TASK 3.8: Menu Principal**
-
+#### **TASK 30: Menu Principal**
 - **Estimation**: 6 heures
 - **Description**:
   Créer une vue pour le menu principal permettant de choisir le mode de jeu et de lancer la partie.
@@ -127,8 +119,7 @@
   - [ ] Bouton "Quitter"
   - [ ] Navigation fonctionnelle (clic souris)
 
-#### **TASK 3.9: Écran de Fin de Partie et Feedback**
-- **Assigné à**: Javier
+#### **TASK 31: Écran de Fin de Partie et Feedback**
 - **Estimation**: 4 heures
 - **Description**:
   Améliorer l'écran de fin de partie et ajouter un feedback visuel pour les coups de l'IA.
@@ -141,34 +132,49 @@
 
 ### Tests et Documentation
 
-#### **TASK 3.10: Tests Unitaires IA**
-
+#### **TASK 32: Tests Unitaires - IA & Heuristiques**
 - **Estimation**: 4 heures
 - **Description**:
-  Écrire des tests spécifiques pour vérifier l'intelligence de l'IA.
+  Écrire des tests unitaires exhaustifs pour valider le comportement de base de l'IA, la génération de coups et la fonction d'évaluation.
 - **Critères d'acceptation**:
-  - [ ] Test : IA trouve le chemin le plus court sans obstacles
-  - [ ] Test : IA pose un mur pour bloquer/ralentir l'adversaire (niveau Difficile)
-  - [ ] Test : IA ne s'enferme pas elle-même
-  - [ ] Test de performance (temps de réponse moyen)
+  - [ ] Fichier `tests/test_ai_core.cpp` créé
+  - [ ] **Test**: Génération de coups (tous les coups valides sont listés)
+  - [ ] **Test**: Pas de coups invalides (hors limites, murs, collisions)
+  - [ ] **Test**: Bot Facile retourne toujours un coup valide
+  - [ ] Fichier `tests/test_heuristics.cpp` créé
+  - [ ] **Test**: Score(Gagnant) > Score(Neutre) > Score(Perdant)
+  - [ ] **Test**: Symétrie (le score est inversement proportionnel pour l'adversaire)
+  - [ ] **Test**: Impact des murs sur le score (bonus léger)
 
-#### **TASK 3.11: Documentation Itération 3**
+#### **TASK 33: Tests Avancés - Minimax & Scénarios**
+- **Estimation**: 6 heures
+- **Description**:
+  Valider l'intelligence du Minimax et le comportement global de l'IA dans des situations complexes via des scénarios prédéfinis.
+- **Critères d'acceptation**:
+  - [ ] Fichier `tests/test_minimax.cpp` créé
+  - [ ] **Test Minimax**: Profondeur 1 trouve victoire immédiate
+  - [ ] **Test Minimax**: Profondeur 2 bloque victoire immédiate
+  - [ ] **Test Performance**: Comparaison Minimax vs Alpha-Beta (nombre de nœuds)
+  - [ ] Fichier `tests/test_ai_scenarios.cpp` créé
+  - [ ] **Scénario 1 (Défense)**: L'IA pose un mur critique pour sauver la partie
+  - [ ] **Scénario 2 (Sûreté)**: L'IA ne s'enferme pas elle-même
+  - [ ] **Scénario 3 (Efficacité)**: L'IA choisit le chemin le plus court en l'absence d'obstacles
 
+#### **TASK 34: Documentation Itération 3**
 - **Estimation**: 2 heures
 - **Description**:
   Mettre à jour la documentation pour inclure les détails sur l'IA et le guide d'utilisation des menus.
 - **Critères d'acceptation**:
-  - [ ] Mise à jour `README.md` (nouvelles fonctionnalités)
+  - [ ] Mise à jour `README.md` (nouvelles fonctionnalités IA)
   - [ ] Mise à jour `docs/USER_GUIDE.md` (menus, niveaux de difficulté)
-  - [ ] Explication succincte de l'algorithme IA dans `docs/architecture/`
+  - [ ] Documentation technique de l'algorithme IA (Architecture, Heuristique)
 
 ---
 
 ## 📊 Résumé de l'effort
 
-| Membre de l'équipe | Heures Estimées | Tâches Assignées |
+| Membre de l'équipe | Heures Estimées | Tâches (Globalement) |
 |--------------------|-----------------|------------------|
-| **Tianyi** (IA Core)| ~28 heures      | 3.1, 3.2, 3.3, 3.4, 3.10 |
-| **Javier** (UI/UX) | ~24 heures      | 3.5, 3.6, 3.7, 3.8, 3.9, 3.11 |
-| **Total**          | ~52 heures      | Répartition équilibrée |
-
+| **Tianyi** (IA Core)| ~34 heures      | IA, Heuristiques, Minimax, Pathfinder, Tests |
+| **Javier** (UI/UX) | ~24 heures      | SceneManager, Intégration, Menus, Config, Docs |
+| **Total**          | ~58 heures      | |
