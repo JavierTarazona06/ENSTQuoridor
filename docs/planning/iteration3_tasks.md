@@ -1,0 +1,174 @@
+# Itération 3 : Intelligence Artificielle et Configurabilité
+**Dates**: 16 décembre 2025 -- 5 janvier 2026 (3 semaines)
+**Équipe**: Javier Tarazona, Tianyi Liang
+
+---
+
+## 🎯 Objectifs de l'itération
+- Implémenter IA Minimax/Négamax avec élagage alpha-beta
+- Créer une heuristique d'évaluation pertinente
+- Intégrer 3 niveaux de difficulté (Facile, Normal, Difficile)
+- Ajouter un menu principal et gestion des états de jeu (SceneManager)
+- Mode Humain vs IA fonctionnel
+
+---
+
+## 📝 Liste des Tâches (Format GitHub Issues)
+
+### Modèle (IA & Logique)
+
+#### **TASK 3.1: Infrastructure IA et Bot Aléatoire (Niveau Facile)**
+
+- **Estimation**: 4 heures
+- **Description**:
+  Créer la classe de base `AI` et implémenter une stratégie simple pour le niveau "Facile". L'IA doit être capable de générer tous les coups valides et d'en choisir un (aléatoirement pour commencer).
+- **Critères d'acceptation**:
+  - [ ] Classe `AI` créée dans `src/model/AI.cpp`
+  - [ ] Méthode `getBestMove(Board, State, Difficulty)` implémentée
+  - [ ] Niveau Facile : Choisit un coup valide aléatoire (déplacement ou mur)
+  - [ ] L'IA ne joue jamais de coup invalide
+  - [ ] Tests unitaires : vérifier que le coup retourné est valide
+
+---
+
+#### **TASK 3.2: Fonction d'Évaluation Heuristique**
+
+- **Estimation**: 6 heures
+- **Description**:
+  Implémenter une fonction d'évaluation `evaluate(Board, Player)` pour estimer la qualité d'une position. Cette fonction est cruciale pour le Minimax.
+- **Critères d'acceptation**:
+  - [ ] Calcul de la distance du chemin le plus court vers l'objectif (pour soi et l'adversaire)
+  - [ ] Score basé sur : `(Distance Adversaire - Distance Soi)`
+  - [ ] Bonus/Malus pour le nombre de murs restants
+  - [ ] Tests : vérifier que les positions gagnantes ont un score maximal et perdantes minimal
+
+---
+
+#### **TASK 3.3: Algorithme Minimax avec Alpha-Beta**
+
+- **Estimation**: 10 heures
+- **Description**:
+  Implémenter l'algorithme Minimax récursif avec élagage Alpha-Beta pour optimiser la recherche de coups.
+- **Critères d'acceptation**:
+  - [ ] Algorithme Minimax implémenté
+  - [ ] Élagage Alpha-Beta fonctionnel (réduction du nombre de nœuds visités)
+  - [ ] Profondeur de recherche configurable (ex: 2 pour Normal, 4 pour Difficile)
+  - [ ] Tests : L'IA bloque une victoire immédiate de l'adversaire
+  - [ ] Tests : L'IA trouve une victoire immédiate si disponible
+
+---
+
+#### **TASK 3.4: Optimisation Pathfinder (A*)**
+
+- **Estimation**: 4 heures
+- **Description**:
+  Améliorer le Pathfinder (actuellement BFS) vers A* (A-Star) ou optimiser le BFS existant pour qu'il soit très rapide, car il sera appelé des milliers de fois par l'IA.
+- **Critères d'acceptation**:
+  - [ ] Classe `Pathfinder` optimisée
+  - [ ] Utilisation de la distance de Manhattan comme heuristique pour A*
+  - [ ] Performance : < 1ms par appel de recherche de chemin
+  - [ ] Vérifier que cela n'introduit pas de régression sur la validation des murs
+
+---
+
+### Contrôleur (Logique de Jeu)
+
+#### **TASK 3.5: SceneManager (Gestion des États)**
+
+- **Estimation**: 6 heures
+- **Description**:
+  Introduire un `SceneManager` pour gérer les transitions entre les différents écrans : Menu Principal, Jeu, Fin de Partie.
+- **Critères d'acceptation**:
+  - [ ] Enum `GameState` (Menu, Playing, GameOver)
+  - [ ] Boucle principale modifiée pour déléguer l'update/render à la scène active
+  - [ ] Transition fluide entre Menu et Jeu
+  - [ ] Possibilité de revenir au Menu depuis le jeu (touche Échap)
+
+---
+
+#### **TASK 3.6: Intégration Tour de l'IA**
+
+- **Estimation**: 4 heures
+- **Description**:
+  Intégrer l'IA dans la boucle de jeu `Game`. Lorsque c'est le tour de l'IA, le jeu doit demander un coup à l'IA, attendre (ou calculer), puis appliquer le coup.
+- **Critères d'acceptation**:
+  - [ ] Détection du tour de l'IA (Player 2 en mode HvIA)
+  - [ ] Appel asynchrone ou gestion du temps pour ne pas geler l'UI (optionnel, ou simple "loading")
+  - [ ] Application automatique du coup choisi par l'IA
+  - [ ] Alternance correcte : Humain -> IA -> Humain
+
+---
+
+#### **TASK 3.7: Configuration et Difficulté**
+
+- **Estimation**: 2 heures
+- **Description**:
+  Ajouter une structure pour stocker les paramètres de la partie avant le lancement (Mode de jeu, Difficulté IA).
+- **Critères d'acceptation**:
+  - [ ] Struct `GameConfig`
+  - [ ] Stockage du mode (PvP ou PvE)
+  - [ ] Stockage de la difficulté (Easy, Normal, Hard)
+  - [ ] Passer cette config à l'initialisation de `Game`
+
+---
+
+### Vue (Interface Graphique)
+
+#### **TASK 3.8: Menu Principal**
+
+- **Estimation**: 6 heures
+- **Description**:
+  Créer une vue pour le menu principal permettant de choisir le mode de jeu et de lancer la partie.
+- **Critères d'acceptation**:
+  - [ ] Affichage du titre "Quoridor"
+  - [ ] Bouton "Humain vs Humain"
+  - [ ] Bouton "Humain vs IA"
+  - [ ] Sélecteur de difficulté (si HvIA sélectionné)
+  - [ ] Bouton "Quitter"
+  - [ ] Navigation fonctionnelle (clic souris)
+
+#### **TASK 3.9: Écran de Fin de Partie et Feedback**
+- **Assigné à**: Javier
+- **Estimation**: 4 heures
+- **Description**:
+  Améliorer l'écran de fin de partie et ajouter un feedback visuel pour les coups de l'IA.
+- **Critères d'acceptation**:
+  - [ ] Écran "Game Over" avec vainqueur affiché
+  - [ ] Bouton "Rejouer" et "Menu Principal"
+  - [ ] (Optionnel) Surligner le dernier coup joué par l'IA pour que le joueur comprenne l'action
+
+---
+
+### Tests et Documentation
+
+#### **TASK 3.10: Tests Unitaires IA**
+
+- **Estimation**: 4 heures
+- **Description**:
+  Écrire des tests spécifiques pour vérifier l'intelligence de l'IA.
+- **Critères d'acceptation**:
+  - [ ] Test : IA trouve le chemin le plus court sans obstacles
+  - [ ] Test : IA pose un mur pour bloquer/ralentir l'adversaire (niveau Difficile)
+  - [ ] Test : IA ne s'enferme pas elle-même
+  - [ ] Test de performance (temps de réponse moyen)
+
+#### **TASK 3.11: Documentation Itération 3**
+
+- **Estimation**: 2 heures
+- **Description**:
+  Mettre à jour la documentation pour inclure les détails sur l'IA et le guide d'utilisation des menus.
+- **Critères d'acceptation**:
+  - [ ] Mise à jour `README.md` (nouvelles fonctionnalités)
+  - [ ] Mise à jour `docs/USER_GUIDE.md` (menus, niveaux de difficulté)
+  - [ ] Explication succincte de l'algorithme IA dans `docs/architecture/`
+
+---
+
+## 📊 Résumé de l'effort
+
+| Membre de l'équipe | Heures Estimées | Tâches Assignées |
+|--------------------|-----------------|------------------|
+| **Tianyi** (IA Core)| ~28 heures      | 3.1, 3.2, 3.3, 3.4, 3.10 |
+| **Javier** (UI/UX) | ~24 heures      | 3.5, 3.6, 3.7, 3.8, 3.9, 3.11 |
+| **Total**          | ~52 heures      | Répartition équilibrée |
+
