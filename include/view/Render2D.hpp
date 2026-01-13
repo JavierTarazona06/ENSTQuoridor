@@ -63,6 +63,11 @@ private:
     float messageElapsed;
     bool messageActive;
 
+    // Background message state (for preemption)
+    std::string backgroundMessageText;
+    sf::Color backgroundMessageColor;
+    bool hasBackgroundMessage;
+
     static constexpr unsigned int WINDOW_WIDTH = 1050;
     static constexpr unsigned int WINDOW_HEIGHT = 900;
     static constexpr float CELL_SIZE = 60.0f;

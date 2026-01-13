@@ -9,7 +9,10 @@ Render2D::Render2D()
       currentMessageColor(sf::Color::Green),
       messageDuration(-1.0f),
       messageElapsed(0.0f),
-      messageActive(false) {
+      messageActive(false),
+      backgroundMessageText(""),
+      backgroundMessageColor(sf::Color::White),
+      hasBackgroundMessage(false) {
     // Optional: Set frame rate limit for smoother rendering
     window.setFramerateLimit(60);
     
@@ -273,6 +276,17 @@ sf::RenderWindow& Render2D::getWindow() {
 }
 
 void Render2D::showMessage(const std::string& text, const Color& color, float duration) {
+    // If showing a temporary message (duration > 0) and current message is persistent (duration == -1),
+    // save the persistent message to restore it later (preemption)
+    if (duration > 0.0f && messageDuration == -1.0f && messageActive) {
+        backgroundMessageText = currentMessageText;
+        backgroundMessageColor = currentMessageColor;
+        hasBackgroundMessage = true;
+    } else {
+        // Not preempting, so clear any saved background message
+        //hasBackgroundMessage = false;
+    }
+    
     currentMessageText = text;
     currentMessageColor = sf::Color(color.r, color.g, color.b);
     messageDuration = duration;
@@ -289,7 +303,19 @@ void Render2D::updateMessage(float deltaTime) {
     if (messageDuration > 0.0f) {
         messageElapsed += deltaTime;
         if (messageElapsed >= messageDuration) {
-            messageActive = false;
+            // Temporary message expired
+            if (hasBackgroundMessage) {
+                // Restore the persistent background message
+                currentMessageText = backgroundMessageText;
+                currentMessageColor = backgroundMessageColor;
+                messageDuration = -1.0f;  // Make it persistent again
+                messageElapsed = 0.0f;
+                hasBackgroundMessage = false;
+                // messageActive remains true to continue displaying the restored message
+            } else {
+                // No background message to restore, so deactivate the message
+                messageActive = false;
+            }
         }
     }
 }

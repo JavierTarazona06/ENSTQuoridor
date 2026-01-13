@@ -20,7 +20,7 @@ void Game::run() {
     int currentPlayer = state.getCurrentPlayer();
     Color playerColor = board.getPawnColor(currentPlayer);
     std::string playerName = "Player " + std::to_string(currentPlayer + 1);
-    renderer.showMessage(playerName + " Turn, select pawn to start moving", {255,255,255}, -1.0f);
+    renderer.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
     
     while (renderer.isOpen()) {
         const float deltaTime = clock.restart().asSeconds();

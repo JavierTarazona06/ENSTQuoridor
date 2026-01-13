@@ -22,7 +22,7 @@ void InputHandler::handleInput(const sf::Event& event, const sf::RenderWindow& w
             int currentPlayer = state.getCurrentPlayer();
             Color playerColor = board.getPawnColor(currentPlayer);
             std::string playerName = "Player " + std::to_string(currentPlayer + 1);
-            render.showMessage(playerName + " Turn, select pawn to start moving", {255,255,255}, -1.0f);
+            render.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
             return;
         }
     }
@@ -50,7 +50,7 @@ void InputHandler::handleInput(const sf::Event& event, const sf::RenderWindow& w
                 std::cout << "Movement mode activated (Press W to place walls)" << std::endl;
                 int currentPlayer = state.getCurrentPlayer();
                 std::string playerName = "Player " + std::to_string(currentPlayer + 1);
-                render.showMessage(playerName + " Turn, select pawn to start moving", {255,255,255}, -1.0f);
+                render.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
             }
         }
         
@@ -163,7 +163,7 @@ void InputHandler::handleMouseClick(int pixelX, int pixelY) {
             int nextPlayer = state.getCurrentPlayer();
             Color playerColor = board.getPawnColor(nextPlayer);
             std::string playerName = "Player " + std::to_string(nextPlayer + 1);
-            render.showMessage(playerName + " Turn, select pawn to start moving", {255,255,255}, -1.0f);
+            render.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
             
             state.setPreviewWall(std::nullopt);
             
@@ -171,7 +171,7 @@ void InputHandler::handleMouseClick(int pixelX, int pixelY) {
             currentMode = InputMode::MovePawn;
         } else {
             std::cout << "Invalid wall placement!" << std::endl;
-            render.showMessage("Invalid wall placement!", {255,0,0}, -1.0f);
+            render.showMessage("Invalid wall placement!", {255,0,0}, 1.5f);
             // Keep the preview, let user try again
         }
     } else {
@@ -194,6 +194,9 @@ void InputHandler::handleMouseClick(int pixelX, int pixelY) {
             // Check if we clicked on the same pawn (deselect)
             if (clickedPos == currentPos) {
                 state.setSelectedPawn(std::nullopt);
+                int nextPlayer = state.getCurrentPlayer();
+                std::string playerName = "Player " + std::to_string(nextPlayer + 1);
+                render.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
                 return;
             }
 
@@ -224,13 +227,13 @@ void InputHandler::handleMouseClick(int pixelX, int pixelY) {
                     Color playerColor = board.getPawnColor(nextPlayer);
                     std::string playerName = "Player " + std::to_string(nextPlayer + 1);
                     //TODO The message is not being viewed completely , Increase box size?
-                    render.showMessage(playerName + " Turn, select pawn to start moving", {255,255,255}, -1.0f);
+                    render.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
                 }
                 
                 state.setSelectedPawn(std::nullopt);
             } else {
                 std::cout << "Invalid move!" << std::endl;
-                render.showMessage("Invalid move!", {255,0,0}, -1.0f);
+                render.showMessage("Invalid move!", {255,0,0}, 1.5f);
                 // Invalid move - just reject (do nothing)
             }
         }

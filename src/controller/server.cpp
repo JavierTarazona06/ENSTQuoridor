@@ -17,7 +17,7 @@ void Server::startGame() {
     int currentPlayer = state_.getCurrentPlayer();
     Color playerColor = board_.getPawnColor(currentPlayer);
     std::string playerName = "Player " + std::to_string(currentPlayer + 1);
-    render_.showMessage(playerName + " Turn, select pawn to start moving", {255,255,255}, -1.0f);
+    render_.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
     
     // Main game loop
     while (render_.isOpen()) {
