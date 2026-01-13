@@ -31,3 +31,28 @@ include(CTest)
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(Catch)
 catch_discover_tests(test_all EXTRA_ARGS --benchmark-samples 10)
+
+# ============================================================================
+# PVE Visual Test - Interactive game with AI opponent
+# This uses the existing UI components but adds AI control
+# ============================================================================
+add_executable(test_pve_visual
+    test_pve_visual.cpp
+)
+
+target_link_libraries(test_pve_visual 
+    PRIVATE 
+        quoridor_model
+        SFML::Graphics
+        SFML::Window
+        SFML::System
+)
+
+# Link to the view library components (reuse from main project)
+target_include_directories(test_pve_visual PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+# Need to compile view sources for this test
+target_sources(test_pve_visual PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/view/Render2D.cpp
+    ${CMAKE_SOURCE_DIR}/src/view/GameView.cpp
+)
