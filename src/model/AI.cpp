@@ -54,7 +54,7 @@ namespace Quoridor {
         // Minimax configuration
         int depth = 2; // Default Normal
         if (difficulty == Difficulty::Hard) depth = 3;
-        if (difficulty == Difficulty::Hell) depth = 4;
+        if (difficulty == Difficulty::Hell) depth = 5;
         
         int bestScore = std::numeric_limits<int>::min();
         Move bestMove; // Default invalid move

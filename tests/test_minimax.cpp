@@ -154,8 +154,8 @@ TEST_CASE("Minimax AI Comprehensive Suite", "[ai][minimax][comprehensive]") {
     }
 
     // =================================================================
-    // LEVEL: HELL (Depth 4)
-    // Goal: Deep calculation (reduced from depth 6 for performance)
+    // LEVEL: HELL (Depth 5)
+    // Goal: Deep calculation (reduced from depth 5 for performance)
     // =================================================================
 
     SECTION("Hell 1: Deep Win Sequence (3 moves)") {
@@ -369,7 +369,7 @@ TEST_CASE("Minimax AI Comprehensive Suite", "[ai][minimax][comprehensive]") {
             return ai.getBestMove(board, state, Difficulty::Hard);
         };
         
-        BENCHMARK("AI Hell (Depth 4)") {
+        BENCHMARK("AI Hell (Depth 5)") {
             return ai.getBestMove(board, state, Difficulty::Hell);
         };
     }

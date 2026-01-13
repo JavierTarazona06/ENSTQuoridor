@@ -11,7 +11,7 @@ namespace Quoridor {
         Easy,   // Random
         Normal, // Minimax Depth 2
         Hard,   // Minimax Depth 3
-        Hell    // Minimax Depth 4 (WARNING: Can be slow in complex board states)
+        Hell    // Minimax Depth 5 (WARNING: Can be slow in complex board states)
     };
 
     struct Move {
