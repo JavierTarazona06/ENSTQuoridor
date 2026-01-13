@@ -4,7 +4,12 @@
 namespace Quoridor {
 
 Render2D::Render2D() 
-    : window(sf::VideoMode({WINDOW_WIDTH, WINDOW_HEIGHT}), "ENSTQuoridor") {
+    : window(sf::VideoMode({WINDOW_WIDTH, WINDOW_HEIGHT}), "ENSTQuoridor"),
+      currentMessageText(""),
+      currentMessageColor(sf::Color::Green),
+      messageDuration(-1.0f),
+      messageElapsed(0.0f),
+      messageActive(false) {
     // Optional: Set frame rate limit for smoother rendering
     window.setFramerateLimit(60);
     
@@ -197,11 +202,10 @@ void Render2D::drawWallPreview(const std::optional<Wall>& previewWall) {
     window.draw(wallShape);
 }
 
-// TODO: Acomodar mejor el cuadro de HUD y su informacion
 void Render2D::drawHUD(const Board& board, const State& state) {
     // HUD position: top-left corner, outside the grid
-    float hudX = GRID_OFFSET_X - HUD_BOX_WIDTH - 20.0f;
-    float hudY = GRID_OFFSET_Y;
+    float hudX = GRID_OFFSET_X - HUD_BOX_WIDTH - 45.0f;
+    float hudY = GRID_OFFSET_Y + CELL_SIZE*BOARD_SIZE/2 - HUD_BOX_HEIGHT/2;
     
     // Draw HUD background box
     sf::RectangleShape hudBox({HUD_BOX_WIDTH, HUD_BOX_HEIGHT});
@@ -221,7 +225,7 @@ void Render2D::drawHUD(const Board& board, const State& state) {
     drawText("PLAYER", hudX + HUD_BOX_WIDTH * 0.5f, section1Y, 18, sf::Color::White, 2);
     
     // Section 2: Player Number with color indicator
-    float section2Y = hudY + 40.0f;
+    float section2Y = hudY + 45.0f;
     std::string playerNum = std::to_string(currentPlayer + 1);
     drawText(playerNum, hudX + HUD_BOX_WIDTH * 0.5f, section2Y, 40, sfPlayerColor, 2);
     
@@ -240,7 +244,7 @@ void Render2D::drawHUD(const Board& board, const State& state) {
     drawText(wallsText, hudX + HUD_BOX_WIDTH * 0.5f, section3Y + 28.0f, 28, wallsColor, 2);
     
     // Section 4: Game Status
-    float section4Y = hudY + 145.0f;
+    float section4Y = hudY + 160.0f;
     drawText("STATUS", hudX + HUD_BOX_WIDTH * 0.5f, section4Y, 12, sf::Color::White, 2);
     
     std::string statusText;
@@ -261,11 +265,58 @@ void Render2D::drawHUD(const Board& board, const State& state) {
             break;
     }
     
-    drawText(statusText, hudX + HUD_BOX_WIDTH * 0.5f, section4Y + 22.0f, 16, statusColor, 2);
+    drawText(statusText, hudX + HUD_BOX_WIDTH * 0.5f, section4Y + 26.0f, 16, statusColor, 2);
 }
 
 sf::RenderWindow& Render2D::getWindow() {
     return window;
+}
+
+void Render2D::showMessage(const std::string& text, const Color& color, float duration) {
+    currentMessageText = text;
+    currentMessageColor = sf::Color(color.r, color.g, color.b);
+    messageDuration = duration;
+    messageElapsed = 0.0f;
+    messageActive = true;
+}
+
+void Render2D::updateMessage(float deltaTime) {
+    if (!messageActive) {
+        return;
+    }
+
+    // If message is persistent (duration == -1), don't count down
+    if (messageDuration > 0.0f) {
+        messageElapsed += deltaTime;
+        if (messageElapsed >= messageDuration) {
+            messageActive = false;
+        }
+    }
+}
+
+void Render2D::drawMessage() {
+    if (!messageActive || currentMessageText.empty()) {
+        return;
+    }
+
+    // Calculate box position: centered horizontally, below the grid
+    float boxX = WINDOW_WIDTH / 2.0f - MESSAGE_BOX_WIDTH / 2.0f;
+    float boxY = GRID_OFFSET_Y + CELL_SIZE * BOARD_SIZE + MESSAGE_BOX_MARGIN_BOTTOM;
+
+    // Draw message box background
+    sf::RectangleShape messageBox({MESSAGE_BOX_WIDTH, MESSAGE_BOX_HEIGHT});
+    messageBox.setPosition({boxX, boxY});
+    messageBox.setFillColor(HUD_BACKGROUND_COLOR);
+    messageBox.setOutlineColor(HUD_BORDER_COLOR);
+    messageBox.setOutlineThickness(1.0f);
+
+    window.draw(messageBox);
+
+    // Draw message text centered in the box
+    float textCenterX = boxX + MESSAGE_BOX_WIDTH / 2.0f;
+    float textCenterY = boxY + MESSAGE_BOX_HEIGHT / 2.0f;
+
+    drawText(currentMessageText, textCenterX, textCenterY, MESSAGE_FONT_SIZE, currentMessageColor, 3);
 }
 
 } // namespace Quoridor
