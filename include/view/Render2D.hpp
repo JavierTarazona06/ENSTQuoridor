@@ -36,6 +36,9 @@ public:
     void drawMessage();
     void updateMessage(float deltaTime);
 
+    // Logo rendering
+    void drawLogo();
+
     // Font management
     bool loadFont(const std::string& fontPath, int fontType);
 
@@ -67,6 +70,11 @@ private:
     std::string backgroundMessageText;
     sf::Color backgroundMessageColor;
     bool hasBackgroundMessage;
+
+    // Logo assets
+    sf::Texture logoTexture;
+    std::optional<sf::Sprite> logoSprite;
+    bool logoLoaded;
 
     static constexpr unsigned int WINDOW_WIDTH = 1050;
     static constexpr unsigned int WINDOW_HEIGHT = 900;

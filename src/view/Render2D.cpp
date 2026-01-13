@@ -12,7 +12,9 @@ Render2D::Render2D()
       messageActive(false),
       backgroundMessageText(""),
       backgroundMessageColor(sf::Color::White),
-      hasBackgroundMessage(false) {
+      hasBackgroundMessage(false),
+      logoSprite(std::nullopt),
+      logoLoaded(false) {
     // Optional: Set frame rate limit for smoother rendering
     window.setFramerateLimit(60);
     
@@ -21,6 +23,15 @@ Render2D::Render2D()
     loadFont(std::string(FONT_DIR) + "/arial/ArialCEBoldItalic.ttf", 1); // title2
     loadFont(std::string(FONT_DIR) + "/arial/ARIALBD.TTF", 2); // title3
     loadFont(std::string(FONT_DIR) + "/arial/ARIAL.TTF", 3); // text
+    
+    // Load logo
+    if (logoTexture.loadFromFile(std::string(FONT_DIR) + "/../../assets/img/logo_ensta_zeb.png")) {
+        logoSprite.emplace(logoTexture);
+        logoLoaded = true;
+    } else {
+        std::cerr << "Error: Could not load logo from assets/img/logo_ensta_zeb.png" << std::endl;
+        logoLoaded = false;
+    }
 }
 
 Render2D::~Render2D() {
@@ -343,6 +354,36 @@ void Render2D::drawMessage() {
     float textCenterY = boxY + MESSAGE_BOX_HEIGHT / 2.0f;
 
     drawText(currentMessageText, textCenterX, textCenterY, MESSAGE_FONT_SIZE, currentMessageColor, 3);
+}
+
+void Render2D::drawLogo() {
+    if (!logoLoaded || !logoSprite.has_value()) {
+        return;
+    }
+
+    // Scale logo to 50% of its size
+    logoSprite->setScale({0.36f, 0.36f});
+
+    // Position logo on the right side of the screen
+    // Right margin from window edge
+    float rightMargin = 36.0f;
+    
+    // Grid end position (right side of grid)
+    float gridRightX = GRID_OFFSET_X + CELL_SIZE * BOARD_SIZE;
+    
+    // Logo X position (right side of screen minus margin)
+    // Account for scale in size calculation
+    float logoX = WINDOW_WIDTH - rightMargin - (logoSprite->getLocalBounds().size.x * 0.36f);
+    
+    // Logo Y position (vertically centered with the grid)
+    float gridCenterY = GRID_OFFSET_Y + (CELL_SIZE * BOARD_SIZE) / 2.0f;
+    float logoY = gridCenterY - (logoSprite->getLocalBounds().size.y * 0.36f) / 2.0f;
+    
+    // Set logo position
+    logoSprite->setPosition({logoX, logoY});
+    
+    // Draw the logo
+    window.draw(*logoSprite);
 }
 
 } // namespace Quoridor
