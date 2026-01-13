@@ -17,6 +17,7 @@ add_executable(test_all
     test_pathfinder.cpp
     test_ai_core.cpp
     test_heuristics.cpp
+    test_minimax.cpp
 )
 
 target_link_libraries(test_all 

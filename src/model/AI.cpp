@@ -5,8 +5,16 @@
 #include <algorithm>
 #include <iostream>
 #include <limits>
+#include <set>
 
 namespace Quoridor {
+
+    // Helper for set uniqueness
+    bool operator<(const Wall& a, const Wall& b) {
+        if (a.pos.x != b.pos.x) return a.pos.x < b.pos.x;
+        if (a.pos.y != b.pos.y) return a.pos.y < b.pos.y;
+        return a.orientation < b.orientation;
+    }
 
     int AI::evaluate(const Board& board, int playerIndex) {
         int opponentIndex = (playerIndex == 0) ? 1 : 0;
@@ -39,18 +47,181 @@ namespace Quoridor {
     Move AI::getBestMove(const Board& board, const State& state, Difficulty difficulty) {
         int player = state.getCurrentPlayer();
         
-        switch (difficulty) {
-            case Difficulty::Easy:
-                return getRandomMove(board, player);
-            case Difficulty::Normal:
-                // Fallback to random for now
-                return getRandomMove(board, player);
-            case Difficulty::Hard:
-                // Fallback to random for now
-                return getRandomMove(board, player);
-            default:
-                return getRandomMove(board, player);
+        if (difficulty == Difficulty::Easy) {
+            return getRandomMove(board, player);
         }
+
+        // Minimax configuration
+        int depth = 2; // Default Normal
+        if (difficulty == Difficulty::Hard) depth = 3;
+        if (difficulty == Difficulty::Hell) depth = 4;
+        
+        int bestScore = std::numeric_limits<int>::min();
+        Move bestMove; // Default invalid move
+        bool moveFound = false;
+
+        std::vector<Move> moves = getAllValidMoves(board, player);
+        
+        // Simple move ordering optimization: Consider pawn moves first (usually better/faster to verify)
+        // They are already added first in getAllValidMoves.
+
+        for (const auto& move : moves) {
+            Board nextBoard = board;
+            if (move.isPawnMove()) {
+                nextBoard.movePawn(player, move.pawnDest);
+            } else {
+                nextBoard.placeWall(move.wall, player);
+            }
+            
+            // Call minimax for the next level (opponent's turn -> minimizing)
+            // Pass 'player' as the reference 'playerIndex' for evaluation
+            int score = minimax(nextBoard, depth - 1, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), false, player);
+            
+            // Debug output
+            /*
+            if (move.isPawnMove()) {
+                std::cout << "Move Pawn to " << move.pawnDest.x << "," << move.pawnDest.y << " Score: " << score << std::endl;
+            } else {
+                std::cout << "Place Wall at " << move.wall.pos.x << "," << move.wall.pos.y << " Score: " << score << std::endl;
+            }
+            */
+
+            if (score > bestScore) {
+                bestScore = score;
+                bestMove = move;
+                moveFound = true;
+            }
+        }
+        
+        if (!moveFound && !moves.empty()) {
+            return moves[0]; // Fallback
+        }
+        
+        return bestMove;
+    }
+
+    int AI::minimax(Board board, int depth, int alpha, int beta, bool maximizingPlayer, int playerIndex) {
+        // Base case: leaf node or game over
+        // Check for immediate win/loss first to avoid evaluating non-terminal states as terminal
+        // Actually evaluate() handles win/loss logic (INT_MAX/INT_MIN)
+        
+        if (depth == 0) {
+            return evaluate(board, playerIndex);
+        }
+        
+        // Check for game over via evaluation (if score is MAX/MIN, it's terminal)
+        int currentEval = evaluate(board, playerIndex);
+        if (currentEval == std::numeric_limits<int>::max() || currentEval == std::numeric_limits<int>::min()) {
+            return currentEval;
+        }
+
+        int currentPlayerIndex = maximizingPlayer ? playerIndex : ((playerIndex == 0) ? 1 : 0);
+        std::vector<Move> moves = getAllValidMoves(board, currentPlayerIndex);
+
+        if (moves.empty()) {
+            return currentEval; // Stalemate or trapped? Should return loss usually.
+        }
+
+        if (maximizingPlayer) {
+            int maxEval = std::numeric_limits<int>::min();
+            for (const auto& move : moves) {
+                Board nextBoard = board;
+                if (move.isPawnMove()) {
+                    nextBoard.movePawn(currentPlayerIndex, move.pawnDest);
+                } else {
+                    nextBoard.placeWall(move.wall, currentPlayerIndex);
+                }
+                
+                int eval = minimax(nextBoard, depth - 1, alpha, beta, false, playerIndex);
+                maxEval = std::max(maxEval, eval);
+                alpha = std::max(alpha, eval);
+                if (beta <= alpha) {
+                    break; // Beta prune
+                }
+            }
+            return maxEval;
+        } else {
+            int minEval = std::numeric_limits<int>::max();
+            for (const auto& move : moves) {
+                Board nextBoard = board;
+                if (move.isPawnMove()) {
+                    nextBoard.movePawn(currentPlayerIndex, move.pawnDest);
+                } else {
+                    nextBoard.placeWall(move.wall, currentPlayerIndex);
+                }
+                
+                int eval = minimax(nextBoard, depth - 1, alpha, beta, true, playerIndex);
+                minEval = std::min(minEval, eval);
+                beta = std::min(beta, eval);
+                if (beta <= alpha) {
+                    break; // Alpha prune
+                }
+            }
+            return minEval;
+        }
+    }
+
+    std::vector<Move> AI::getAllValidMoves(const Board& board, int playerIndex) {
+        std::vector<Move> moves;
+        
+        // Pawn moves
+        auto pMoves = getValidPawnMoves(board, playerIndex);
+        for (const auto& p : pMoves) {
+            moves.push_back(Move::createPawnMove(p));
+        }
+        
+        // Wall moves optimization: Only consider relevant walls
+        if (board.getWallsRemaining(playerIndex) > 0) {
+            // Strategy: Block opponent's shortest path & Box opponent
+            int opponentIndex = (playerIndex == 0) ? 1 : 0;
+            
+            std::set<Wall> relevantWalls; // Use set to avoid duplicates
+
+            // 1. Walls blocking the opponent's shortest path
+            std::vector<Position> path = Pathfinder::getShortestPath(board, opponentIndex);
+            if (!path.empty()) {
+                Position current = board.getPawnPosition(opponentIndex);
+                for (const auto& next : path) {
+                    // Moving Vertical (row change)
+                    if (current.x == next.x) {
+                        int r = std::min(current.y, next.y);
+                        // Horizontal walls that block vertical movement at column 'current.x'
+                        relevantWalls.insert({{current.x, r}, Orientation::Horizontal});
+                        relevantWalls.insert({{current.x - 1, r}, Orientation::Horizontal});
+                    } 
+                    // Moving Horizontal (col change)
+                    else if (current.y == next.y) {
+                        int c = std::min(current.x, next.x);
+                        // Vertical walls that block horizontal movement at row 'current.y'
+                        relevantWalls.insert({{c, current.y}, Orientation::Vertical});
+                        relevantWalls.insert({{c, current.y - 1}, Orientation::Vertical});
+                    }
+                    current = next;
+                }
+            }
+
+            // 2. Walls near opponent (aggressive/defensive box)
+            // Consider immediate vicinity to ensure we don't miss tactical blocks not on current shortest path
+            Position oppPos = board.getPawnPosition(opponentIndex);
+            for (int r = oppPos.y - 1; r <= oppPos.y; ++r) {
+                for (int c = oppPos.x - 1; c <= oppPos.x; ++c) {
+                    relevantWalls.insert({{c, r}, Orientation::Horizontal});
+                    relevantWalls.insert({{c, r}, Orientation::Vertical});
+                }
+            }
+
+            // 3. Walls near self (defensive against blocking?)
+            // Maybe less critical for Hell mode speed, skip for now.
+
+            // Validate and add unique walls
+            for (const auto& w : relevantWalls) {
+                if (Rules::isValidWallPlacement(board, w, playerIndex)) {
+                    moves.push_back(Move::createWallMove(w));
+                }
+            }
+        }
+        
+        return moves;
     }
 
     Move AI::getRandomMove(const Board& board, int playerIndex) {

@@ -8,9 +8,10 @@
 namespace Quoridor {
 
     enum class Difficulty {
-        Easy,
-        Normal,
-        Hard
+        Easy,   // Random
+        Normal, // Minimax Depth 2
+        Hard,   // Minimax Depth 3
+        Hell    // Minimax Depth 4 (WARNING: Can be slow in complex board states)
     };
 
     struct Move {
@@ -40,6 +41,12 @@ namespace Quoridor {
 
         bool isPawnMove() const { return type == Type::PawnMove; }
         bool isWallPlacement() const { return type == Type::WallPlacement; }
+        
+        bool operator==(const Move& other) const {
+            if (type != other.type) return false;
+            if (type == Type::PawnMove) return pawnDest == other.pawnDest;
+            return wall == other.wall;
+        }
     };
 
     class AI {
@@ -79,6 +86,22 @@ namespace Quoridor {
          * @brief Generate all valid wall placements for a player
          */
         std::vector<Wall> getValidWallPlacements(const Board& board, int playerIndex);
+
+        /**
+         * @brief Minimax algorithm with Alpha-Beta pruning
+         * 
+         * @param board Current board state
+         * @param depth Current depth remaining
+         * @param alpha Best value maximizing player can guarantee
+         * @param beta Best value minimizing player can guarantee
+         * @param maximizingPlayer True if current turn is for the AI (maximizer)
+         * @param playerIndex The AI's player index (constant across recursion)
+         * @return Best score found
+         */
+        int minimax(Board board, int depth, int alpha, int beta, bool maximizingPlayer, int playerIndex);
+        
+        // Helper to collect all moves (pawn + walls)
+        std::vector<Move> getAllValidMoves(const Board& board, int currentPlayerIndex);
     };
 
 } // namespace Quoridor
