@@ -15,6 +15,8 @@ add_executable(test_all
     test_input_handler.cpp
     test_jumps.cpp
     test_pathfinder.cpp
+    test_ai_core.cpp
+    test_heuristics.cpp
 )
 
 target_link_libraries(test_all 

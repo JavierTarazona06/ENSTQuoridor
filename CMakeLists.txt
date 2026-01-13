@@ -14,6 +14,7 @@ add_library(quoridor_model
     src/model/Pathfinder.cpp
     src/model/State.cpp
     src/model/Rules.cpp
+    src/model/AI.cpp
     src/view/Render2D.cpp
     src/view/GameView.cpp
     src/controller/server.cpp

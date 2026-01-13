@@ -24,6 +24,15 @@ namespace Quoridor {
          * @return true if at least one path exists to the goal row, false otherwise.
          */
         static bool hasPathToGoal(const Board& board, int playerIndex);
+
+        /**
+         * @brief Calculates the shortest path distance (number of moves) to the goal line using A*.
+         * 
+         * @param board The current board state.
+         * @param playerIndex The index of the player (0 or 1).
+         * @return The number of moves to reach the goal, or -1 if no path exists.
+         */
+        static int getShortestPathDistance(const Board& board, int playerIndex);
     };
 
 } // namespace Quoridor

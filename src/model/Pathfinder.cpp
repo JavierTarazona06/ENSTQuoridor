@@ -3,6 +3,9 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include <limits>
+#include <set>
+
 namespace Quoridor {
 
     // Helper function to check if a specific wall blocks the move between two ADJACENT cells
@@ -60,70 +63,101 @@ namespace Quoridor {
         return false;
     }
 
-    bool Pathfinder::hasPathToGoal(const Board& board, int playerIndex, const Wall& hypotheticalWall) {
-        Position startPos = board.getPawnPosition(playerIndex);
+    // A* Node structure
+    struct Node {
+        Position pos;
+        int f_score; // g + h
         
-        // Player 0 (Top) -> Goal Row 8 (Bottom)
-        // Player 1 (Bottom) -> Goal Row 0 (Top)
+        // Priority queue orders largest element first, so we want smallest f_score to be "largest" priority
+        // Wait, standard std::greater makes smallest element appear at top.
+        // So we need operator> to mean "larger cost".
+        bool operator>(const Node& other) const {
+            return f_score > other.f_score;
+        }
+    };
+
+    static int heuristic(const Position& pos, int targetRow) {
+        // Manhattan distance to the target row (we only care about vertical distance)
+        // Since we can move horizontally freely to find a gap, the minimum steps required is just |y - target|
+        // Horizontal distance is 0 because the target is the entire row.
+        return std::abs(pos.y - targetRow);
+    }
+
+    static int solveAStar(const Board& board, int playerIndex, const Wall* extraWall) {
+        Position startPos = board.getPawnPosition(playerIndex);
         int targetRow = (playerIndex == 0) ? (BOARD_SIZE - 1) : 0;
 
-        // BFS Setup
-        std::queue<Position> q;
-        q.push(startPos);
+        // Min-priority queue
+        std::priority_queue<Node, std::vector<Node>, std::greater<Node>> openSet;
+        openSet.push({startPos, heuristic(startPos, targetRow)});
 
-        // Visited array
-        std::vector<std::vector<bool>> visited(BOARD_SIZE, std::vector<bool>(BOARD_SIZE, false));
-        visited[startPos.y][startPos.x] = true;
+        // g_score map: cost from start to node
+        // Initialize with infinity
+        std::vector<std::vector<int>> g_score(BOARD_SIZE, std::vector<int>(BOARD_SIZE, std::numeric_limits<int>::max()));
+        g_score[startPos.y][startPos.x] = 0;
 
         // Directions: Up, Down, Left, Right
         const int dr[] = {-1, 1, 0, 0};
         const int dc[] = {0, 0, -1, 1};
 
-        while (!q.empty()) {
-            Position curr = q.front();
-            q.pop();
+        while (!openSet.empty()) {
+            Node current = openSet.top();
+            openSet.pop();
 
             // Check if we reached the target row
-            if (curr.y == targetRow) {
-                return true;
+            if (current.pos.y == targetRow) {
+                // Return actual distance (g_score)
+                return g_score[current.pos.y][current.pos.x];
+            }
+
+            // Optimization: If we found a shorter path to this node already, skip
+            if (current.f_score > g_score[current.pos.y][current.pos.x] + heuristic(current.pos, targetRow)) {
+                // Actually f = g + h, so g = f - h. 
+                // Easier: just check if g_score is better than what current implies?
+                // Standard A*: pop node.
+                continue;
             }
 
             // Explore neighbors
             for (int i = 0; i < 4; ++i) {
-                int nextRow = curr.y + dr[i];
-                int nextCol = curr.x + dc[i];
+                int nextRow = current.pos.y + dr[i];
+                int nextCol = current.pos.x + dc[i];
 
                 // 1. Check bounds
                 if (!Board::isInBounds(nextRow, nextCol)) {
                     continue;
                 }
 
-                // 2. Check visited
-                if (visited[nextRow][nextCol]) {
+                // 2. Check walls
+                if (isPathBlocked(board, current.pos.y, current.pos.x, nextRow, nextCol, extraWall)) {
                     continue;
                 }
 
-                // 3. Check walls (existing + hypothetical)
-                if (isPathBlocked(board, curr.y, curr.x, nextRow, nextCol, &hypotheticalWall)) {
-                    continue;
-                }
+                // Tentative g_score
+                int tentative_g = g_score[current.pos.y][current.pos.x] + 1;
 
-                // Mark as visited and add to queue
-                visited[nextRow][nextCol] = true;
-                q.push({nextCol, nextRow});
+                // If path is better
+                if (tentative_g < g_score[nextRow][nextCol]) {
+                    g_score[nextRow][nextCol] = tentative_g;
+                    int f = tentative_g + heuristic({nextCol, nextRow}, targetRow);
+                    openSet.push({{nextCol, nextRow}, f});
+                }
             }
         }
 
-        return false;
+        return -1; // No path found
+    }
+
+    bool Pathfinder::hasPathToGoal(const Board& board, int playerIndex, const Wall& hypotheticalWall) {
+        return solveAStar(board, playerIndex, &hypotheticalWall) != -1;
     }
 
     bool Pathfinder::hasPathToGoal(const Board& board, int playerIndex) {
-        // Just call the main function with a dummy wall that is out of bounds/invalid so it won't block anything
-        // Or we could pass nullptr if we changed the signature to accept pointer.
-        // But since we take const ref, let's create a dummy wall.
-        // A wall at (-10, -10) should not block anything on the board.
-        Wall dummyWall = {{-10, -10}, Orientation::Horizontal};
-        return hasPathToGoal(board, playerIndex, dummyWall);
+        return solveAStar(board, playerIndex, nullptr) != -1;
+    }
+
+    int Pathfinder::getShortestPathDistance(const Board& board, int playerIndex) {
+        return solveAStar(board, playerIndex, nullptr);
     }
 
 } // namespace Quoridor
