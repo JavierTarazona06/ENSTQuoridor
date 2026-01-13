@@ -28,7 +28,8 @@ TEST_CASE("InputHandler pixel to grid conversion", "[input][conversion]") {
     Board board;
     State state;
     Rules rules;
-    InputHandler inputHandler(board, state, rules);
+    Render2D render;
+    InputHandler inputHandler(board, state, rules, render);
     
     // We can't test pixelToGrid directly as it is private, 
     // but we can verify the logic works by selecting a pawn.
@@ -61,7 +62,8 @@ TEST_CASE("InputHandler invalid moves", "[input][logic]") {
     Board board;
     State state;
     Rules rules;
-    InputHandler inputHandler(board, state, rules);
+    Render2D render;
+    InputHandler inputHandler(board, state, rules, render);
     
     // Player 0 at (4, 0)
     int x, y;
@@ -91,7 +93,8 @@ TEST_CASE("InputHandler click outside grid", "[input][bounds]") {
     Board board;
     State state;
     Rules rules;
-    InputHandler inputHandler(board, state, rules);
+    Render2D render;
+    InputHandler inputHandler(board, state, rules, render);
     
     sf::RenderWindow window;
     
@@ -106,7 +109,8 @@ TEST_CASE("InputHandler deselect logic", "[input][logic]") {
     Board board;
     State state;
     Rules rules;
-    InputHandler inputHandler(board, state, rules);
+    Render2D render;
+    InputHandler inputHandler(board, state, rules, render);
     
     // Player 0 at (4, 0)
     int x, y;
@@ -145,7 +149,8 @@ TEST_CASE("InputHandler R key resets game when finished", "[input][reset]") {
     Board board;
     State state;
     Rules rules;
-    InputHandler inputHandler(board, state, rules);
+    Render2D render;
+    InputHandler inputHandler(board, state, rules, render);
     sf::RenderWindow window;
     
     SECTION("R key resets game when Player1 won") {

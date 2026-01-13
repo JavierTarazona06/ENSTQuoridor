@@ -49,11 +49,16 @@ namespace Quoridor {
         // Selection state for UI
         void setSelectedPawn(std::optional<Position> pos);
         std::optional<Position> getSelectedPawn() const;
+        
+        // Wall preview for placement mode
+        void setPreviewWall(const std::optional<Wall>& wall);
+        std::optional<Wall> getPreviewWall() const;
 
     private:
         int currentPlayer_; // 0 or 1
         GameStatus status_;
         std::optional<Position> selectedPawn_;
+        std::optional<Wall> previewWall_;
     };
 
 } // namespace Quoridor
