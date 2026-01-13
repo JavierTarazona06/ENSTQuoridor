@@ -52,6 +52,9 @@ These scripts set up vcpkg (if needed), select the right CMake preset, and build
 ```powershell
 # From repo root
 scripts\bootstrap.ps1 -Config Debug
+
+# Just program. From repo root
+cmake --build build/x64-windows --config Debug
 ```
 
 - Linux/macOS (Bash):
@@ -59,6 +62,13 @@ scripts\bootstrap.ps1 -Config Debug
 # From repo root
 chmod +x scripts/bootstrap.sh
 scripts/bootstrap.sh Debug
+
+# Just program. From repo root
+# For macOS (Apple Silicon):
+cmake --build build/arm64-osx --config Debug
+# For macOS (Intel) or Linux (adjust preset name as needed):
+# cmake --build build/x64-osx --config Debug
+# cmake --build build/x64-linux --config Debug
 ```
 
 ## Output

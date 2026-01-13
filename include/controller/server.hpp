@@ -6,6 +6,7 @@
 #include "controller/InputHandler.hpp"
 #include "view/Render2D.hpp"
 #include "view/View.hpp"
+#include <SFML/System/Clock.hpp>
 #include <memory>
 
 namespace Quoridor {
@@ -25,12 +26,13 @@ private:
     InputHandler inputHandler_;
     Render2D render_;
     std::unique_ptr<View> current_view_;
+    sf::Clock clock_;
 
     // Handle game events
     void handleEvents();
     
     // Update game state
-    void update();
+    void update(float deltaTime);
     
     // Render the game
     void render();

@@ -20,8 +20,23 @@ namespace Quoridor {
         pawnColors_[0] = {255, 0, 0};   // Red for player 0
         pawnColors_[1] = {0, 0, 255};   // Blue for player 1
         
+        // Initialize wall counts
+        wallsRemaining_.fill(MAX_WALLS_PER_PLAYER);
+
         placedWalls_.clear();
         std::cout << "Board initialized." << std::endl;
+    }
+
+    void Board::resetGame() {
+        // Reset pawn positions
+        pawnPositions_[0] = {BOARD_SIZE / 2, 0}; 
+        pawnPositions_[1] = {BOARD_SIZE / 2, BOARD_SIZE - 1}; 
+
+        // Reset wall counts
+        wallsRemaining_.fill(MAX_WALLS_PER_PLAYER);
+
+        // Clear placed walls
+        placedWalls_.clear();
     }
 
     // --- Helper Validation Methods ---
@@ -61,14 +76,63 @@ namespace Quoridor {
         movePawn(player, newPos);
     }
 
-    void Board::placeWall(const Wall& wall) {
+    void Board::placeWall(const Wall& wall, int playerIndex) {
+        if (playerIndex < 0 || playerIndex >= NUM_PLAYERS) {
+            throw std::out_of_range("Invalid player index.");
+        }
+
+        if (wallsRemaining_[playerIndex] <= 0) {
+            throw std::runtime_error("Player has no walls remaining.");
+        }
+
         if (!isWallPlacementValid(wall.pos)) {
             throw std::invalid_argument("Wall position is outside the valid 8x8 wall grid.");
         }
 
-        // Overlap/Path validation is deferred to the Rules class
-        
+        // Check for overlaps
+        for (const auto& existingWall : placedWalls_) {
+            // 1. Exact position check (collision or crossing)
+            if (existingWall.pos == wall.pos) {
+                throw std::invalid_argument("Wall overlaps or crosses an existing wall.");
+            }
+
+            // 2. Partial overlap check
+            if (wall.orientation == Orientation::Horizontal) {
+                // If horizontal, cannot overlap with other horizontal walls at x-1 or x+1 (same y)
+                if (existingWall.orientation == Orientation::Horizontal &&
+                    existingWall.pos.y == wall.pos.y &&
+                    (existingWall.pos.x == wall.pos.x - 1 || existingWall.pos.x == wall.pos.x + 1)) {
+                    throw std::invalid_argument("Wall overlaps with another horizontal wall.");
+                }
+            } else { // Vertical
+                // If vertical, cannot overlap with other vertical walls at y-1 or y+1 (same x)
+                if (existingWall.orientation == Orientation::Vertical &&
+                    existingWall.pos.x == wall.pos.x &&
+                    (existingWall.pos.y == wall.pos.y - 1 || existingWall.pos.y == wall.pos.y + 1)) {
+                    throw std::invalid_argument("Wall overlaps with another vertical wall.");
+                }
+            }
+        }
+
         placedWalls_.push_back(wall);
+        wallsRemaining_[playerIndex]--;
+    }
+
+    int Board::getWallsRemaining(int playerIndex) const {
+        if (playerIndex < 0 || playerIndex >= NUM_PLAYERS) {
+            throw std::out_of_range("Invalid player index.");
+        }
+        return wallsRemaining_[playerIndex];
+    }
+
+    bool Board::isWallAt(const Position& pos, Orientation orientation) const {
+        Wall targetWall = {pos, orientation};
+        for (const auto& wall : placedWalls_) {
+            if (wall == targetWall) {
+                return true;
+            }
+        }
+        return false;
     }
 
     Position Board::getPawnPosition(int playerIndex) const {

@@ -6,17 +6,24 @@
 namespace Quoridor {
 
 Server::Server() 
-    : board_(), state_(board_), rules_(), inputHandler_(board_, state_, rules_), render_(), current_view_(std::make_unique<GameView>()) {
+    : board_(), state_(), rules_(), render_(), inputHandler_(board_, state_, rules_, render_), current_view_(std::make_unique<GameView>()) {
 }
 
 Server::~Server() {
 }
 
 void Server::startGame() {
+    // Display initial player turn message
+    int currentPlayer = state_.getCurrentPlayer();
+    Color playerColor = board_.getPawnColor(currentPlayer);
+    std::string playerName = "Player " + std::to_string(currentPlayer + 1);
+    render_.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
+    
     // Main game loop
     while (render_.isOpen()) {
+        const float deltaTime = clock_.restart().asSeconds();
         handleEvents();
-        update();
+        update(deltaTime);
         render();
     }
 }
@@ -33,7 +40,10 @@ void Server::handleEvents() {
     }
 }
 
-void Server::update() {
+void Server::update(float deltaTime) {
+    // Update message box timer
+    render_.updateMessage(deltaTime);
+    
     // Update game logic here
     // This is where game state changes will happen
 }
@@ -44,6 +54,9 @@ void Server::render() {
     
     // Draw using current view
     current_view_->render(render_, board_, state_);
+    
+    // Draw message box
+    render_.drawMessage();
     
     // Display everything
     render_.display();
