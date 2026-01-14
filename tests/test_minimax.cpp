@@ -59,7 +59,7 @@ TEST_CASE("Minimax AI Comprehensive Suite", "[ai][minimax][comprehensive]") {
     }
 
     // =================================================================
-    // LEVEL: NORMAL (Depth 2)
+    // LEVEL: NORMAL (Depth 1)
     // Goal: Immediate tactical decisions (1-step lookahead + response)
     // =================================================================
 
@@ -93,8 +93,8 @@ TEST_CASE("Minimax AI Comprehensive Suite", "[ai][minimax][comprehensive]") {
     }
 
     // =================================================================
-    // LEVEL: HARD (Depth 3)
-    // Goal: Strategy sequences (1.5-step lookahead)
+    // LEVEL: HARD (Depth 2)
+    // Goal: Strategy sequences (2-step lookahead)
     // =================================================================
 
     SECTION("Hard 1: Setup 2-move Win") {
@@ -154,8 +154,8 @@ TEST_CASE("Minimax AI Comprehensive Suite", "[ai][minimax][comprehensive]") {
     }
 
     // =================================================================
-    // LEVEL: HELL (Depth 5)
-    // Goal: Deep calculation (reduced from depth 5 for performance)
+    // LEVEL: HELL (Depth 4)
+    // Goal: Deep calculation (reduced from depth 4 for performance)
     // =================================================================
 
     SECTION("Hell 1: Deep Win Sequence (3 moves)") {
@@ -361,15 +361,15 @@ TEST_CASE("Minimax AI Comprehensive Suite", "[ai][minimax][comprehensive]") {
             board.placeWall({{c, r}, Orientation::Horizontal}, 1);
         }
         
-        BENCHMARK("AI Normal (Depth 2)") {
+        BENCHMARK("AI Normal (Depth 1)") {
             return ai.getBestMove(board, state, Difficulty::Normal);
         };
         
-        BENCHMARK("AI Hard (Depth 3)") {
+        BENCHMARK("AI Hard (Depth 2)") {
             return ai.getBestMove(board, state, Difficulty::Hard);
         };
         
-        BENCHMARK("AI Hell (Depth 5)") {
+        BENCHMARK("AI Hell (Depth 4)") {
             return ai.getBestMove(board, state, Difficulty::Hell);
         };
     }

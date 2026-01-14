@@ -89,9 +89,9 @@ private:
         std::cout << "\n";
         std::cout << "AI Difficulty (press number key to change):\n";
         std::cout << "  1: Easy   (Random moves)\n";
-        std::cout << "  2: Normal (Minimax depth 2)\n";
-        std::cout << "  3: Hard   (Minimax depth 3)\n";
-        std::cout << "  4: Hell   (Minimax depth 5)\n";
+        std::cout << "  2: Normal (Minimax depth 1)\n";
+        std::cout << "  3: Hard   (Minimax depth 2)\n";
+        std::cout << "  4: Hell   (Minimax depth 4)\n";
         std::cout << "\n";
         std::cout << "Current AI difficulty: Normal\n";
         std::cout << "========================================\n";
@@ -250,17 +250,17 @@ private:
         if (keyEvent->code == sf::Keyboard::Key::Num2) {
             aiDifficulty = Difficulty::Normal;
             std::cout << "AI difficulty: Normal\n";
-            renderer.showMessage("AI difficulty: Normal (Depth 2)", {255, 255, 100}, 2.0f);
+            renderer.showMessage("AI difficulty: Normal (Depth 1)", {255, 255, 100}, 2.0f);
         }
         if (keyEvent->code == sf::Keyboard::Key::Num3) {
             aiDifficulty = Difficulty::Hard;
             std::cout << "AI difficulty: Hard\n";
-            renderer.showMessage("AI difficulty: Hard (Depth 3)", {255, 165, 0}, 2.0f);
+            renderer.showMessage("AI difficulty: Hard (Depth 2)", {255, 165, 0}, 2.0f);
         }
         if (keyEvent->code == sf::Keyboard::Key::Num4) {
             aiDifficulty = Difficulty::Hell;
             std::cout << "AI difficulty: Hell\n";
-            renderer.showMessage("AI difficulty: HELL (Depth 5)", {255, 50, 50}, 2.0f);
+            renderer.showMessage("AI difficulty: HELL (Depth 4)", {255, 50, 50}, 2.0f);
         }
     }
 

@@ -124,9 +124,9 @@ cmake --build build/arm64-osx --target test_pve_visual
 | Key | Difficulty | Description |
 |-----|------------|-------------|
 | `1` | Easy | Random valid moves |
-| `2` | Normal | Minimax depth 2 |
-| `3` | Hard | Minimax depth 3 |
-| `4` | Hell | Minimax depth 5 |
+| `2` | Normal | Minimax depth 1 |
+| `3` | Hard | Minimax depth 2 |
+| `4` | Hell | Minimax depth 4 |
 
 ### Other Controls
 
@@ -162,9 +162,9 @@ The AI uses the Minimax algorithm with Alpha-Beta pruning:
 | Difficulty | Search Depth | Typical Response Time |
 |------------|--------------|----------------------|
 | Easy | Random | < 1ms |
-| Normal | 2 | ~1ms |
-| Hard | 3 | ~5ms |
-| Hell | 5 | ~50-200ms |
+| Normal | 1 | ~1ms |
+| Hard | 2 | ~5ms |
+| Hell | 4 | ~50-200ms |
 
 ### File Structure
 
