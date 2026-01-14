@@ -77,6 +77,12 @@ void GameView::render(Render2D& render, const Board& board, const State& state) 
     // Draw HUD (Player info, walls remaining, status)
     render.drawHUD(board, state);
 
+    // Draw message box
+    render.drawMessage();
+
+    // Draw logo
+    render.drawLogo();
+
     // Draw Victory Overlay if game is over
     if (state.getGameStatus() != GameStatus::Playing) {
         // Semi-transparent overlay

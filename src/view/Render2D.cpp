@@ -4,7 +4,17 @@
 namespace Quoridor {
 
 Render2D::Render2D() 
-    : window(sf::VideoMode({WINDOW_WIDTH, WINDOW_HEIGHT}), "ENSTQuoridor") {
+    : window(sf::VideoMode({WINDOW_WIDTH, WINDOW_HEIGHT}), "ENSTQuoridor"),
+      currentMessageText(""),
+      currentMessageColor(sf::Color::Green),
+      messageDuration(-1.0f),
+      messageElapsed(0.0f),
+      messageActive(false),
+      backgroundMessageText(""),
+      backgroundMessageColor(sf::Color::White),
+      hasBackgroundMessage(false),
+      logoSprite(std::nullopt),
+      logoLoaded(false) {
     // Optional: Set frame rate limit for smoother rendering
     window.setFramerateLimit(60);
     
@@ -13,6 +23,15 @@ Render2D::Render2D()
     loadFont(std::string(FONT_DIR) + "/arial/ArialCEBoldItalic.ttf", 1); // title2
     loadFont(std::string(FONT_DIR) + "/arial/ARIALBD.TTF", 2); // title3
     loadFont(std::string(FONT_DIR) + "/arial/ARIAL.TTF", 3); // text
+    
+    // Load logo
+    if (logoTexture.loadFromFile(std::string(FONT_DIR) + "/../../assets/img/logo_ensta_zeb.png")) {
+        logoSprite.emplace(logoTexture);
+        logoLoaded = true;
+    } else {
+        std::cerr << "Error: Could not load logo from assets/img/logo_ensta_zeb.png" << std::endl;
+        logoLoaded = false;
+    }
 }
 
 Render2D::~Render2D() {
@@ -197,11 +216,10 @@ void Render2D::drawWallPreview(const std::optional<Wall>& previewWall) {
     window.draw(wallShape);
 }
 
-// TODO: Acomodar mejor el cuadro de HUD y su informacion
 void Render2D::drawHUD(const Board& board, const State& state) {
     // HUD position: top-left corner, outside the grid
-    float hudX = GRID_OFFSET_X - HUD_BOX_WIDTH - 20.0f;
-    float hudY = GRID_OFFSET_Y;
+    float hudX = GRID_OFFSET_X - HUD_BOX_WIDTH - 45.0f;
+    float hudY = GRID_OFFSET_Y + CELL_SIZE*BOARD_SIZE/2 - HUD_BOX_HEIGHT/2;
     
     // Draw HUD background box
     sf::RectangleShape hudBox({HUD_BOX_WIDTH, HUD_BOX_HEIGHT});
@@ -221,7 +239,7 @@ void Render2D::drawHUD(const Board& board, const State& state) {
     drawText("PLAYER", hudX + HUD_BOX_WIDTH * 0.5f, section1Y, 18, sf::Color::White, 2);
     
     // Section 2: Player Number with color indicator
-    float section2Y = hudY + 40.0f;
+    float section2Y = hudY + 45.0f;
     std::string playerNum = std::to_string(currentPlayer + 1);
     drawText(playerNum, hudX + HUD_BOX_WIDTH * 0.5f, section2Y, 40, sfPlayerColor, 2);
     
@@ -240,7 +258,7 @@ void Render2D::drawHUD(const Board& board, const State& state) {
     drawText(wallsText, hudX + HUD_BOX_WIDTH * 0.5f, section3Y + 28.0f, 28, wallsColor, 2);
     
     // Section 4: Game Status
-    float section4Y = hudY + 145.0f;
+    float section4Y = hudY + 160.0f;
     drawText("STATUS", hudX + HUD_BOX_WIDTH * 0.5f, section4Y, 12, sf::Color::White, 2);
     
     std::string statusText;
@@ -261,11 +279,111 @@ void Render2D::drawHUD(const Board& board, const State& state) {
             break;
     }
     
-    drawText(statusText, hudX + HUD_BOX_WIDTH * 0.5f, section4Y + 22.0f, 16, statusColor, 2);
+    drawText(statusText, hudX + HUD_BOX_WIDTH * 0.5f, section4Y + 26.0f, 16, statusColor, 2);
 }
 
 sf::RenderWindow& Render2D::getWindow() {
     return window;
+}
+
+void Render2D::showMessage(const std::string& text, const Color& color, float duration) {
+    // If showing a temporary message (duration > 0) and current message is persistent (duration == -1),
+    // save the persistent message to restore it later (preemption)
+    if (duration > 0.0f && messageDuration == -1.0f && messageActive) {
+        backgroundMessageText = currentMessageText;
+        backgroundMessageColor = currentMessageColor;
+        hasBackgroundMessage = true;
+    } else {
+        // Not preempting, so clear any saved background message
+        //hasBackgroundMessage = false;
+    }
+    
+    currentMessageText = text;
+    currentMessageColor = sf::Color(color.r, color.g, color.b);
+    messageDuration = duration;
+    messageElapsed = 0.0f;
+    messageActive = true;
+}
+
+void Render2D::updateMessage(float deltaTime) {
+    if (!messageActive) {
+        return;
+    }
+
+    // If message is persistent (duration == -1), don't count down
+    if (messageDuration > 0.0f) {
+        messageElapsed += deltaTime;
+        if (messageElapsed >= messageDuration) {
+            // Temporary message expired
+            if (hasBackgroundMessage) {
+                // Restore the persistent background message
+                currentMessageText = backgroundMessageText;
+                currentMessageColor = backgroundMessageColor;
+                messageDuration = -1.0f;  // Make it persistent again
+                messageElapsed = 0.0f;
+                hasBackgroundMessage = false;
+                // messageActive remains true to continue displaying the restored message
+            } else {
+                // No background message to restore, so deactivate the message
+                messageActive = false;
+            }
+        }
+    }
+}
+
+void Render2D::drawMessage() {
+    if (!messageActive || currentMessageText.empty()) {
+        return;
+    }
+
+    // Calculate box position: centered horizontally, below the grid
+    float boxX = WINDOW_WIDTH / 2.0f - MESSAGE_BOX_WIDTH / 2.0f;
+    float boxY = GRID_OFFSET_Y + CELL_SIZE * BOARD_SIZE + MESSAGE_BOX_MARGIN_BOTTOM;
+
+    // Draw message box background
+    sf::RectangleShape messageBox({MESSAGE_BOX_WIDTH, MESSAGE_BOX_HEIGHT});
+    messageBox.setPosition({boxX, boxY});
+    messageBox.setFillColor(HUD_BACKGROUND_COLOR);
+    messageBox.setOutlineColor(HUD_BORDER_COLOR);
+    messageBox.setOutlineThickness(1.0f);
+
+    window.draw(messageBox);
+
+    // Draw message text centered in the box
+    float textCenterX = boxX + MESSAGE_BOX_WIDTH / 2.0f;
+    float textCenterY = boxY + MESSAGE_BOX_HEIGHT / 2.0f;
+
+    drawText(currentMessageText, textCenterX, textCenterY, MESSAGE_FONT_SIZE, currentMessageColor, 3);
+}
+
+void Render2D::drawLogo() {
+    if (!logoLoaded || !logoSprite.has_value()) {
+        return;
+    }
+
+    // Scale logo to 50% of its size
+    logoSprite->setScale({0.36f, 0.36f});
+
+    // Position logo on the right side of the screen
+    // Right margin from window edge
+    float rightMargin = 36.0f;
+    
+    // Grid end position (right side of grid)
+    float gridRightX = GRID_OFFSET_X + CELL_SIZE * BOARD_SIZE;
+    
+    // Logo X position (right side of screen minus margin)
+    // Account for scale in size calculation
+    float logoX = WINDOW_WIDTH - rightMargin - (logoSprite->getLocalBounds().size.x * 0.36f);
+    
+    // Logo Y position (vertically centered with the grid)
+    float gridCenterY = GRID_OFFSET_Y + (CELL_SIZE * BOARD_SIZE) / 2.0f;
+    float logoY = gridCenterY - (logoSprite->getLocalBounds().size.y * 0.36f) / 2.0f;
+    
+    // Set logo position
+    logoSprite->setPosition({logoX, logoY});
+    
+    // Draw the logo
+    window.draw(*logoSprite);
 }
 
 } // namespace Quoridor

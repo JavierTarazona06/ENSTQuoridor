@@ -18,7 +18,7 @@ public:
 
 private:
     void processEvents();
-    void update();
+    void update(float deltaTime);
     void render();
 
     Board board;

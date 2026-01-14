@@ -55,3 +55,4 @@ In this mode, you can place obstacles on the board.
 - **Reset Game**:
   - When the game is over (a player has reached the opposite side).
   - Press the **`R`** key to reset the board and start a new game.
+  - You can also reset the game at anytime !

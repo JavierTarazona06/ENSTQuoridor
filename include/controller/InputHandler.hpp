@@ -15,7 +15,7 @@ enum class InputMode {
 
 class InputHandler {
 public:
-    InputHandler(Board& board, State& state, Rules& rules);
+    InputHandler(Board& board, State& state, Rules& rules, Render2D& render);
     ~InputHandler() = default;
 
     void handleInput(const sf::Event& event, const sf::RenderWindow& window);
@@ -37,6 +37,7 @@ private:
     Board& board;
     State& state;
     Rules& rules;
+    Render2D& render;
     
     InputMode currentMode = InputMode::MovePawn;
 };

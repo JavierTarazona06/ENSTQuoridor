@@ -4,19 +4,31 @@
 
 namespace Quoridor {
 
-InputHandler::InputHandler(Board& board, State& state, Rules& rules)
-    : board(board), state(state), rules(rules) {}
+InputHandler::InputHandler(Board& board, State& state, Rules& rules, Render2D& render)
+    : board(board), state(state), rules(rules), render(render) {}
 
 void InputHandler::handleInput(const sf::Event& event, const sf::RenderWindow& window) {
-    // If game is over, only allow reset
-    if (state.getGameStatus() != GameStatus::Playing) {
-        if (event.is<sf::Event::KeyPressed>()) {
-            if (event.getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::R) {
-                board.resetGame();
-                state.resetGame();
-                currentMode = InputMode::MovePawn;
-            }
+    // Handle key pressed events
+    if (event.is<sf::Event::KeyPressed>()) {
+        auto keyEvent = event.getIf<sf::Event::KeyPressed>();
+        
+        // 'R' key - restart game at any time
+        if (keyEvent->code == sf::Keyboard::Key::R) {
+            board.resetGame();
+            state.resetGame();
+            currentMode = InputMode::MovePawn;
+            
+            // Display initial turn message
+            int currentPlayer = state.getCurrentPlayer();
+            Color playerColor = board.getPawnColor(currentPlayer);
+            std::string playerName = "Player " + std::to_string(currentPlayer + 1);
+            render.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
+            return;
         }
+    }
+    
+    // If game is over, don't allow other actions
+    if (state.getGameStatus() != GameStatus::Playing) {
         return;
     }
     
@@ -30,11 +42,15 @@ void InputHandler::handleInput(const sf::Event& event, const sf::RenderWindow& w
                 currentMode = InputMode::PlaceWall;
                 state.setSelectedPawn(std::nullopt); // Deselect any selected pawn
                 state.setPreviewWall(std::nullopt);
-                std::cout << "Wall placement mode activated (Press W to return to movement)" << std::endl;
+                std::cout << "Wall placement mode activated (Press W to return to movement or O to rotate)" << std::endl;
+                render.showMessage("Wall placement mode (Press W to return or O to rotate)", {255,255,255}, -1.0f);
             } else {
                 currentMode = InputMode::MovePawn;
                 state.setPreviewWall(std::nullopt);
                 std::cout << "Movement mode activated (Press W to place walls)" << std::endl;
+                int currentPlayer = state.getCurrentPlayer();
+                std::string playerName = "Player " + std::to_string(currentPlayer + 1);
+                render.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
             }
         }
         
@@ -142,12 +158,20 @@ void InputHandler::handleMouseClick(int pixelX, int pixelY) {
             
             // Switch to next player
             state.switchPlayer();
+            
+            // Display turn message for next player
+            int nextPlayer = state.getCurrentPlayer();
+            Color playerColor = board.getPawnColor(nextPlayer);
+            std::string playerName = "Player " + std::to_string(nextPlayer + 1);
+            render.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
+            
             state.setPreviewWall(std::nullopt);
             
             // Auto-switch back to movement mode
             currentMode = InputMode::MovePawn;
         } else {
             std::cout << "Invalid wall placement!" << std::endl;
+            render.showMessage("Invalid wall placement!", {255,0,0}, 1.5f);
             // Keep the preview, let user try again
         }
     } else {
@@ -161,6 +185,7 @@ void InputHandler::handleMouseClick(int pixelX, int pixelY) {
             if (playerPos == clickedPos) {
                 state.setSelectedPawn(clickedPos);
                 std::cout << "Pawn selected. Click destination or press W to place wall." << std::endl;
+                render.showMessage("Pawn selected. Click destination or press W to place wall.", {255,255,255}, -1.0f);
             }
         } else {
             // A pawn is already selected, try to move
@@ -169,6 +194,9 @@ void InputHandler::handleMouseClick(int pixelX, int pixelY) {
             // Check if we clicked on the same pawn (deselect)
             if (clickedPos == currentPos) {
                 state.setSelectedPawn(std::nullopt);
+                int nextPlayer = state.getCurrentPlayer();
+                std::string playerName = "Player " + std::to_string(nextPlayer + 1);
+                render.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
                 return;
             }
 
@@ -184,18 +212,28 @@ void InputHandler::handleMouseClick(int pixelX, int pixelY) {
                     if (currentPlayer == 0) {
                         state.setGameStatus(GameStatus::Player1Won);
                         std::cout << "Player 1 (Top) wins!" << std::endl;
+                        render.showMessage("Player 1 Wins!", {255,255,255}, -1.0f);
                     } else {
                         state.setGameStatus(GameStatus::Player2Won);
                         std::cout << "Player 2 (Bottom) wins!" << std::endl;
+                        render.showMessage("Player 2 Wins!", {255,255,255}, -1.0f);
                     }
                 } else {
                     // Only switch player if no one has won yet
                     state.switchPlayer();
+                    
+                    // Display turn message for next player
+                    int nextPlayer = state.getCurrentPlayer();
+                    Color playerColor = board.getPawnColor(nextPlayer);
+                    std::string playerName = "Player " + std::to_string(nextPlayer + 1);
+                    //TODO The message is not being viewed completely , Increase box size?
+                    render.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
                 }
                 
                 state.setSelectedPawn(std::nullopt);
             } else {
                 std::cout << "Invalid move!" << std::endl;
+                render.showMessage("Invalid move!", {255,0,0}, 1.5f);
                 // Invalid move - just reject (do nothing)
             }
         }
