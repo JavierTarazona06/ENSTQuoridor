@@ -43,15 +43,19 @@ public:
           aiThinking(false)
     {
         printWelcomeMessage();
+        showInitialTurnMessage();
     }
 
     /**
      * @brief Main game loop
      */
     void run() {
+        sf::Clock clock;  // Clock for tracking delta time
+        
         while (renderer.isOpen()) {
+            const float deltaTime = clock.restart().asSeconds();
             processEvents();
-            update();
+            update(deltaTime);
             render();
         }
     }
@@ -94,6 +98,15 @@ private:
     }
 
     /**
+     * @brief Show initial turn message on game start
+     */
+    void showInitialTurnMessage() {
+        int currentPlayer = state.getCurrentPlayer();
+        std::string playerName = "Player " + std::to_string(currentPlayer + 1);
+        renderer.showMessage(playerName + " Turn - Select pawn or press W for wall mode", {255, 255, 255}, -1.0f);
+    }
+
+    /**
      * @brief Process all pending SFML events
      */
     void processEvents() {
@@ -110,14 +123,21 @@ private:
 
     /**
      * @brief Update game state, execute AI move if it's AI's turn
+     * @param deltaTime Time elapsed since last frame
      */
-    void update() {
+    void update(float deltaTime) {
+        // Update message box timer (for temporary messages)
+        renderer.updateMessage(deltaTime);
+        
         // If it's AI's turn and game is in progress, execute AI move
         if (state.getCurrentPlayer() == 1 && 
             state.getGameStatus() == GameStatus::Playing &&
             !aiThinking) {
             
             aiThinking = true;
+            
+            // Show AI thinking message
+            renderer.showMessage("AI is thinking...", {255, 200, 100}, -1.0f);
             
             // Small delay to let player see the board state
             std::this_thread::sleep_for(std::chrono::milliseconds(300));
@@ -147,13 +167,16 @@ private:
             return;
         }
 
-        // Only allow reset when game is over
-        if (state.getGameStatus() != GameStatus::Playing) {
-            if (event.is<sf::Event::KeyPressed>()) {
-                if (event.getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::R) {
-                    resetGame();
-                }
+        // Handle R key reset - allowed at any time (matching main game behavior)
+        if (event.is<sf::Event::KeyPressed>()) {
+            if (event.getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::R) {
+                resetGame();
+                return;
             }
+        }
+        
+        // If game is over, only allow reset
+        if (state.getGameStatus() != GameStatus::Playing) {
             return;
         }
 
@@ -193,10 +216,14 @@ private:
                 state.setSelectedPawn(std::nullopt);
                 state.setPreviewWall(std::nullopt);
                 std::cout << "Wall placement mode (press W to return to movement)\n";
+                renderer.showMessage("Wall placement mode - Press W to return or O to rotate", {255, 255, 255}, -1.0f);
             } else {
                 currentMode = InputMode::MovePawn;
                 state.setPreviewWall(std::nullopt);
                 std::cout << "Movement mode (press W to place walls)\n";
+                int currentPlayer = state.getCurrentPlayer();
+                std::string playerName = "Player " + std::to_string(currentPlayer + 1);
+                renderer.showMessage(playerName + " Turn - Select pawn or press W for wall mode", {255, 255, 255}, -1.0f);
             }
         }
         
@@ -209,30 +236,31 @@ private:
                     ? Orientation::Vertical 
                     : Orientation::Horizontal;
                 state.setPreviewWall(rotatedWall);
+                std::string orientationStr = (rotatedWall.orientation == Orientation::Horizontal) ? "Horizontal" : "Vertical";
+                renderer.showMessage("Wall rotated to " + orientationStr, {200, 200, 200}, 1.0f);
             }
-        }
-        
-        // R key - Reset game
-        if (keyEvent->code == sf::Keyboard::Key::R) {
-            resetGame();
         }
         
         // Number keys 1-4 - Select AI difficulty
         if (keyEvent->code == sf::Keyboard::Key::Num1) {
             aiDifficulty = Difficulty::Easy;
             std::cout << "AI difficulty: Easy\n";
+            renderer.showMessage("AI difficulty: Easy (Random)", {100, 255, 100}, 2.0f);
         }
         if (keyEvent->code == sf::Keyboard::Key::Num2) {
             aiDifficulty = Difficulty::Normal;
             std::cout << "AI difficulty: Normal\n";
+            renderer.showMessage("AI difficulty: Normal (Depth 2)", {255, 255, 100}, 2.0f);
         }
         if (keyEvent->code == sf::Keyboard::Key::Num3) {
             aiDifficulty = Difficulty::Hard;
             std::cout << "AI difficulty: Hard\n";
+            renderer.showMessage("AI difficulty: Hard (Depth 3)", {255, 165, 0}, 2.0f);
         }
         if (keyEvent->code == sf::Keyboard::Key::Num4) {
             aiDifficulty = Difficulty::Hell;
             std::cout << "AI difficulty: Hell\n";
+            renderer.showMessage("AI difficulty: HELL (Depth 5)", {255, 50, 50}, 2.0f);
         }
     }
 
@@ -331,13 +359,16 @@ private:
         
         if (rules.isValidWallPlacement(board, newWall, currentPlayer)) {
             board.placeWall(newWall, currentPlayer);
-            std::cout << "Player placed a wall! Remaining: " << board.getWallsRemaining(currentPlayer) << "\n";
+            int remaining = board.getWallsRemaining(currentPlayer);
+            std::cout << "Player placed a wall! Remaining: " << remaining << "\n";
+            renderer.showMessage("Wall placed! Walls remaining: " + std::to_string(remaining), {100, 255, 100}, 1.5f);
             
             state.switchPlayer();
             state.setPreviewWall(std::nullopt);
             currentMode = InputMode::MovePawn;
         } else {
             std::cout << "Invalid wall position!\n";
+            renderer.showMessage("Invalid wall position!", {255, 100, 100}, 1.5f);
         }
     }
 
@@ -357,6 +388,7 @@ private:
             if (playerPos == clickedPos) {
                 state.setSelectedPawn(clickedPos);
                 std::cout << "Pawn selected. Click destination to move.\n";
+                renderer.showMessage("Pawn selected - Click destination to move", {255, 255, 255}, -1.0f);
             }
         } else {
             Position currentPos = selectedPos.value();
@@ -364,6 +396,9 @@ private:
             // Clicking on the same pawn deselects it
             if (clickedPos == currentPos) {
                 state.setSelectedPawn(std::nullopt);
+                int player = state.getCurrentPlayer();
+                std::string playerName = "Player " + std::to_string(player + 1);
+                renderer.showMessage(playerName + " Turn - Select pawn or press W for wall mode", {255, 255, 255}, -1.0f);
                 return;
             }
 
@@ -371,12 +406,14 @@ private:
             if (rules.isValidMove(board, currentPlayer, currentPos.y, currentPos.x, clickedPos.y, clickedPos.x)) {
                 board.movePawn(currentPlayer, clickedPos);
                 std::cout << "Player moved to (" << clickedPos.x << "," << clickedPos.y << ")\n";
+                renderer.showMessage("Pawn moved successfully!", {100, 255, 100}, 1.0f);
                 
                 // Check for victory
                 if (rules.checkVictory(board, currentPlayer)) {
                     state.setGameStatus(GameStatus::Player1Won);
                     std::cout << "\n** Player 1 (Human) wins! **\n";
                     std::cout << "Press R to restart\n";
+                    renderer.showMessage("VICTORY! Player 1 wins! Press R to restart", {255, 215, 0}, -1.0f);
                 } else {
                     state.switchPlayer();
                 }
@@ -384,6 +421,7 @@ private:
                 state.setSelectedPawn(std::nullopt);
             } else {
                 std::cout << "Invalid move!\n";
+                renderer.showMessage("Invalid move!", {255, 100, 100}, 1.5f);
             }
         }
     }
@@ -400,11 +438,13 @@ private:
         if (aiMove.isPawnMove()) {
             board.movePawn(1, aiMove.pawnDest);
             std::cout << ">>> AI moved to (" << aiMove.pawnDest.x << "," << aiMove.pawnDest.y << ")\n";
+            renderer.showMessage("AI moved pawn to (" + std::to_string(aiMove.pawnDest.x) + "," + std::to_string(aiMove.pawnDest.y) + ")", {150, 150, 255}, 1.5f);
         } else if (aiMove.isWallPlacement()) {
             board.placeWall(aiMove.wall, 1);
-            std::cout << ">>> AI placed " 
-                      << (aiMove.wall.orientation == Orientation::Horizontal ? "horizontal" : "vertical")
+            std::string orientStr = (aiMove.wall.orientation == Orientation::Horizontal) ? "horizontal" : "vertical";
+            std::cout << ">>> AI placed " << orientStr
                       << " wall at (" << aiMove.wall.pos.x << "," << aiMove.wall.pos.y << ")\n";
+            renderer.showMessage("AI placed " + orientStr + " wall", {150, 150, 255}, 1.5f);
         }
         
         // Check if AI wins
@@ -412,8 +452,11 @@ private:
             state.setGameStatus(GameStatus::Player2Won);
             std::cout << "\n** Player 2 (AI) wins! **\n";
             std::cout << "Press R to restart\n";
+            renderer.showMessage("DEFEAT! AI wins! Press R to restart", {255, 100, 100}, -1.0f);
         } else {
             state.switchPlayer();
+            // Show player turn message
+            renderer.showMessage("Player 1 Turn - Select pawn or press W for wall mode", {255, 255, 255}, -1.0f);
         }
     }
 
@@ -432,6 +475,9 @@ private:
             case Difficulty::Hard: std::cout << "Hard\n"; break;
             case Difficulty::Hell: std::cout << "Hell\n"; break;
         }
+        
+        // Show reset message and initial turn
+        renderer.showMessage("Game Reset! Player 1 Turn - Select pawn or press W for wall mode", {255, 255, 255}, -1.0f);
     }
 
     // Member variables

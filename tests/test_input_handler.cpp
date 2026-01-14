@@ -198,7 +198,10 @@ TEST_CASE("InputHandler R key resets game when finished", "[input][reset]") {
         REQUIRE(state.getCurrentPlayer() == 0);
     }
     
-    SECTION("R key does NOT reset game while playing") {
+    SECTION("R key resets game at any time (including while playing)") {
+        // After view branch merge, R key now resets game at any time
+        // This is a design change: users can restart mid-game
+        
         // Game is already in Playing state by default
         REQUIRE(state.getGameStatus() == GameStatus::Playing);
         
@@ -206,15 +209,16 @@ TEST_CASE("InputHandler R key resets game when finished", "[input][reset]") {
         board.movePawn(0, {5, 3});
         state.switchPlayer();
         
-        // Press R key
+        // Press R key - should reset the game
         inputHandler.handleInput(createKeyEvent(sf::Keyboard::Key::R), window);
         
-        // Game should NOT be reset (pawn should still be at moved position)
+        // Game SHOULD be reset (new behavior)
         Position p0 = board.getPawnPosition(0);
-        REQUIRE(p0.x == 5);
-        REQUIRE(p0.y == 3);
+        REQUIRE(p0.x == BOARD_SIZE / 2);  // Back to initial position
+        REQUIRE(p0.y == 0);
         
-        // Player should still be 1 (not reset to 0)
-        REQUIRE(state.getCurrentPlayer() == 1);
+        // Player should be reset to 0
+        REQUIRE(state.getCurrentPlayer() == 0);
+        REQUIRE(state.getGameStatus() == GameStatus::Playing);
     }
 }
