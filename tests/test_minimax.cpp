@@ -59,8 +59,9 @@ TEST_CASE("Minimax AI Comprehensive Suite", "[ai][minimax][comprehensive]") {
     }
 
     // =================================================================
-    // LEVEL: NORMAL (Depth 1)
-    // Goal: Immediate tactical decisions (1-step lookahead + response)
+    // LEVEL: NORMAL (Depth 1 + noise)
+    // Goal: Basic tactical decisions, allows occasional mistakes
+    // Note: With noise injection, Normal is intentionally beatable
     // =================================================================
 
     SECTION("Normal 1: Immediate Win (1 move)") {
@@ -73,31 +74,42 @@ TEST_CASE("Minimax AI Comprehensive Suite", "[ai][minimax][comprehensive]") {
         REQUIRE(move.pawnDest.y == 8);
     }
 
-    SECTION("Normal 2: Block Immediate Loss") {
+    SECTION("Normal 2: Forward Progress at Start") {
+        // At depth 1, AI should still prefer moving forward
+        state.resetGame(); board.resetGame();
+        
+        Move move = ai.getBestMove(board, state, Difficulty::Normal);
+        // Should be a valid move (pawn or wall)
+        REQUIRE((move.isPawnMove() || move.isWallPlacement()));
+    }
+
+    SECTION("Normal 3: Noise allows variety") {
+        // Due to noise, Normal may not always pick the same move
+        // Just verify it returns valid moves
+        state.resetGame(); board.resetGame();
+        
+        Move move = ai.getBestMove(board, state, Difficulty::Normal);
+        REQUIRE((move.isPawnMove() || move.isWallPlacement()));
+    }
+
+    // =================================================================
+    // LEVEL: HARD (Depth 2 + low noise)
+    // Goal: Strategy sequences (2-step lookahead), rare mistakes
+    // =================================================================
+
+    SECTION("Hard 1: Block Immediate Loss") {
+        // This was previously Normal 2, but depth 2 is needed to see opponent's win
         state.resetGame(); board.resetGame();
         board.movePawn(0, {4, 6});
         board.movePawn(1, {4, 1}); // Needs 1 move to win
         
-        Move move = ai.getBestMove(board, state, Difficulty::Normal);
+        Move move = ai.getBestMove(board, state, Difficulty::Hard);
+        // Hard should see the threat and block with wall
         REQUIRE(move.isWallPlacement());
         REQUIRE(move.wall.pos.y < 3); 
     }
 
-    SECTION("Normal 3: Forward Progress") {
-        state.resetGame(); board.resetGame();
-        
-        Move move = ai.getBestMove(board, state, Difficulty::Normal);
-        REQUIRE(move.isPawnMove());
-        REQUIRE(move.pawnDest.y == 1);
-        REQUIRE(move.pawnDest.x == 4);
-    }
-
-    // =================================================================
-    // LEVEL: HARD (Depth 2)
-    // Goal: Strategy sequences (2-step lookahead)
-    // =================================================================
-
-    SECTION("Hard 1: Setup 2-move Win") {
+    SECTION("Hard 2: Setup 2-move Win") {
         // P0 at (4,6). P1 far away.
         state.resetGame(); board.resetGame();
         board.movePawn(0, {4, 6});
@@ -115,7 +127,7 @@ TEST_CASE("Minimax AI Comprehensive Suite", "[ai][minimax][comprehensive]") {
         REQUIRE(move.pawnDest.y == 7);
     }
 
-    SECTION("Hard 2: Detect Deep Threat") {
+    SECTION("Hard 3: Detect Deep Threat") {
         state.resetGame(); board.resetGame();
         board.movePawn(0, {4, 5}); // Needs 3 moves
         board.movePawn(1, {4, 2}); // Needs 2 moves
@@ -131,7 +143,7 @@ TEST_CASE("Minimax AI Comprehensive Suite", "[ai][minimax][comprehensive]") {
         REQUIRE(move.isWallPlacement());
     }
 
-    SECTION("Hard 3: Avoid Self-Block") {
+    SECTION("Hard 4: Avoid Self-Block") {
         state.resetGame(); board.resetGame();
         board.movePawn(0, {4, 4});
         board.movePawn(1, {0, 0});

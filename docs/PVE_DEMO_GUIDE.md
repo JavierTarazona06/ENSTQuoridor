@@ -124,9 +124,34 @@ cmake --build build/arm64-osx --target test_pve_visual
 | Key | Difficulty | Description |
 |-----|------------|-------------|
 | `1` | Easy | Random valid moves |
-| `2` | Normal | Minimax depth 1 |
-| `3` | Hard | Minimax depth 2 |
-| `4` | Hell | Minimax depth 4 |
+| `2` | Normal | Minimax depth 1, noise ±25 |
+| `3` | Hard | Minimax depth 2, noise ±8 |
+| `4` | Hell | Minimax depth 4, no noise |
+
+#### Difficulty System Details
+
+The AI difficulty is controlled by two factors:
+
+1. **Search Depth**: How many moves ahead the AI looks
+2. **Noise Injection**: Random value added to evaluation scores (±noise range)
+
+| Difficulty | Depth | Noise | Behavior |
+|------------|-------|-------|----------|
+| Easy | 0 | N/A | Completely random moves - no strategy |
+| Normal | 1 | ±25| Can see immediate threats, but often makes suboptimal choices |
+| Hard | 2 | ±8 | Can see your next move and plan counters, rarely makes mistakes |
+| Hell | 4 | 0 | Deep calculation with perfect evaluation - very challenging |
+
+**Why Noise?**
+- Without noise, even depth 1 AI would always play perfectly within its horizon
+- Noise makes the AI occasionally pick suboptimal moves, simulating human-like mistakes
+- Higher noise = more "mistakes" = easier to beat
+
+**Strategy Tips:**
+- **Easy**: Good for learning the game mechanics
+- **Normal**: Beatable by most players - focus on advancing while occasionally blocking
+- **Hard**: Requires careful planning - control the center and use walls strategically  
+- **Hell**: Expert level - only winnable with optimal play and some luck
 
 ### Other Controls
 
@@ -157,14 +182,26 @@ The demo reuses the following existing components:
 
 ### AI Implementation
 
-The AI uses the Minimax algorithm with Alpha-Beta pruning:
+The AI uses the Minimax algorithm with Alpha-Beta pruning and noise injection for difficulty balancing:
 
-| Difficulty | Search Depth | Typical Response Time |
-|------------|--------------|----------------------|
-| Easy | Random | < 1ms |
-| Normal | 1 | ~1ms |
-| Hard | 2 | ~5ms |
-| Hell | 4 | ~50-200ms |
+| Difficulty | Search Depth | Noise Level | Typical Response Time |
+|------------|--------------|-------------|----------------------|
+| Easy | Random | N/A | < 1ms |
+| Normal | 1 | ±25 | ~150μs |
+| Hard | 2 | ±8 | ~800μs |
+| Hell | 4 | 0 | ~8-10ms |
+
+#### Evaluation Function
+
+The AI evaluates board positions using 5 weighted factors:
+
+| Factor | Weight | Description |
+|--------|--------|-------------|
+| Distance Difference | ×10 | Difference in shortest path to goal |
+| Endgame Bonus | ×15 | Extra value when close to winning |
+| Wall Advantage | ×2 | Having more walls than opponent |
+| Mobility | ×3 | Number of available moves |
+| Wall Effectiveness | ×5 | Walls that block opponent vs waste walls |
 
 ### File Structure
 

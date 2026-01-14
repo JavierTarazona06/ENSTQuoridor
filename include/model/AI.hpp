@@ -7,11 +7,20 @@
 
 namespace Quoridor {
 
+    /**
+     * @brief AI difficulty levels with balanced gameplay
+     * 
+     * Each level uses different search depth and noise injection:
+     * - Easy:   Random moves (no strategy)
+     * - Normal: Depth 1, noise=25 (makes occasional mistakes, beatable)
+     * - Hard:   Depth 2, noise=8  (rarely makes mistakes, challenging)
+     * - Hell:   Depth 4, noise=0  (perfect calculation, very difficult)
+     */
     enum class Difficulty {
-        Easy,   // Random
-        Normal, // Minimax Depth 2
-        Hard,   // Minimax Depth 3
-        Hell    // Minimax Depth 5 (WARNING: Can be slow in complex board states)
+        Easy,   // Random moves
+        Normal, // Depth 1 + noise (beatable by average player)
+        Hard,   // Depth 2 + low noise (challenging)
+        Hell    // Depth 4, no noise (expert level)
     };
 
     struct Move {
@@ -96,9 +105,19 @@ namespace Quoridor {
          * @param beta Best value minimizing player can guarantee
          * @param maximizingPlayer True if current turn is for the AI (maximizer)
          * @param playerIndex The AI's player index (constant across recursion)
+         * @param noiseLevel Random noise to inject for difficulty balancing
          * @return Best score found
          */
-        int minimax(Board board, int depth, int alpha, int beta, bool maximizingPlayer, int playerIndex);
+        int minimax(Board board, int depth, int alpha, int beta, bool maximizingPlayer, int playerIndex, int noiseLevel = 0);
+        
+        /**
+         * @brief Evaluate with random noise injection for difficulty balancing
+         * @param board Board to evaluate
+         * @param playerIndex Player index (0 or 1)
+         * @param noiseLevel Amount of random noise to add (0 = perfect)
+         * @return Score with noise applied (terminal states unaffected)
+         */
+        int evaluateWithNoise(const Board& board, int playerIndex, int noiseLevel);
         
         // Helper to collect all moves (pawn + walls)
         std::vector<Move> getAllValidMoves(const Board& board, int currentPlayerIndex);

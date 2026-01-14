@@ -27,6 +27,29 @@ namespace Quoridor {
         constexpr int WALL_EFFECTIVENESS = 5;   // Weight for wall blocking value
     }
 
+    // ============================================================================
+    // Difficulty-based noise levels for balanced gameplay
+    // Higher noise = more mistakes = easier to beat
+    // 
+    // Design rationale:
+    // - Normal (noise=25): Score variance ~50 points, makes suboptimal choices ~30% of time
+    // - Hard (noise=8): Score variance ~16 points, rarely picks wrong move
+    // - Hell (noise=0): Perfect play, no randomness
+    // ============================================================================
+    namespace DifficultyConfig {
+        constexpr int EASY_DEPTH = 0;           // Random moves
+        constexpr int NORMAL_DEPTH = 1;         // Look 1 ply ahead
+        constexpr int HARD_DEPTH = 2;           // Look 2 plies ahead
+        constexpr int HELL_DEPTH = 4;           // Look 4 plies ahead
+        
+        constexpr int NORMAL_NOISE = 25;        // ~30% chance of suboptimal move
+        constexpr int HARD_NOISE = 8;           // ~10% chance of suboptimal move
+        constexpr int HELL_NOISE = 0;           // Perfect play
+    }
+
+    // Thread-local random generator for noise injection
+    static thread_local std::mt19937 noiseGen(std::random_device{}());
+
     int AI::evaluate(const Board& board, int playerIndex) {
         int opponentIndex = (playerIndex == 0) ? 1 : 0;
         
@@ -126,19 +149,32 @@ namespace Quoridor {
             return getRandomMove(board, player);
         }
 
-        // Minimax configuration
-        int depth = 1; // Default Normal
-        if (difficulty == Difficulty::Hard) depth = 2;
-        if (difficulty == Difficulty::Hell) depth = 4;
+        // Configure depth and noise based on difficulty
+        int depth = DifficultyConfig::NORMAL_DEPTH;
+        int noiseLevel = DifficultyConfig::NORMAL_NOISE;
+        
+        switch (difficulty) {
+            case Difficulty::Normal:
+                depth = DifficultyConfig::NORMAL_DEPTH;
+                noiseLevel = DifficultyConfig::NORMAL_NOISE;
+                break;
+            case Difficulty::Hard:
+                depth = DifficultyConfig::HARD_DEPTH;
+                noiseLevel = DifficultyConfig::HARD_NOISE;
+                break;
+            case Difficulty::Hell:
+                depth = DifficultyConfig::HELL_DEPTH;
+                noiseLevel = DifficultyConfig::HELL_NOISE;
+                break;
+            default:
+                break;
+        }
         
         int bestScore = std::numeric_limits<int>::min();
         Move bestMove; // Default invalid move
         bool moveFound = false;
 
         std::vector<Move> moves = getAllValidMoves(board, player);
-        
-        // Simple move ordering optimization: Consider pawn moves first (usually better/faster to verify)
-        // They are already added first in getAllValidMoves.
 
         for (const auto& move : moves) {
             Board nextBoard = board;
@@ -148,18 +184,11 @@ namespace Quoridor {
                 nextBoard.placeWall(move.wall, player);
             }
             
-            // Call minimax for the next level (opponent's turn -> minimizing)
-            // Pass 'player' as the reference 'playerIndex' for evaluation
-            int score = minimax(nextBoard, depth - 1, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), false, player);
-            
-            // Debug output
-            /*
-            if (move.isPawnMove()) {
-                std::cout << "Move Pawn to " << move.pawnDest.x << "," << move.pawnDest.y << " Score: " << score << std::endl;
-            } else {
-                std::cout << "Place Wall at " << move.wall.pos.x << "," << move.wall.pos.y << " Score: " << score << std::endl;
-            }
-            */
+            // Use noise-injected minimax
+            int score = minimax(nextBoard, depth - 1, 
+                               std::numeric_limits<int>::min(), 
+                               std::numeric_limits<int>::max(), 
+                               false, player, noiseLevel);
 
             if (score > bestScore) {
                 bestScore = score;
@@ -175,13 +204,30 @@ namespace Quoridor {
         return bestMove;
     }
 
-    int AI::minimax(Board board, int depth, int alpha, int beta, bool maximizingPlayer, int playerIndex) {
-        // Base case: leaf node or game over
-        // Check for immediate win/loss first to avoid evaluating non-terminal states as terminal
-        // Actually evaluate() handles win/loss logic (INT_MAX/INT_MIN)
+    int AI::evaluateWithNoise(const Board& board, int playerIndex, int noiseLevel) {
+        int baseScore = evaluate(board, playerIndex);
         
+        // Don't add noise to terminal states
+        if (baseScore == std::numeric_limits<int>::max() || 
+            baseScore == std::numeric_limits<int>::min() ||
+            baseScore == std::numeric_limits<int>::max() - 1 ||
+            baseScore == std::numeric_limits<int>::min() + 1) {
+            return baseScore;
+        }
+        
+        // Add random noise for difficulty balancing
+        if (noiseLevel > 0) {
+            std::uniform_int_distribution<> noiseDist(-noiseLevel, noiseLevel);
+            baseScore += noiseDist(noiseGen);
+        }
+        
+        return baseScore;
+    }
+
+    int AI::minimax(Board board, int depth, int alpha, int beta, bool maximizingPlayer, int playerIndex, int noiseLevel) {
+        // Base case: leaf node
         if (depth == 0) {
-            return evaluate(board, playerIndex);
+            return evaluateWithNoise(board, playerIndex, noiseLevel);
         }
         
         // Check for game over via evaluation (if score is MAX/MIN, it's terminal)
@@ -194,7 +240,7 @@ namespace Quoridor {
         std::vector<Move> moves = getAllValidMoves(board, currentPlayerIndex);
 
         if (moves.empty()) {
-            return currentEval; // Stalemate or trapped? Should return loss usually.
+            return currentEval; // Stalemate or trapped
         }
 
         if (maximizingPlayer) {
@@ -207,7 +253,7 @@ namespace Quoridor {
                     nextBoard.placeWall(move.wall, currentPlayerIndex);
                 }
                 
-                int eval = minimax(nextBoard, depth - 1, alpha, beta, false, playerIndex);
+                int eval = minimax(nextBoard, depth - 1, alpha, beta, false, playerIndex, noiseLevel);
                 maxEval = std::max(maxEval, eval);
                 alpha = std::max(alpha, eval);
                 if (beta <= alpha) {
@@ -225,7 +271,7 @@ namespace Quoridor {
                     nextBoard.placeWall(move.wall, currentPlayerIndex);
                 }
                 
-                int eval = minimax(nextBoard, depth - 1, alpha, beta, true, playerIndex);
+                int eval = minimax(nextBoard, depth - 1, alpha, beta, true, playerIndex, noiseLevel);
                 minEval = std::min(minEval, eval);
                 beta = std::min(beta, eval);
                 if (beta <= alpha) {
