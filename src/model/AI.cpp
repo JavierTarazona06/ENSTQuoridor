@@ -16,6 +16,17 @@ namespace Quoridor {
         return a.orientation < b.orientation;
     }
 
+    // ============================================================================
+    // Evaluation Function Weights (tunable parameters)
+    // ============================================================================
+    namespace EvalWeights {
+        constexpr int DISTANCE_DIFF = 10;       // Base weight for path distance difference
+        constexpr int WALL_ADVANTAGE = 2;       // Weight per wall advantage
+        constexpr int MOBILITY = 3;             // Weight for movement freedom
+        constexpr int ENDGAME_BONUS = 15;       // Extra weight when close to winning
+        constexpr int WALL_EFFECTIVENESS = 5;   // Weight for wall blocking value
+    }
+
     int AI::evaluate(const Board& board, int playerIndex) {
         int opponentIndex = (playerIndex == 0) ? 1 : 0;
         
@@ -23,23 +34,87 @@ namespace Quoridor {
         int myDist = Pathfinder::getShortestPathDistance(board, playerIndex);
         int oppDist = Pathfinder::getShortestPathDistance(board, opponentIndex);
         
-        // Handle end game states
+        // ===== Terminal State Detection =====
         if (myDist == 0) return std::numeric_limits<int>::max(); // I won
         if (oppDist == 0) return std::numeric_limits<int>::min(); // Opponent won
         
-        // Handle blocked paths (should not happen if move generation is correct, but safe to handle)
-        if (myDist == -1) return std::numeric_limits<int>::min() + 1; // I am blocked (avoid actual min to prevent overflow)
-        if (oppDist == -1) return std::numeric_limits<int>::max() - 1; // Opponent blocked (I effectively win)
+        // Handle blocked paths
+        if (myDist == -1) return std::numeric_limits<int>::min() + 1; // I am blocked
+        if (oppDist == -1) return std::numeric_limits<int>::max() - 1; // Opponent blocked
         
-        // Base score: The closer I am relative to opponent, the better.
-        // Weight: 10 points per step difference
-        int score = (oppDist - myDist) * 10;
+        int score = 0;
         
-        // Bonus: Remaining walls
-        // Having more walls is a strategic advantage (Relative to opponent)
+        // ===== Factor 1: Path Distance Difference (Most Important) =====
+        // The closer I am relative to opponent, the better
+        score += (oppDist - myDist) * EvalWeights::DISTANCE_DIFF;
+        
+        // ===== Factor 2: Endgame Bonus (Non-linear reward near victory) =====
+        // When close to winning, prioritize advancing over other tactics
+        if (myDist <= 3) {
+            // Exponential bonus: closer = much higher bonus
+            score += (4 - myDist) * (4 - myDist) * EvalWeights::ENDGAME_BONUS;
+        }
+        // When opponent is close to winning, increase urgency to block
+        if (oppDist <= 3) {
+            // Penalty increases as opponent approaches goal
+            score -= (4 - oppDist) * (4 - oppDist) * EvalWeights::ENDGAME_BONUS;
+        }
+        
+        // ===== Factor 3: Wall Advantage =====
+        // Having more walls provides strategic flexibility
         int myWalls = board.getWallsRemaining(playerIndex);
         int oppWalls = board.getWallsRemaining(opponentIndex);
-        score += (myWalls - oppWalls) * 1; // 1 point per wall advantage
+        score += (myWalls - oppWalls) * EvalWeights::WALL_ADVANTAGE;
+        
+        // ===== Factor 4: Mobility (Movement Freedom) =====
+        // More movement options = better tactical flexibility
+        // Count valid pawn moves for both players
+        int myMobility = 0;
+        int oppMobility = 0;
+        
+        Position myPos = board.getPawnPosition(playerIndex);
+        Position oppPos = board.getPawnPosition(opponentIndex);
+        
+        // Check adjacent cells for valid moves (simplified mobility check)
+        const int dx[] = {0, 0, 1, -1};
+        const int dy[] = {1, -1, 0, 0};
+        
+        for (int i = 0; i < 4; ++i) {
+            int newX = myPos.x + dx[i];
+            int newY = myPos.y + dy[i];
+            if (newX >= 0 && newX < BOARD_SIZE && newY >= 0 && newY < BOARD_SIZE) {
+                if (Rules::isValidMove(board, playerIndex, myPos.y, myPos.x, newY, newX)) {
+                    myMobility++;
+                }
+            }
+            
+            newX = oppPos.x + dx[i];
+            newY = oppPos.y + dy[i];
+            if (newX >= 0 && newX < BOARD_SIZE && newY >= 0 && newY < BOARD_SIZE) {
+                if (Rules::isValidMove(board, opponentIndex, oppPos.y, oppPos.x, newY, newX)) {
+                    oppMobility++;
+                }
+            }
+        }
+        
+        score += (myMobility - oppMobility) * EvalWeights::MOBILITY;
+        
+        // ===== Factor 5: Wall Effectiveness (Strategic Wall Value) =====
+        // Reward if opponent's path has been lengthened by our walls
+        // Compare opponent's current distance to their theoretical minimum (without walls blocking)
+        // A rough heuristic: opponent's base distance is their row distance to goal
+        int oppBaseDistance = (opponentIndex == 0) ? (BOARD_SIZE - 1 - oppPos.y) : oppPos.y;
+        int wallEffectiveness = oppDist - oppBaseDistance;
+        if (wallEffectiveness > 0) {
+            score += wallEffectiveness * EvalWeights::WALL_EFFECTIVENESS;
+        }
+        
+        // Similarly, penalize if our path is blocked by opponent's walls
+        int myBaseDistance = (playerIndex == 0) ? (BOARD_SIZE - 1 - myPos.y) : myPos.y;
+        int oppWallEffectiveness = myDist - myBaseDistance;
+        if (oppWallEffectiveness > 0) {
+            score -= oppWallEffectiveness * EvalWeights::WALL_EFFECTIVENESS;
+        }
         
         return score;
     }
