@@ -123,9 +123,9 @@ cmake --build build/arm64-osx --target test_pve_visual
 
 | Key | Difficulty | Description |
 |-----|------------|-------------|
-| `1` | Easy | Random valid moves |
-| `2` | Normal | Minimax depth 1, noise ±25 |
-| `3` | Hard | Minimax depth 2, noise ±8 |
+| `1` | Easy | Minimax depth 1, noise ±40 |
+| `2` | Normal | Minimax depth 1, noise ±8 |
+| `3` | Hard | Minimax depth 2, noise ±3 |
 | `4` | Hell | Minimax depth 4, no noise |
 
 #### Difficulty System Details
@@ -135,20 +135,24 @@ The AI difficulty is controlled by two factors:
 1. **Search Depth**: How many moves ahead the AI looks
 2. **Noise Injection**: Random value added to evaluation scores (±noise range)
 
-| Difficulty | Depth | Noise | Behavior |
-|------------|-------|-------|----------|
-| Easy | 0 | N/A | Completely random moves - no strategy |
-| Normal | 1 | ±25| Can see immediate threats, but often makes suboptimal choices |
-| Hard | 2 | ±8 | Can see your next move and plan counters, rarely makes mistakes |
-| Hell | 4 | 0 | Deep calculation with perfect evaluation - very challenging |
+| Difficulty | Depth | Noise | Suboptimal Rate | Behavior |
+|------------|-------|-------|-----------------|----------|
+| Easy | 1 | ±40 | ~50% | Sees immediate moves but often picks randomly |
+| Normal | 1 | ±8 | ~15% | Sees immediate moves, occasionally makes mistakes |
+| Hard | 2 | ±3 | ~5% | Can plan ahead, rarely makes mistakes |
+| Hell | 4 | 0 | 0% | Deep calculation with perfect evaluation |
 
 **Why Noise?**
 - Without noise, even depth 1 AI would always play perfectly within its horizon
 - Noise makes the AI occasionally pick suboptimal moves, simulating human-like mistakes
 - Higher noise = more "mistakes" = easier to beat
 
+**Suboptimal Rate Calculation:**
+- When two moves differ by Δ points, the probability of choosing the worse move follows a triangular distribution
+- For typical move differences (~10 points): Easy ~50%, Normal ~15%, Hard ~5%
+
 **Strategy Tips:**
-- **Easy**: Good for learning the game mechanics
+- **Easy**: Good for learning the game mechanics - AI makes many random choices
 - **Normal**: Beatable by most players - focus on advancing while occasionally blocking
 - **Hard**: Requires careful planning - control the center and use walls strategically  
 - **Hell**: Expert level - only winnable with optimal play and some luck
@@ -186,9 +190,9 @@ The AI uses the Minimax algorithm with Alpha-Beta pruning and noise injection fo
 
 | Difficulty | Search Depth | Noise Level | Typical Response Time |
 |------------|--------------|-------------|----------------------|
-| Easy | Random | N/A | < 1ms |
-| Normal | 1 | ±25 | ~150μs |
-| Hard | 2 | ±8 | ~800μs |
+| Easy | 1 | ±40 | ~150μs |
+| Normal | 1 | ±8 | ~150μs |
+| Hard | 2 | ±3 | ~800μs |
 | Hell | 4 | 0 | ~8-10ms |
 
 #### Evaluation Function

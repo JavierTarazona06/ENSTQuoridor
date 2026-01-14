@@ -28,22 +28,24 @@ namespace Quoridor {
     }
 
     // ============================================================================
-    // Difficulty-based noise levels for balanced gameplay
+    // Difficulty-based depth and noise levels for balanced gameplay
     // Higher noise = more mistakes = easier to beat
     // 
     // Design rationale:
-    // - Normal (noise=25): Score variance ~50 points, makes suboptimal choices ~30% of time
-    // - Hard (noise=8): Score variance ~16 points, rarely picks wrong move
-    // - Hell (noise=0): Perfect play, no randomness
+    // - Easy (depth=1, noise=40): Sees immediate moves but often picks randomly
+    // - Normal (depth=1, noise=8): Sees immediate moves, occasionally mistakes
+    // - Hard (depth=2, noise=3): Can plan ahead, rarely makes mistakes
+    // - Hell (depth=4, noise=0): Deep calculation, perfect play
     // ============================================================================
     namespace DifficultyConfig {
-        constexpr int EASY_DEPTH = 0;           // Random moves
+        constexpr int EASY_DEPTH = 1;           // Look 1 ply ahead
         constexpr int NORMAL_DEPTH = 1;         // Look 1 ply ahead
         constexpr int HARD_DEPTH = 2;           // Look 2 plies ahead
         constexpr int HELL_DEPTH = 4;           // Look 4 plies ahead
-        
-        constexpr int NORMAL_NOISE = 25;        // ~30% chance of suboptimal move
-        constexpr int HARD_NOISE = 8;           // ~10% chance of suboptimal move
+
+        constexpr int EASY_NOISE = 40;          // High randomness, ~50% suboptimal
+        constexpr int NORMAL_NOISE = 8;         // Moderate, ~15% suboptimal
+        constexpr int HARD_NOISE = 3;           // Low, ~5% suboptimal
         constexpr int HELL_NOISE = 0;           // Perfect play
     }
 
@@ -144,16 +146,16 @@ namespace Quoridor {
 
     Move AI::getBestMove(const Board& board, const State& state, Difficulty difficulty) {
         int player = state.getCurrentPlayer();
-        
-        if (difficulty == Difficulty::Easy) {
-            return getRandomMove(board, player);
-        }
 
         // Configure depth and noise based on difficulty
         int depth = DifficultyConfig::NORMAL_DEPTH;
         int noiseLevel = DifficultyConfig::NORMAL_NOISE;
         
         switch (difficulty) {
+            case Difficulty::Easy:
+                depth = DifficultyConfig::EASY_DEPTH;
+                noiseLevel = DifficultyConfig::EASY_NOISE;
+                break;
             case Difficulty::Normal:
                 depth = DifficultyConfig::NORMAL_DEPTH;
                 noiseLevel = DifficultyConfig::NORMAL_NOISE;
