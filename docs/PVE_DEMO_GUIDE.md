@@ -166,8 +166,8 @@ The AI difficulty is controlled by two factors:
 
 ## Game Rules
 
-- **Player 1 (Human)**: White pawn, starts at top, goal is bottom row
-- **Player 2 (AI)**: Black pawn, starts at bottom, goal is top row
+- **Player 1 (Human)**: Red pawn, starts at top, goal is bottom row
+- **Player 2 (AI)**: Blue pawn, starts at bottom, goal is top row
 - Each player has 10 walls to place
 - Walls cannot completely block a player's path to their goal
 - First player to reach their goal row wins
