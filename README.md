@@ -88,25 +88,37 @@ ENSTQuoridor/
 
 ---
 
-## 🎮 How to Play
+## 🧩 Game Rules
 
-### Basic Rules
-1. Each player starts at opposite ends of the board (top and bottom rows)
-2. On your turn, you can either:
-   - **Move your pawn** one square orthogonally (up, down, left, right)
-   - **Place a wall** between two squares (if you have walls remaining)
-3. **Jumping**: If an opponent blocks your path, you can jump over them
-4. **Wall constraint**: You cannot place a wall that completely blocks a player's path to their goal
-5. **Win condition**: First player to reach the opposite row wins
+### Core Rules
+- **Objective:** Reach the opposite row before your opponent.
+- **Turn options:**
+  - **Move pawn:** One cell orthogonally (up, down, left, right).
+  - **Place wall:** Between two cells; consumes one of your walls.
+- **Jumping:**
+  - If the opponent is directly adjacent, you may jump over them if the square behind them is free.
+  - If the straight jump is blocked or off-board, a **diagonal jump** to one of the two adjacent diagonals is allowed.
+- **Wall constraint:** A wall must not completely block any player's path to their goal — at least one path must remain.
+- **Inventory:** Each player starts with **10 walls**.
+- **Victory:** First to reach their goal row wins (Player 0 → bottom row, Player 1 → top row).
 
 ### Game Modes
 - **Human vs Human**: Local multiplayer on the same machine
 - **Human vs AI**: Challenge the computer at three difficulty levels
 
+
 ### Controls
-- **Mouse**: Click to select pawn, click destination to move
-- **Keyboard**: Switch between move/wall-placement mode
-- **ESC**: Pause menu
+- **Mouse:**
+  - Click your pawn to select; click a destination cell to move.
+  - Click the selected pawn again to deselect.
+- **Keyboard:**
+  - `W` — Toggle wall placement mode.
+  - `O` — Rotate wall (horizontal ↔ vertical).
+  - `1` / `2` / `3` / `4` — AI difficulty (Easy / Normal / Hard / Hell) in PVE demo.
+  - `R` — Reset game.
+  - `ESC` — Pause menu.
+
+See also the detailed PVE demo guide: [docs/PVE_DEMO_GUIDE.md](docs/PVE_DEMO_GUIDE.md)
 
 ---
 
