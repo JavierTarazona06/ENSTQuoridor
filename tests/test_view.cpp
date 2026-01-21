@@ -18,12 +18,15 @@ TEST_CASE("Render2D font loading", "[view][fonts]") {
     }
     
     SECTION("Window dimensions should be correct") {
-        REQUIRE(Render2D::getWindowWidth() == 900);
+        // Updated to match new window size (1050x900) after view branch merge
+        REQUIRE(Render2D::getWindowWidth() == 1050);
         REQUIRE(Render2D::getWindowHeight() == 900);
     }
     
     SECTION("Grid offset values should be correct") {
-        REQUIRE(Render2D::getGridOffsetX() == 180.0f);
+        // Grid is now centered: GRID_OFFSET_X = WINDOW_WIDTH/2 - (CELL_SIZE * BOARD_SIZE)/2
+        // = 1050/2 - (60*9)/2 = 525 - 270 = 255
+        REQUIRE(Render2D::getGridOffsetX() == 255.0f);
         REQUIRE(Render2D::getGridOffsetY() == 180.0f);
     }
 }
