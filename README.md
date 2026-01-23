@@ -108,15 +108,24 @@ ENSTQuoridor/
 
 
 ### Controls
+
+#### Menu
+- `H` — Human vs Human mode
+- `A` — Human vs AI mode
+- `1` / `2` / `3` / `4` — Easy / Normal / Hard / Hell difficulty
+- `Enter` — Start game
+- `Esc` — Quit
+
+#### In-Game
 - **Mouse:**
   - Click your pawn to select; click a destination cell to move.
   - Click the selected pawn again to deselect.
 - **Keyboard:**
   - `W` — Toggle wall placement mode.
   - `O` — Rotate wall (horizontal ↔ vertical).
-  - `1` / `2` / `3` / `4` — AI difficulty (Easy / Normal / Hard / Hell) in PVE demo.
+  - `1` / `2` / `3` / `4` — Change AI difficulty on-the-fly (in AI mode)
   - `R` — Reset game.
-  - `ESC` — Pause menu.
+  - `Esc` — Return to menu.
 
 See also the detailed PVE demo guide: [docs/PVE_DEMO_GUIDE.md](docs/PVE_DEMO_GUIDE.md)
 

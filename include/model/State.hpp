@@ -11,6 +11,11 @@ namespace Quoridor {
         Player2Won
     };
 
+    enum class GameMode {
+        HumanVsHuman,
+        HumanVsAI
+    };
+
     class State {
     public:
         /**

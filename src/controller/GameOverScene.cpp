@@ -20,7 +20,7 @@ void GameOverScene::handleEvent(const sf::Event& event) {
     if (event.is<sf::Event::KeyPressed>()) {
         const auto key = event.getIf<sf::Event::KeyPressed>()->code;
         if (key == sf::Keyboard::Key::Enter) {
-            manager.setScene(std::make_unique<GameScene>(manager), GameState::Playing);
+            manager.setScene(std::make_unique<GameScene>(manager, GameMode::HumanVsHuman, Difficulty::Normal), GameState::Playing);
             return;
         }
         if (key == sf::Keyboard::Key::Escape) {
