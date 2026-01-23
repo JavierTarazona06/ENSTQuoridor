@@ -133,9 +133,10 @@ void GameView::drawGameModeInfoBox(Render2D& render, GameMode mode, Difficulty d
     infoBox.setOutlineThickness(2.0f);
     render.getWindow().draw(infoBox);
     
-    // Draw mode text
+    // Draw mode text (center vertically for PvP, top offset for PvE to leave room for difficulty line)
     std::string modeText = (mode == GameMode::HumanVsAI) ? "AI vs Human" : "Human vs Human";
-    render.drawText(modeText, gridRightX + boxWidth / 2.0f, gridMiddleY - 15.0f, 18, sf::Color(100, 200, 255), 0);
+    float modeTextY = (mode == GameMode::HumanVsAI) ? (gridMiddleY - 15.0f) : gridMiddleY;
+    render.drawText(modeText, gridRightX + boxWidth / 2.0f, modeTextY, 18, sf::Color(100, 200, 255), 0);
     
     // Draw difficulty if AI mode
     if (mode == GameMode::HumanVsAI) {
