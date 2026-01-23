@@ -45,8 +45,6 @@ void GameOverScene::render() {
     renderer.drawText("Enter: Restart", centerX, centerY + 10.0f, 24, sf::Color(200, 255, 200), 3);
     renderer.drawText("Esc: Main Menu", centerX, centerY + 50.0f, 22, sf::Color(220, 220, 220), 3);
 
-    renderer.drawMessage();
-
     renderer.display();
 }
 

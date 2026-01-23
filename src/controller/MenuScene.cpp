@@ -32,9 +32,6 @@ void MenuScene::update(float deltaTime) {
 void MenuScene::render() {
     renderer.clear();
 
-    // Optional logo
-    renderer.drawLogo();
-
     const float centerX = Render2D::getWindowWidth() / 2.0f;
     const float centerY = Render2D::getWindowHeight() / 2.0f;
 
@@ -42,6 +39,8 @@ void MenuScene::render() {
     renderer.drawText("Press Enter to Play", centerX, centerY - 20.0f, 28, sf::Color(200, 255, 200), 3);
     renderer.drawText("Press Esc to Quit", centerX, centerY + 30.0f, 24, sf::Color(220, 220, 220), 3);
 
+    renderer.drawLogo(centerX, centerY + 180.0f);
+    
     renderer.display();
 }
 

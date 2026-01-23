@@ -357,6 +357,8 @@ void Render2D::drawMessage() {
 }
 
 void Render2D::drawLogo(std::optional<float> customLogoX, std::optional<float> customLogoY) {
+    // Position is the center of the image
+
     if (!logoLoaded || !logoSprite.has_value()) {
         return;
     }
@@ -364,27 +366,32 @@ void Render2D::drawLogo(std::optional<float> customLogoX, std::optional<float> c
     // Scale logo to 50% of its size
     logoSprite->setScale({0.36f, 0.36f});
 
+    // Get scaled image dimensions for centering calculations
+    float scaledImageWidth = logoSprite->getLocalBounds().size.x * 0.36f;
+    float scaledImageHeight = logoSprite->getLocalBounds().size.y * 0.36f;
+    
     // Compute final X position (use provided or default)
     float finalLogoX;
     if (customLogoX.has_value()) {
-        finalLogoX = customLogoX.value();
+        // Custom position represents center of image
+        finalLogoX = customLogoX.value() - scaledImageWidth / 2.0f;
     } else {
         // Default: Position logo on the right side of the screen
         // Right margin from window edge
         float rightMargin = 36.0f;
         // Logo X position (right side of screen minus margin)
-        // Account for scale in size calculation
-        finalLogoX = WINDOW_WIDTH - rightMargin - (logoSprite->getLocalBounds().size.x * 0.36f);
+        finalLogoX = WINDOW_WIDTH - rightMargin - scaledImageWidth;
     }
     
     // Compute final Y position (use provided or default)
     float finalLogoY;
     if (customLogoY.has_value()) {
-        finalLogoY = customLogoY.value();
+        // Custom position represents center of image
+        finalLogoY = customLogoY.value() - scaledImageHeight / 2.0f;
     } else {
         // Default: Vertically centered with the grid
         float gridCenterY = GRID_OFFSET_Y + (CELL_SIZE * BOARD_SIZE) / 2.0f;
-        finalLogoY = gridCenterY - (logoSprite->getLocalBounds().size.y * 0.36f) / 2.0f;
+        finalLogoY = gridCenterY - scaledImageHeight / 2.0f;
     }
     
     // Set logo position
