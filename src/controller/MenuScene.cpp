@@ -66,6 +66,37 @@ void MenuScene::handleEvent(const sf::Event& event) {
             }
         }
     }
+
+    // Mouse click on mode labels acts like pressing H or A
+    if (event.is<sf::Event::MouseButtonPressed>()) {
+        const auto& mouse = event.getIf<sf::Event::MouseButtonPressed>()->position;
+        const float centerX = Render2D::getWindowWidth() / 2.0f;
+        const float centerY = Render2D::getWindowHeight() / 2.0f;
+
+        // Define simple bounding boxes around the text labels
+        const float boxHalfWidth = 160.0f;
+        const float hvhTop = centerY - 65.0f;   // a bit above the text baseline
+        const float hvhBottom = centerY - 35.0f;
+        const float hvaiTop = centerY - 30.0f;
+        const float hvaiBottom = centerY + 0.0f;
+
+        const bool overHVH = (mouse.x >= centerX - boxHalfWidth && mouse.x <= centerX + boxHalfWidth &&
+                              mouse.y >= hvhTop && mouse.y <= hvhBottom);
+        const bool overHVAI = (mouse.x >= centerX - boxHalfWidth && mouse.x <= centerX + boxHalfWidth &&
+                               mouse.y >= hvaiTop && mouse.y <= hvaiBottom);
+
+        if (overHVH) {
+            config.mode = GameMode::HumanVsHuman;
+            renderer.showMessage("Mode: Human vs Human", {100, 255, 100}, 1.5f);
+            return;
+        }
+
+        if (overHVAI) {
+            config.mode = GameMode::HumanVsAI;
+            renderer.showMessage("Mode: Human vs AI", {255, 200, 100}, 1.5f);
+            return;
+        }
+    }
 }
 
 void MenuScene::update(float deltaTime) {

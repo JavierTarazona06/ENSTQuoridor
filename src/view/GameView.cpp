@@ -125,17 +125,17 @@ void GameView::drawGameModeInfoBox(Render2D& render, GameMode mode, Difficulty d
     
     // Draw info box background
     float boxWidth = 200.0f;
-    float boxHeight = (mode == GameMode::HumanVsAI) ? 80.0f : 60.0f;
+    float boxHeight = (mode == GameMode::HumanVsAI) ? 120.0f : 60.0f;
     sf::RectangleShape infoBox({boxWidth, boxHeight});
     infoBox.setPosition({gridRightX, gridMiddleY - boxHeight / 2.0f});
     infoBox.setFillColor(sf::Color(30, 30, 30, 200));
-    infoBox.setOutlineColor(sf::Color(100, 200, 255));
+    infoBox.setOutlineColor(sf::Color(255, 255, 255));
     infoBox.setOutlineThickness(2.0f);
     render.getWindow().draw(infoBox);
     
     // Draw mode text (center vertically for PvP, top offset for PvE to leave room for difficulty line)
     std::string modeText = (mode == GameMode::HumanVsAI) ? "AI vs Human" : "Human vs Human";
-    float modeTextY = (mode == GameMode::HumanVsAI) ? (gridMiddleY - 15.0f) : gridMiddleY;
+    float modeTextY = (mode == GameMode::HumanVsAI) ? (gridMiddleY - 30.0f) : gridMiddleY;
     render.drawText(modeText, gridRightX + boxWidth / 2.0f, modeTextY, 18, sf::Color(100, 200, 255), 0);
     
     // Draw difficulty if AI mode
@@ -157,7 +157,8 @@ void GameView::drawGameModeInfoBox(Render2D& render, GameMode mode, Difficulty d
             diffColor = sf::Color(255, 50, 50);
         }
         
-        render.drawText("Difficulty: " + diffText, gridRightX + boxWidth / 2.0f, gridMiddleY + 15.0f, 16, diffColor, 0);
+        render.drawText("Difficulty: " + diffText, gridRightX + boxWidth / 2.0f, gridMiddleY + 2.0f, 16, diffColor, 0);
+        render.drawText("Press 1-4 to change", gridRightX + boxWidth / 2.0f, gridMiddleY + 30.0f, 16, sf::Color(180, 180, 180), 0);
     }
 }
 
