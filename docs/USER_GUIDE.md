@@ -7,6 +7,19 @@ This guide explains the keyboard and mouse controls for the current version of t
 - **Mouse**: Used for selecting pawns, moving pawns, and placing walls.
 - **Keyboard**: Used for mode switching and game control.
 
+## 🧭 Game Modes
+
+- **Human vs Human**: Local multiplayer on the same machine.
+- **Human vs AI**: Challenge the computer at four difficulty levels.
+
+## 🗺️ Menu Controls
+
+- **H** — Human vs Human mode
+- **A** — Human vs AI mode
+- **1 / 2 / 3 / 4** — Easy / Normal / Hard / Hell difficulty
+- **Enter** — Start game
+- **Esc** — Quit
+
 ## 🕹️ Detailed Interactions
 
 ### 1. Move Pawn Mode (Default)

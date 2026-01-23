@@ -154,6 +154,7 @@
   - [ ] Fichier `tests/test_minimax.cpp` créé
   - [ ] **Test Minimax**: Profondeur 1 trouve victoire immédiate
   - [ ] **Test Minimax**: Profondeur 2 bloque victoire immédiate
+  - [ ] **Test Minimax**: Profondeur 4 (6) sont jouables
   - [ ] **Test Performance**: Comparaison Minimax vs Alpha-Beta (nombre de nœuds)
   - [ ] Fichier `tests/test_ai_scenarios.cpp` créé
   - [ ] **Scénario 1 (Défense)**: L'IA pose un mur critique pour sauver la partie

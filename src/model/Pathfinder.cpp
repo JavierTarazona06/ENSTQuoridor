@@ -3,38 +3,29 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include <limits>
+#include <map> // For reconstructing path
+
 namespace Quoridor {
 
-    // Helper function to check if a specific wall blocks the move between two ADJACENT cells
+    // ... (keep helper functions isBlockedBy and isPathBlocked same) ...
+    // To save context space, I will rewrite the whole file but keeping helpers.
+
     static bool isBlockedBy(const Wall& wall, int fromRow, int fromCol, int toRow, int toCol) {
         bool movingVertical = (std::abs(toRow - fromRow) == 1);
         
         if (movingVertical) {
-            // Moving between rows (up/down)
-            // Blocked by Horizontal wall at min(fromRow, toRow)
-            // Wall spans cols x and x+1.
-            // We are at col fromCol.
             if (wall.orientation == Orientation::Horizontal) {
                 int splitRow = std::min(fromRow, toRow);
                 if (wall.pos.y == splitRow) {
-                    // Check if wall spans the column we are in
-                    if (wall.pos.x == fromCol || wall.pos.x == fromCol - 1) {
-                        return true;
-                    }
+                    if (wall.pos.x == fromCol || wall.pos.x == fromCol - 1) return true;
                 }
             }
         } else {
-            // Moving Horizontal (left/right)
-            // Blocked by Vertical wall at min(fromCol, toCol)
-            // Wall spans rows y and y+1.
-            // We are at row fromRow.
             if (wall.orientation == Orientation::Vertical) {
                 int splitCol = std::min(fromCol, toCol);
                 if (wall.pos.x == splitCol) {
-                    // Check if wall spans the row we are in
-                    if (wall.pos.y == fromRow || wall.pos.y == fromRow - 1) {
-                        return true;
-                    }
+                    if (wall.pos.y == fromRow || wall.pos.y == fromRow - 1) return true;
                 }
             }
         }
@@ -42,88 +33,167 @@ namespace Quoridor {
     }
 
     static bool isPathBlocked(const Board& board, int fromRow, int fromCol, int toRow, int toCol, const Wall* extraWall) {
-        // Check existing walls
         const auto& walls = board.getWalls();
         for (const auto& wall : walls) {
-            if (isBlockedBy(wall, fromRow, fromCol, toRow, toCol)) {
-                return true;
-            }
+            if (isBlockedBy(wall, fromRow, fromCol, toRow, toCol)) return true;
         }
-
-        // Check extra wall if provided
         if (extraWall) {
-            if (isBlockedBy(*extraWall, fromRow, fromCol, toRow, toCol)) {
-                return true;
-            }
+            if (isBlockedBy(*extraWall, fromRow, fromCol, toRow, toCol)) return true;
         }
-
         return false;
     }
 
-    bool Pathfinder::hasPathToGoal(const Board& board, int playerIndex, const Wall& hypotheticalWall) {
-        Position startPos = board.getPawnPosition(playerIndex);
+    struct Node {
+        Position pos;
+        int f_score;
+        bool operator>(const Node& other) const { return f_score > other.f_score; }
+    };
+
+    static int heuristic(const Position& pos, int targetRow) {
+        return std::abs(pos.y - targetRow);
+    }
+
+    // Helper to reconstruct path
+    static std::vector<Position> reconstructPath(const std::vector<std::vector<Position>>& cameFrom, Position current) {
+        std::vector<Position> totalPath;
+        totalPath.push_back(current);
         
-        // Player 0 (Top) -> Goal Row 8 (Bottom)
-        // Player 1 (Bottom) -> Goal Row 0 (Top)
+        while (cameFrom[current.y][current.x].x != -1) {
+            current = cameFrom[current.y][current.x];
+            totalPath.push_back(current);
+        }
+        std::reverse(totalPath.begin(), totalPath.end());
+        // Path includes start? Usually yes, or no?
+        // Let's exclude start, so size == number of moves.
+        if (!totalPath.empty()) totalPath.erase(totalPath.begin());
+        return totalPath;
+    }
+
+    static std::vector<Position> solveAStar(const Board& board, int playerIndex, const Wall* extraWall) {
+        Position startPos = board.getPawnPosition(playerIndex);
         int targetRow = (playerIndex == 0) ? (BOARD_SIZE - 1) : 0;
 
-        // BFS Setup
-        std::queue<Position> q;
-        q.push(startPos);
+        std::priority_queue<Node, std::vector<Node>, std::greater<Node>> openSet;
+        openSet.push({startPos, heuristic(startPos, targetRow)});
 
-        // Visited array
-        std::vector<std::vector<bool>> visited(BOARD_SIZE, std::vector<bool>(BOARD_SIZE, false));
-        visited[startPos.y][startPos.x] = true;
+        std::vector<std::vector<int>> g_score(BOARD_SIZE, std::vector<int>(BOARD_SIZE, std::numeric_limits<int>::max()));
+        g_score[startPos.y][startPos.x] = 0;
 
-        // Directions: Up, Down, Left, Right
+        // Parent map for path reconstruction: initialize with {-1, -1}
+        std::vector<std::vector<Position>> cameFrom(BOARD_SIZE, std::vector<Position>(BOARD_SIZE, {-1, -1}));
+
         const int dr[] = {-1, 1, 0, 0};
         const int dc[] = {0, 0, -1, 1};
 
-        while (!q.empty()) {
-            Position curr = q.front();
-            q.pop();
+        while (!openSet.empty()) {
+            Node current = openSet.top();
+            openSet.pop();
 
-            // Check if we reached the target row
-            if (curr.y == targetRow) {
-                return true;
+            if (current.pos.y == targetRow) {
+                return reconstructPath(cameFrom, current.pos);
             }
 
-            // Explore neighbors
+            if (current.f_score > g_score[current.pos.y][current.pos.x] + heuristic(current.pos, targetRow)) {
+                continue;
+            }
+
             for (int i = 0; i < 4; ++i) {
-                int nextRow = curr.y + dr[i];
-                int nextCol = curr.x + dc[i];
+                int nextRow = current.pos.y + dr[i];
+                int nextCol = current.pos.x + dc[i];
 
-                // 1. Check bounds
-                if (!Board::isInBounds(nextRow, nextCol)) {
-                    continue;
+                if (!Board::isInBounds(nextRow, nextCol)) continue;
+                if (isPathBlocked(board, current.pos.y, current.pos.x, nextRow, nextCol, extraWall)) continue;
+
+                int tentative_g = g_score[current.pos.y][current.pos.x] + 1;
+
+                if (tentative_g < g_score[nextRow][nextCol]) {
+                    cameFrom[nextRow][nextCol] = current.pos;
+                    g_score[nextRow][nextCol] = tentative_g;
+                    int f = tentative_g + heuristic({nextCol, nextRow}, targetRow);
+                    openSet.push({{nextCol, nextRow}, f});
                 }
-
-                // 2. Check visited
-                if (visited[nextRow][nextCol]) {
-                    continue;
-                }
-
-                // 3. Check walls (existing + hypothetical)
-                if (isPathBlocked(board, curr.y, curr.x, nextRow, nextCol, &hypotheticalWall)) {
-                    continue;
-                }
-
-                // Mark as visited and add to queue
-                visited[nextRow][nextCol] = true;
-                q.push({nextCol, nextRow});
             }
         }
 
-        return false;
+        return {}; // Return empty vector if no path
+    }
+
+    // =========================================================================
+    // BFS Implementation for hasPathToGoal - More efficient for existence check
+    // BFS is faster than A* here because:
+    // 1. We only need to check if a path exists, not find the shortest one
+    // 2. The search space is small (9x9 = 81 cells)
+    // 3. BFS uses a simple queue (O(1) operations) vs A*'s priority queue (O(log n))
+    // 4. No heuristic calculation overhead
+    // =========================================================================
+
+    static bool solveBFS(const Board& board, int playerIndex, const Wall* extraWall) {
+        Position start = board.getPawnPosition(playerIndex);
+        int targetRow = (playerIndex == 0) ? (BOARD_SIZE - 1) : 0;
+        
+        // Early termination: already at goal
+        if (start.y == targetRow) return true;
+        
+        // Visited array
+        std::vector<std::vector<bool>> visited(BOARD_SIZE, std::vector<bool>(BOARD_SIZE, false));
+        
+        // BFS queue
+        std::queue<Position> queue;
+        queue.push(start);
+        visited[start.y][start.x] = true;
+        
+        // Direction vectors: up, down, left, right
+        const int dr[] = {-1, 1, 0, 0};
+        const int dc[] = {0, 0, -1, 1};
+        
+        while (!queue.empty()) {
+            Position current = queue.front();
+            queue.pop();
+            
+            for (int i = 0; i < 4; ++i) {
+                int nextRow = current.y + dr[i];
+                int nextCol = current.x + dc[i];
+                
+                // Bounds check
+                if (!Board::isInBounds(nextRow, nextCol)) continue;
+                
+                // Already visited
+                if (visited[nextRow][nextCol]) continue;
+                
+                // Wall check (including hypothetical wall)
+                if (isPathBlocked(board, current.y, current.x, nextRow, nextCol, extraWall)) continue;
+                
+                // Goal check - return immediately for early termination!
+                if (nextRow == targetRow) return true;
+                
+                visited[nextRow][nextCol] = true;
+                queue.push({nextCol, nextRow});
+            }
+        }
+        
+        return false; // No path found
+    }
+
+    bool Pathfinder::hasPathToGoal(const Board& board, int playerIndex, const Wall& hypotheticalWall) {
+        return solveBFS(board, playerIndex, &hypotheticalWall);
     }
 
     bool Pathfinder::hasPathToGoal(const Board& board, int playerIndex) {
-        // Just call the main function with a dummy wall that is out of bounds/invalid so it won't block anything
-        // Or we could pass nullptr if we changed the signature to accept pointer.
-        // But since we take const ref, let's create a dummy wall.
-        // A wall at (-10, -10) should not block anything on the board.
-        Wall dummyWall = {{-10, -10}, Orientation::Horizontal};
-        return hasPathToGoal(board, playerIndex, dummyWall);
+        return solveBFS(board, playerIndex, nullptr);
+    }
+
+    int Pathfinder::getShortestPathDistance(const Board& board, int playerIndex) {
+        Position start = board.getPawnPosition(playerIndex);
+        int targetRow = (playerIndex == 0) ? (BOARD_SIZE - 1) : 0;
+        if (start.y == targetRow) return 0;
+
+        auto path = solveAStar(board, playerIndex, nullptr);
+        if (path.empty()) return -1;
+        return static_cast<int>(path.size());
+    }
+
+    std::vector<Position> Pathfinder::getShortestPath(const Board& board, int playerIndex) {
+        return solveAStar(board, playerIndex, nullptr);
     }
 
 } // namespace Quoridor
