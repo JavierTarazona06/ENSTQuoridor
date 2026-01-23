@@ -45,22 +45,22 @@ void MenuScene::handleEvent(const sf::Event& event) {
         
         // 1-4 - AI Difficulty (only if AI mode selected)
         if (selectedMode == GameMode::HumanVsAI) {
-            if (key == sf::Keyboard::Key::Num1) {
+            if (key == sf::Keyboard::Key::Num1 || key == sf::Keyboard::Key::Numpad1) {
                 selectedDifficulty = Difficulty::Easy;
                 renderer.showMessage("AI Difficulty: Easy", {100, 255, 100}, 1.5f);
                 return;
             }
-            if (key == sf::Keyboard::Key::Num2) {
+            if (key == sf::Keyboard::Key::Num2 || key == sf::Keyboard::Key::Numpad2) {
                 selectedDifficulty = Difficulty::Normal;
                 renderer.showMessage("AI Difficulty: Normal", {255, 255, 100}, 1.5f);
                 return;
             }
-            if (key == sf::Keyboard::Key::Num3) {
+            if (key == sf::Keyboard::Key::Num3 || key == sf::Keyboard::Key::Numpad3) {
                 selectedDifficulty = Difficulty::Hard;
                 renderer.showMessage("AI Difficulty: Hard", {255, 165, 0}, 1.5f);
                 return;
             }
-            if (key == sf::Keyboard::Key::Num4) {
+            if (key == sf::Keyboard::Key::Num4 || key == sf::Keyboard::Key::Numpad4) {
                 selectedDifficulty = Difficulty::Hell;
                 renderer.showMessage("AI Difficulty: Hell", {255, 50, 50}, 1.5f);
                 return;
@@ -81,6 +81,7 @@ void MenuScene::render() {
 
     // Title
     renderer.drawText("ENSTQuoridor", centerX, centerY - 250.0f, 48, sf::Color::White, 1);
+    renderer.drawText("Developed by Javier Tarazona & Liang Tianyi", centerX, centerY - 210.0f, 18, sf::Color::White, 1);
     
     // Game Mode Selection
     renderer.drawText("Select Game Mode:", centerX, centerY - 150.0f, 24, sf::Color(200, 200, 200), 2);

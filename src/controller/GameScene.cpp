@@ -43,22 +43,22 @@ void GameScene::handleEvent(const sf::Event& event) {
         
         // Allow difficulty change during game in AI mode
         if (gameMode == GameMode::HumanVsAI) {
-            if (key == sf::Keyboard::Key::Num1) {
+            if (key == sf::Keyboard::Key::Num1 || key == sf::Keyboard::Key::Numpad1) {
                 aiDifficulty = Difficulty::Easy;
                 renderer.showMessage("AI Difficulty: Easy", {100, 255, 100}, 1.5f);
                 return;
             }
-            if (key == sf::Keyboard::Key::Num2) {
+            if (key == sf::Keyboard::Key::Num2 || key == sf::Keyboard::Key::Numpad2) {
                 aiDifficulty = Difficulty::Normal;
                 renderer.showMessage("AI Difficulty: Normal", {255, 255, 100}, 1.5f);
                 return;
             }
-            if (key == sf::Keyboard::Key::Num3) {
+            if (key == sf::Keyboard::Key::Num3 || key == sf::Keyboard::Key::Numpad3) {
                 aiDifficulty = Difficulty::Hard;
                 renderer.showMessage("AI Difficulty: Hard", {255, 165, 0}, 1.5f);
                 return;
             }
-            if (key == sf::Keyboard::Key::Num4) {
+            if (key == sf::Keyboard::Key::Num4 || key == sf::Keyboard::Key::Numpad4) {
                 aiDifficulty = Difficulty::Hell;
                 renderer.showMessage("AI Difficulty: Hell", {255, 50, 50}, 1.5f);
                 return;
