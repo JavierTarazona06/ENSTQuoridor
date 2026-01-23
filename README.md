@@ -217,5 +217,5 @@ This project is developed as part of the IN204 course at ENSTA Paris. All rights
 
 ---
 
-**Project Status**: 🚧 In Development (Iteration 2)  
-**Last Updated**: December 2, 2025
+**Project Status**: 🚧 In Development (Iteration 4)  
+**Last Updated**: January 23, 2026
