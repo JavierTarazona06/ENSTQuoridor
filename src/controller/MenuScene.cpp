@@ -80,10 +80,11 @@ void MenuScene::render() {
     const float centerY = Render2D::getWindowHeight() / 2.0f;
 
     // Title
-    renderer.drawText("ENSTQuoridor", centerX, centerY - 200.0f, 48, sf::Color::White, 1);
+    renderer.drawText("ENSTQuoridor", centerX, centerY - 250.0f, 48, sf::Color::White, 1);
     
     // Game Mode Selection
-    renderer.drawText("Select Game Mode:", centerX, centerY - 100.0f, 24, sf::Color(200, 200, 200), 2);
+    renderer.drawText("Select Game Mode:", centerX, centerY - 150.0f, 24, sf::Color(200, 200, 200), 2);
+    renderer.drawText("(Type letter or number)", centerX, centerY - 100.0f, 24, sf::Color(200, 200, 200), 2);
     
     sf::Color hvhColor = (selectedMode == GameMode::HumanVsHuman) ? sf::Color(100, 255, 100) : sf::Color(150, 150, 150);
     sf::Color hvaiColor = (selectedMode == GameMode::HumanVsAI) ? sf::Color(255, 200, 100) : sf::Color(150, 150, 150);
@@ -93,7 +94,7 @@ void MenuScene::render() {
     
     // Difficulty selection (only show if AI mode)
     if (selectedMode == GameMode::HumanVsAI) {
-        renderer.drawText("AI Difficulty:", centerX, centerY + 30.0f, 20, sf::Color(200, 200, 200), 2);
+        renderer.drawText("AI Difficulty:", centerX, centerY + 30.0f, 22, sf::Color(200, 200, 200), 2);
         
         std::string diffText;
         sf::Color diffColor;
@@ -103,15 +104,15 @@ void MenuScene::render() {
             case Difficulty::Hard:   diffText = "[3] Hard"; diffColor = sf::Color(255, 165, 0); break;
             case Difficulty::Hell:   diffText = "[4] Hell"; diffColor = sf::Color(255, 50, 50); break;
         }
-        renderer.drawText(diffText, centerX, centerY + 60.0f, 18, diffColor, 3);
-        renderer.drawText("Press 1-4 to change", centerX, centerY + 85.0f, 14, sf::Color(120, 120, 120), 3);
+        renderer.drawText(diffText, centerX, centerY + 75.0f, 22, diffColor, 3);
+        renderer.drawText("Press 1-4 to change", centerX, centerY + 110.0f, 22, sf::Color(120, 120, 120), 3);
     }
     
     // Instructions
-    renderer.drawText("Press Enter to Start", centerX, centerY + 130.0f, 24, sf::Color(200, 255, 200), 3);
-    renderer.drawText("Press Esc to Quit", centerX, centerY + 165.0f, 20, sf::Color(180, 180, 180), 3);
+    renderer.drawText("Press Enter to Start", centerX, centerY + 160.0f, 24, sf::Color(200, 255, 200), 3);
+    renderer.drawText("Press Esc to Quit", centerX, centerY + 200.0f, 24, sf::Color(180, 180, 180), 3);
 
-    renderer.drawLogo(centerX, centerY + 250.0f);
+    renderer.drawLogo(centerX, centerY + 300.0f);
     
     renderer.drawMessage();
     renderer.display();

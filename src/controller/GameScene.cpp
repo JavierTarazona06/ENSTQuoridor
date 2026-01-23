@@ -12,7 +12,7 @@ GameScene::GameScene(SceneManager& manager, GameMode mode, Difficulty difficulty
       state(),
       rules(),
       gameView(),
-      inputHandler(board, state, rules, renderer),
+      inputHandler(board, state, rules, renderer, mode),
       gameMode(mode),
       aiDifficulty(difficulty),
       aiThinking(false),
@@ -36,6 +36,7 @@ void GameScene::handleEvent(const sf::Event& event) {
     if (event.is<sf::Event::KeyPressed>()) {
         const auto key = event.getIf<sf::Event::KeyPressed>()->code;
         if (key == sf::Keyboard::Key::Escape) {
+            renderer.showMessage("", {0,0,0}, 0.0f); // Clear message
             manager.setScene(std::make_unique<MenuScene>(manager), GameState::Menu);
             return;
         }
@@ -96,19 +97,18 @@ void GameScene::update(float deltaTime) {
 
 void GameScene::render() {
     renderer.clear();
-    gameView.render(renderer, board, state);
+    gameView.render(renderer, board, state, gameMode, aiDifficulty);
     renderer.display();
 }
 
 void GameScene::checkForGameOver() {
     if (state.getGameStatus() != GameStatus::Playing) {
-        manager.setScene(std::make_unique<GameOverScene>(manager, state.getGameStatus()), GameState::GameOver);
+        manager.setScene(std::make_unique<GameOverScene>(manager, state.getGameStatus(), gameMode, aiDifficulty), GameState::GameOver);
     }
 }
 
 void GameScene::executeAITurn() {
     aiThinking = true;
-    renderer.showMessage("AI is thinking...", {255, 200, 100}, -1.0f);
     
     AI ai;
     Move aiMove = ai.getBestMove(board, state, aiDifficulty);
@@ -118,11 +118,11 @@ void GameScene::executeAITurn() {
     // Check for AI victory
     if (rules.checkVictory(board, 1)) {
         state.setGameStatus(GameStatus::Player2Won);
-        renderer.showMessage("AI Wins! Press R to restart or Esc for menu", {255, 100, 100}, -1.0f);
+        renderer.showMessage("AI Wins! Press Enter to restart or Esc for menu", {255, 100, 100}, -1.0f);
     } else {
         // Switch back to human player
         state.switchPlayer();
-        renderer.showMessage("Player 1 Turn - Your move", {255, 255, 255}, -1.0f);
+        renderer.showMessage("Player 1 Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
     }
     
     aiThinking = false;

@@ -5,8 +5,8 @@
 
 namespace Quoridor {
 
-GameOverScene::GameOverScene(SceneManager& manager, GameStatus result)
-    : manager(manager), renderer(manager.getRenderer()), result(result) {
+GameOverScene::GameOverScene(SceneManager& manager, GameStatus result, GameMode mode, Difficulty difficulty)
+    : manager(manager), renderer(manager.getRenderer()), result(result), gameMode(mode), difficulty(difficulty) {
     std::string message = (result == GameStatus::Player1Won) ? "Player 1 Wins!" : "Player 2 Wins!";
     renderer.showMessage(message + " Press Enter to restart or Esc for Menu", {255,255,255}, -1.0f);
 }
@@ -20,10 +20,12 @@ void GameOverScene::handleEvent(const sf::Event& event) {
     if (event.is<sf::Event::KeyPressed>()) {
         const auto key = event.getIf<sf::Event::KeyPressed>()->code;
         if (key == sf::Keyboard::Key::Enter) {
-            manager.setScene(std::make_unique<GameScene>(manager, GameMode::HumanVsHuman, Difficulty::Normal), GameState::Playing);
+            // Restart with the same game mode and difficulty
+            manager.setScene(std::make_unique<GameScene>(manager, gameMode, difficulty), GameState::Playing);
             return;
         }
         if (key == sf::Keyboard::Key::Escape) {
+            renderer.showMessage("", {0,0,0}, 0.0f); // Clear message
             manager.setScene(std::make_unique<MenuScene>(manager), GameState::Menu);
             return;
         }
