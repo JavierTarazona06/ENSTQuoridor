@@ -131,6 +131,28 @@ ctest --test-dir build/x64-osx/tests -C Debug
 ./build/x64-osx/tests/test_all [tags]
 ```
 
+### PVE Visual Demo
+
+A visual demo (`test_pve_visual`) is also built automatically, allowing you to play against the AI:
+
+**Windows:**
+```powershell
+.\build\x64-windows\tests\Debug\test_pve_visual.exe
+```
+
+**Linux:**
+```bash
+./build/x64-linux/tests/test_pve_visual
+```
+
+**macOS:**
+```bash
+./build/arm64-osx/tests/test_pve_visual    # Apple Silicon
+./build/x64-osx/tests/test_pve_visual      # Intel
+```
+
+See [PVE Demo Guide](../PVE_DEMO_GUIDE.md) for detailed controls and usage.
+
 ## Troubleshooting
 
 - **"Could not find toolchain file"**: Ensure `VCPKG_ROOT` is set or let the bootstrap scripts handle it

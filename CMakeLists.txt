@@ -5,6 +5,9 @@ project(ENSTQuoridor VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Export compile commands for IntelliSense
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Find SFML package
 find_package(SFML COMPONENTS Graphics Window System REQUIRED)
 
@@ -14,10 +17,15 @@ add_library(quoridor_model
     src/model/Pathfinder.cpp
     src/model/State.cpp
     src/model/Rules.cpp
+    src/model/AI.cpp
     src/view/Render2D.cpp
     src/view/GameView.cpp
     src/controller/server.cpp
     src/controller/InputHandler.cpp
+    src/controller/SceneManager.cpp
+    src/controller/MenuScene.cpp
+    src/controller/GameScene.cpp
+    src/controller/GameOverScene.cpp
     src/controller/Game.cpp
 )
 # Define FONT_DIR for font assets

@@ -4,6 +4,7 @@
 #include "model/Board.hpp"
 #include "model/State.hpp"
 #include "model/Rules.hpp"
+#include "model/AI.hpp"
 #include "view/Render2D.hpp"
 
 namespace Quoridor {
@@ -15,7 +16,7 @@ enum class InputMode {
 
 class InputHandler {
 public:
-    InputHandler(Board& board, State& state, Rules& rules, Render2D& render);
+    InputHandler(Board& board, State& state, Rules& rules, Render2D& render, GameMode mode = GameMode::HumanVsHuman);
     ~InputHandler() = default;
 
     void handleInput(const sf::Event& event, const sf::RenderWindow& window);
@@ -38,6 +39,7 @@ private:
     State& state;
     Rules& rules;
     Render2D& render;
+    GameMode gameMode;
     
     InputMode currentMode = InputMode::MovePawn;
 };

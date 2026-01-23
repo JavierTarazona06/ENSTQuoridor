@@ -36,8 +36,8 @@ public:
     void drawMessage();
     void updateMessage(float deltaTime);
 
-    // Logo rendering
-    void drawLogo();
+    // Logo rendering with optional custom position
+    void drawLogo(std::optional<float> logoX = std::nullopt, std::optional<float> logoY = std::nullopt);
 
     // Font management
     bool loadFont(const std::string& fontPath, int fontType);

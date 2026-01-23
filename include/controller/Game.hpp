@@ -1,11 +1,8 @@
 #pragma once
 
-#include "model/Board.hpp"
-#include "model/State.hpp"
-#include "model/Rules.hpp"
 #include "view/Render2D.hpp"
-#include "view/GameView.hpp"
-#include "controller/InputHandler.hpp"
+#include "controller/SceneManager.hpp"
+#include "controller/MenuScene.hpp"
 
 namespace Quoridor {
 
@@ -21,12 +18,8 @@ private:
     void update(float deltaTime);
     void render();
 
-    Board board;
-    State state;
-    Rules rules;
     Render2D renderer;
-    GameView gameView;
-    InputHandler inputHandler;
+    SceneManager sceneManager;
 };
 
 } // namespace Quoridor
