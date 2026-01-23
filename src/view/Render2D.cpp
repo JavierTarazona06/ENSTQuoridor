@@ -295,7 +295,8 @@ void Render2D::showMessage(const std::string& text, const Color& color, float du
         hasBackgroundMessage = true;
     } else {
         // Not preempting, so clear any saved background message
-        //hasBackgroundMessage = false;
+        // TODO this was commentted, check if needed
+        hasBackgroundMessage = false;
     }
     
     currentMessageText = text;

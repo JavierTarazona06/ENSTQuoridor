@@ -42,22 +42,23 @@ void GameScene::handleEvent(const sf::Event& event) {
         
         // Allow difficulty change during game in AI mode
         if (config.isAIMode()) {
-            if (key == sf::Keyboard::Key::Num1 || key == sf::Keyboard::Key::Numpad1) {
+            auto scancode = event.getIf<sf::Event::KeyPressed>()->scancode;
+            if (key == sf::Keyboard::Key::Num1 || key == sf::Keyboard::Key::Numpad1 || scancode == sf::Keyboard::Scancode::Num1) {
                 config.difficulty = Difficulty::Easy;
                 renderer.showMessage("AI Difficulty: Easy", {100, 255, 100}, 1.5f);
                 return;
             }
-            if (key == sf::Keyboard::Key::Num2 || key == sf::Keyboard::Key::Numpad2) {
+            if (key == sf::Keyboard::Key::Num2 || key == sf::Keyboard::Key::Numpad2 || scancode == sf::Keyboard::Scancode::Num2) {
                 config.difficulty = Difficulty::Normal;
                 renderer.showMessage("AI Difficulty: Normal", {255, 255, 100}, 1.5f);
                 return;
             }
-            if (key == sf::Keyboard::Key::Num3 || key == sf::Keyboard::Key::Numpad3) {
+            if (key == sf::Keyboard::Key::Num3 || key == sf::Keyboard::Key::Numpad3 || scancode == sf::Keyboard::Scancode::Num3) {
                 config.difficulty = Difficulty::Hard;
                 renderer.showMessage("AI Difficulty: Hard", {255, 165, 0}, 1.5f);
                 return;
             }
-            if (key == sf::Keyboard::Key::Num4 || key == sf::Keyboard::Key::Numpad4) {
+            if (key == sf::Keyboard::Key::Num4 || key == sf::Keyboard::Key::Numpad4 || scancode == sf::Keyboard::Scancode::Num4) {
                 config.difficulty = Difficulty::Hell;
                 renderer.showMessage("AI Difficulty: Hell", {255, 50, 50}, 1.5f);
                 return;
