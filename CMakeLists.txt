@@ -19,6 +19,10 @@ add_library(quoridor_model
     src/view/GameView.cpp
     src/controller/server.cpp
     src/controller/InputHandler.cpp
+    src/controller/SceneManager.cpp
+    src/controller/MenuScene.cpp
+    src/controller/GameScene.cpp
+    src/controller/GameOverScene.cpp
     src/controller/Game.cpp
 )
 # Define FONT_DIR for font assets
