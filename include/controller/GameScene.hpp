@@ -7,13 +7,13 @@
 #include "model/Board.hpp"
 #include "model/State.hpp"
 #include "model/Rules.hpp"
-#include "model/AI.hpp"
+#include "model/GameConfig.hpp"
 
 namespace Quoridor {
 
 class GameScene : public Scene {
 public:
-    explicit GameScene(SceneManager& manager, GameMode mode = GameMode::HumanVsHuman, Difficulty difficulty = Difficulty::Normal);
+    explicit GameScene(SceneManager& manager, const GameConfig& config = GameConfig());
     ~GameScene() override = default;
 
     void handleEvent(const sf::Event& event) override;
@@ -33,9 +33,10 @@ private:
     GameView gameView;
     InputHandler inputHandler;
     
+    // Game configuration
+    GameConfig config;
+    
     // AI-related members
-    GameMode gameMode;
-    Difficulty aiDifficulty;
     bool aiThinking;
     float aiDelayTimer;
     static constexpr float AI_DELAY = 0.5f;

@@ -5,22 +5,21 @@
 
 namespace Quoridor {
 
-GameScene::GameScene(SceneManager& manager, GameMode mode, Difficulty difficulty)
+GameScene::GameScene(SceneManager& manager, const GameConfig& gameConfig)
     : manager(manager),
       renderer(manager.getRenderer()),
       board(),
       state(),
       rules(),
       gameView(),
-      inputHandler(board, state, rules, renderer, mode),
-      gameMode(mode),
-      aiDifficulty(difficulty),
+      inputHandler(board, state, rules, renderer, gameConfig.mode),
+      config(gameConfig),
       aiThinking(false),
       aiDelayTimer(0.0f) {
     int currentPlayer = state.getCurrentPlayer();
     std::string playerName = "Player " + std::to_string(currentPlayer + 1);
     
-    if (gameMode == GameMode::HumanVsAI) {
+    if (config.isAIMode()) {
         renderer.showMessage(playerName + " Turn (Human vs AI mode)", {255,255,255}, -1.0f);
     } else {
         renderer.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
@@ -42,24 +41,24 @@ void GameScene::handleEvent(const sf::Event& event) {
         }
         
         // Allow difficulty change during game in AI mode
-        if (gameMode == GameMode::HumanVsAI) {
+        if (config.isAIMode()) {
             if (key == sf::Keyboard::Key::Num1 || key == sf::Keyboard::Key::Numpad1) {
-                aiDifficulty = Difficulty::Easy;
+                config.difficulty = Difficulty::Easy;
                 renderer.showMessage("AI Difficulty: Easy", {100, 255, 100}, 1.5f);
                 return;
             }
             if (key == sf::Keyboard::Key::Num2 || key == sf::Keyboard::Key::Numpad2) {
-                aiDifficulty = Difficulty::Normal;
+                config.difficulty = Difficulty::Normal;
                 renderer.showMessage("AI Difficulty: Normal", {255, 255, 100}, 1.5f);
                 return;
             }
             if (key == sf::Keyboard::Key::Num3 || key == sf::Keyboard::Key::Numpad3) {
-                aiDifficulty = Difficulty::Hard;
+                config.difficulty = Difficulty::Hard;
                 renderer.showMessage("AI Difficulty: Hard", {255, 165, 0}, 1.5f);
                 return;
             }
             if (key == sf::Keyboard::Key::Num4 || key == sf::Keyboard::Key::Numpad4) {
-                aiDifficulty = Difficulty::Hell;
+                config.difficulty = Difficulty::Hell;
                 renderer.showMessage("AI Difficulty: Hell", {255, 50, 50}, 1.5f);
                 return;
             }
@@ -67,7 +66,7 @@ void GameScene::handleEvent(const sf::Event& event) {
     }
 
     // Block input during AI's turn
-    if (gameMode == GameMode::HumanVsAI && 
+    if (config.isAIMode() && 
         state.getCurrentPlayer() == 1 && 
         state.getGameStatus() == GameStatus::Playing) {
         return; // Don't process human input during AI turn
@@ -81,7 +80,7 @@ void GameScene::update(float deltaTime) {
     checkForGameOver();
     
     // AI turn logic (only in HumanVsAI mode)
-    if (gameMode == GameMode::HumanVsAI && 
+    if (config.isAIMode() && 
         state.getCurrentPlayer() == 1 && 
         state.getGameStatus() == GameStatus::Playing &&
         !aiThinking) {
@@ -97,13 +96,13 @@ void GameScene::update(float deltaTime) {
 
 void GameScene::render() {
     renderer.clear();
-    gameView.render(renderer, board, state, gameMode, aiDifficulty);
+    gameView.render(renderer, board, state, config.mode, config.difficulty);
     renderer.display();
 }
 
 void GameScene::checkForGameOver() {
     if (state.getGameStatus() != GameStatus::Playing) {
-        manager.setScene(std::make_unique<GameOverScene>(manager, state.getGameStatus(), gameMode, aiDifficulty), GameState::GameOver);
+        manager.setScene(std::make_unique<GameOverScene>(manager, state.getGameStatus(), config), GameState::GameOver);
     }
 }
 
@@ -111,7 +110,7 @@ void GameScene::executeAITurn() {
     aiThinking = true;
     
     AI ai;
-    Move aiMove = ai.getBestMove(board, state, aiDifficulty);
+    Move aiMove = ai.getBestMove(board, state, config.difficulty);
     
     applyAIMove(aiMove);
     

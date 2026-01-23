@@ -2,8 +2,7 @@
 
 #include "controller/Scene.hpp"
 #include "controller/SceneManager.hpp"
-#include "model/State.hpp"
-#include "model/AI.hpp"
+#include "model/GameConfig.hpp"
 
 namespace Quoridor {
 
@@ -19,8 +18,7 @@ public:
 private:
     SceneManager& manager;
     Render2D& renderer;
-    GameMode selectedMode;
-    Difficulty selectedDifficulty;
+    GameConfig config;
 };
 
 } // namespace Quoridor

@@ -3,13 +3,13 @@
 #include "controller/Scene.hpp"
 #include "controller/SceneManager.hpp"
 #include "model/State.hpp"
-#include "model/AI.hpp"
+#include "model/GameConfig.hpp"
 
 namespace Quoridor {
 
 class GameOverScene : public Scene {
 public:
-    GameOverScene(SceneManager& manager, GameStatus result, GameMode mode = GameMode::HumanVsHuman, Difficulty difficulty = Difficulty::Normal);
+    GameOverScene(SceneManager& manager, GameStatus result, const GameConfig& config = GameConfig());
     ~GameOverScene() override = default;
 
     void handleEvent(const sf::Event& event) override;
@@ -20,8 +20,7 @@ private:
     SceneManager& manager;
     Render2D& renderer;
     GameStatus result;
-    GameMode gameMode;
-    Difficulty difficulty;
+    GameConfig config;
 };
 
 } // namespace Quoridor

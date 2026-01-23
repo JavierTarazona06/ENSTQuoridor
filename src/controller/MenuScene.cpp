@@ -5,8 +5,7 @@ namespace Quoridor {
 
 MenuScene::MenuScene(SceneManager& manager)
     : manager(manager), renderer(manager.getRenderer()),
-      selectedMode(GameMode::HumanVsHuman),
-      selectedDifficulty(Difficulty::Normal) {}
+      config() {}
 
 void MenuScene::handleEvent(const sf::Event& event) {
     if (event.is<sf::Event::Closed>()) {
@@ -17,9 +16,9 @@ void MenuScene::handleEvent(const sf::Event& event) {
     if (event.is<sf::Event::KeyPressed>()) {
         const auto key = event.getIf<sf::Event::KeyPressed>()->code;
         
-        // Enter - Start game with selected mode
+        // Enter - Start game with selected config
         if (key == sf::Keyboard::Key::Enter) {
-            manager.setScene(std::make_unique<GameScene>(manager, selectedMode, selectedDifficulty), GameState::Playing);
+            manager.setScene(std::make_unique<GameScene>(manager, config), GameState::Playing);
             return;
         }
         
@@ -31,37 +30,37 @@ void MenuScene::handleEvent(const sf::Event& event) {
         
         // H - Human vs Human
         if (key == sf::Keyboard::Key::H) {
-            selectedMode = GameMode::HumanVsHuman;
+            config.mode = GameMode::HumanVsHuman;
             renderer.showMessage("Mode: Human vs Human", {100, 255, 100}, 1.5f);
             return;
         }
         
         // A - Human vs AI
         if (key == sf::Keyboard::Key::A) {
-            selectedMode = GameMode::HumanVsAI;
+            config.mode = GameMode::HumanVsAI;
             renderer.showMessage("Mode: Human vs AI", {255, 200, 100}, 1.5f);
             return;
         }
         
         // 1-4 - AI Difficulty (only if AI mode selected)
-        if (selectedMode == GameMode::HumanVsAI) {
+        if (config.isAIMode()) {
             if (key == sf::Keyboard::Key::Num1 || key == sf::Keyboard::Key::Numpad1) {
-                selectedDifficulty = Difficulty::Easy;
+                config.difficulty = Difficulty::Easy;
                 renderer.showMessage("AI Difficulty: Easy", {100, 255, 100}, 1.5f);
                 return;
             }
             if (key == sf::Keyboard::Key::Num2 || key == sf::Keyboard::Key::Numpad2) {
-                selectedDifficulty = Difficulty::Normal;
+                config.difficulty = Difficulty::Normal;
                 renderer.showMessage("AI Difficulty: Normal", {255, 255, 100}, 1.5f);
                 return;
             }
             if (key == sf::Keyboard::Key::Num3 || key == sf::Keyboard::Key::Numpad3) {
-                selectedDifficulty = Difficulty::Hard;
+                config.difficulty = Difficulty::Hard;
                 renderer.showMessage("AI Difficulty: Hard", {255, 165, 0}, 1.5f);
                 return;
             }
             if (key == sf::Keyboard::Key::Num4 || key == sf::Keyboard::Key::Numpad4) {
-                selectedDifficulty = Difficulty::Hell;
+                config.difficulty = Difficulty::Hell;
                 renderer.showMessage("AI Difficulty: Hell", {255, 50, 50}, 1.5f);
                 return;
             }
@@ -87,19 +86,19 @@ void MenuScene::render() {
     renderer.drawText("Select Game Mode:", centerX, centerY - 150.0f, 24, sf::Color(200, 200, 200), 2);
     renderer.drawText("(Type letter or number)", centerX, centerY - 100.0f, 24, sf::Color(200, 200, 200), 2);
     
-    sf::Color hvhColor = (selectedMode == GameMode::HumanVsHuman) ? sf::Color(100, 255, 100) : sf::Color(150, 150, 150);
-    sf::Color hvaiColor = (selectedMode == GameMode::HumanVsAI) ? sf::Color(255, 200, 100) : sf::Color(150, 150, 150);
+    sf::Color hvhColor = config.isPvPMode() ? sf::Color(100, 255, 100) : sf::Color(150, 150, 150);
+    sf::Color hvaiColor = config.isAIMode() ? sf::Color(255, 200, 100) : sf::Color(150, 150, 150);
     
     renderer.drawText("[H] Human vs Human", centerX, centerY - 50.0f, 22, hvhColor, 3);
     renderer.drawText("[A] Human vs AI", centerX, centerY - 15.0f, 22, hvaiColor, 3);
     
     // Difficulty selection (only show if AI mode)
-    if (selectedMode == GameMode::HumanVsAI) {
+    if (config.isAIMode()) {
         renderer.drawText("AI Difficulty:", centerX, centerY + 30.0f, 22, sf::Color(200, 200, 200), 2);
         
         std::string diffText;
         sf::Color diffColor;
-        switch(selectedDifficulty) {
+        switch(config.difficulty) {
             case Difficulty::Easy:   diffText = "[1] Easy"; diffColor = sf::Color(100, 255, 100); break;
             case Difficulty::Normal: diffText = "[2] Normal"; diffColor = sf::Color(255, 255, 100); break;
             case Difficulty::Hard:   diffText = "[3] Hard"; diffColor = sf::Color(255, 165, 0); break;
