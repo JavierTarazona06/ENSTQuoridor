@@ -4,8 +4,8 @@
 
 namespace Quoridor {
 
-InputHandler::InputHandler(Board& board, State& state, Rules& rules, Render2D& render)
-    : board(board), state(state), rules(rules), render(render) {}
+InputHandler::InputHandler(Board& board, State& state, Rules& rules, Render2D& render, GameMode mode)
+    : board(board), state(state), rules(rules), render(render), gameMode(mode) {}
 
 void InputHandler::handleInput(const sf::Event& event, const sf::RenderWindow& window) {
     // Handle key pressed events
@@ -161,9 +161,13 @@ void InputHandler::handleMouseClick(int pixelX, int pixelY) {
             
             // Display turn message for next player
             int nextPlayer = state.getCurrentPlayer();
-            Color playerColor = board.getPawnColor(nextPlayer);
-            std::string playerName = "Player " + std::to_string(nextPlayer + 1);
-            render.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
+            if (gameMode == GameMode::HumanVsAI && nextPlayer == 1) {
+                render.showMessage("AI is thinking...", {255, 200, 100}, -1.0f);
+            } else {
+                Color playerColor = board.getPawnColor(nextPlayer);
+                std::string playerName = "Player " + std::to_string(nextPlayer + 1);
+                render.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
+            }
             
             state.setPreviewWall(std::nullopt);
             
@@ -224,10 +228,13 @@ void InputHandler::handleMouseClick(int pixelX, int pixelY) {
                     
                     // Display turn message for next player
                     int nextPlayer = state.getCurrentPlayer();
-                    Color playerColor = board.getPawnColor(nextPlayer);
-                    std::string playerName = "Player " + std::to_string(nextPlayer + 1);
-                    //TODO The message is not being viewed completely , Increase box size?
-                    render.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
+                    if (gameMode == GameMode::HumanVsAI && nextPlayer == 1) {
+                        render.showMessage("AI is thinking...", {255, 200, 100}, -1.0f);
+                    } else {
+                        Color playerColor = board.getPawnColor(nextPlayer);
+                        std::string playerName = "Player " + std::to_string(nextPlayer + 1);
+                        render.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
+                    }
                 }
                 
                 state.setSelectedPawn(std::nullopt);
