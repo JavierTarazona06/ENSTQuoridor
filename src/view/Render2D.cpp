@@ -356,7 +356,7 @@ void Render2D::drawMessage() {
     drawText(currentMessageText, textCenterX, textCenterY, MESSAGE_FONT_SIZE, currentMessageColor, 3);
 }
 
-void Render2D::drawLogo() {
+void Render2D::drawLogo(std::optional<float> customLogoX, std::optional<float> customLogoY) {
     if (!logoLoaded || !logoSprite.has_value()) {
         return;
     }
@@ -364,23 +364,31 @@ void Render2D::drawLogo() {
     // Scale logo to 50% of its size
     logoSprite->setScale({0.36f, 0.36f});
 
-    // Position logo on the right side of the screen
-    // Right margin from window edge
-    float rightMargin = 36.0f;
+    // Compute final X position (use provided or default)
+    float finalLogoX;
+    if (customLogoX.has_value()) {
+        finalLogoX = customLogoX.value();
+    } else {
+        // Default: Position logo on the right side of the screen
+        // Right margin from window edge
+        float rightMargin = 36.0f;
+        // Logo X position (right side of screen minus margin)
+        // Account for scale in size calculation
+        finalLogoX = WINDOW_WIDTH - rightMargin - (logoSprite->getLocalBounds().size.x * 0.36f);
+    }
     
-    // Grid end position (right side of grid)
-    float gridRightX = GRID_OFFSET_X + CELL_SIZE * BOARD_SIZE;
-    
-    // Logo X position (right side of screen minus margin)
-    // Account for scale in size calculation
-    float logoX = WINDOW_WIDTH - rightMargin - (logoSprite->getLocalBounds().size.x * 0.36f);
-    
-    // Logo Y position (vertically centered with the grid)
-    float gridCenterY = GRID_OFFSET_Y + (CELL_SIZE * BOARD_SIZE) / 2.0f;
-    float logoY = gridCenterY - (logoSprite->getLocalBounds().size.y * 0.36f) / 2.0f;
+    // Compute final Y position (use provided or default)
+    float finalLogoY;
+    if (customLogoY.has_value()) {
+        finalLogoY = customLogoY.value();
+    } else {
+        // Default: Vertically centered with the grid
+        float gridCenterY = GRID_OFFSET_Y + (CELL_SIZE * BOARD_SIZE) / 2.0f;
+        finalLogoY = gridCenterY - (logoSprite->getLocalBounds().size.y * 0.36f) / 2.0f;
+    }
     
     // Set logo position
-    logoSprite->setPosition({logoX, logoY});
+    logoSprite->setPosition({finalLogoX, finalLogoY});
     
     // Draw the logo
     window.draw(*logoSprite);
