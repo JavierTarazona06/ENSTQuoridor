@@ -111,7 +111,7 @@ void MenuScene::render() {
     const float centerY = Render2D::getWindowHeight() / 2.0f;
 
     // Title
-    renderer.drawText("ENSTQuoridor", centerX, centerY - 250.0f, 48, sf::Color::White, 1);
+    renderer.drawText("ENSTQuoridor 1.0", centerX, centerY - 250.0f, 48, sf::Color::White, 1);
     renderer.drawText("Developed by Javier Tarazona & Liang Tianyi", centerX, centerY - 210.0f, 18, sf::Color::White, 1);
     
     // Game Mode Selection

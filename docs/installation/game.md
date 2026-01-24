@@ -168,4 +168,30 @@ If you want to distribute the application to users who don't have development to
 - SFML DLL files
 - Assets folder
 
-See the packaging documentation for instructions on creating distributable packages.
+### Creating a Distributable ZIP Package (Windows)
+
+First, build the Release version:
+
+```powershell
+# Configure (if not already done)
+cmake --preset x64-windows
+
+# Build Release
+scripts\bootstrap.ps1 -Config Release
+# Or just program
+cmake --build build\x64-windows --config Release
+```
+
+Then generate the portable ZIP package:
+
+```powershell
+cd build\x64-windows
+cpack -G ZIP -C Release
+```
+
+This creates `Quoridor-1.0-Windows.zip` containing:
+- `quoridor_game.exe`
+- SFML DLLs (`sfml-graphics-3.dll`, `sfml-window-3.dll`, `sfml-system-3.dll`, `sfml-audio-3.dll`)
+- `assets/` folder with fonts and images
+
+The ZIP can be distributed to users who can simply extract and double-click `quoridor_game.exe` to run the game.
