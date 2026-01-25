@@ -1,7 +1,28 @@
 #include "controller/MenuScene.hpp"
 #include "controller/GameScene.hpp"
+#include "controller/HowToPlayScene.hpp"
 
 namespace Quoridor {
+
+namespace {
+sf::Vector2f HvsHCoor() {
+    const float centerX = Render2D::getWindowWidth() / 2.0f;
+    const float centerY = Render2D::getWindowHeight() / 2.0f;
+    return {centerX, centerY - 150.0f};
+}
+
+sf::Vector2f HvsAICoor() {
+    const float centerX = Render2D::getWindowWidth() / 2.0f;
+    const float centerY = Render2D::getWindowHeight() / 2.0f;
+    return {centerX, centerY - 115.0f};
+}
+
+sf::Vector2f HowPlayCoor() {
+    const float centerX = Render2D::getWindowWidth() / 2.0f;
+    const float centerY = Render2D::getWindowHeight() / 2.0f;
+    return {centerX, centerY + 130.0f};
+}
+} // namespace
 
 MenuScene::MenuScene(SceneManager& manager)
     : manager(manager), renderer(manager.getRenderer()),
@@ -71,20 +92,25 @@ void MenuScene::handleEvent(const sf::Event& event) {
     // Mouse click on mode labels acts like pressing H or A
     if (event.is<sf::Event::MouseButtonPressed>()) {
         const auto& mouse = event.getIf<sf::Event::MouseButtonPressed>()->position;
-        const float centerX = Render2D::getWindowWidth() / 2.0f;
-        const float centerY = Render2D::getWindowHeight() / 2.0f;
+        const sf::Vector2f hvhCoor = HvsHCoor();
+        const sf::Vector2f hvaiCoor = HvsAICoor();
+        const sf::Vector2f howPlayCoor = HowPlayCoor();
 
         // Define simple bounding boxes around the text labels
         const float boxHalfWidth = 160.0f;
-        const float hvhTop = centerY - 65.0f;   // a bit above the text baseline
-        const float hvhBottom = centerY - 35.0f;
-        const float hvaiTop = centerY - 30.0f;
-        const float hvaiBottom = centerY + 0.0f;
+        const float hvhTop = hvhCoor.y - 15.0f;   // a bit above the text baseline
+        const float hvhBottom = hvhCoor.y + 15.0f;
+        const float hvaiTop = hvaiCoor.y - 15.0f;
+        const float hvaiBottom = hvaiCoor.y + 15.0f;
+        const float howPlayTop = howPlayCoor.y - 15.0f;
+        const float howPlayBottom = howPlayCoor.y + 15.0f;
 
-        const bool overHVH = (mouse.x >= centerX - boxHalfWidth && mouse.x <= centerX + boxHalfWidth &&
+        const bool overHVH = (mouse.x >= hvhCoor.x - boxHalfWidth && mouse.x <= hvhCoor.x + boxHalfWidth &&
                               mouse.y >= hvhTop && mouse.y <= hvhBottom);
-        const bool overHVAI = (mouse.x >= centerX - boxHalfWidth && mouse.x <= centerX + boxHalfWidth &&
+        const bool overHVAI = (mouse.x >= hvaiCoor.x - boxHalfWidth && mouse.x <= hvaiCoor.x + boxHalfWidth &&
                                mouse.y >= hvaiTop && mouse.y <= hvaiBottom);
+        const bool overHowPlay = (mouse.x >= howPlayCoor.x - boxHalfWidth && mouse.x <= howPlayCoor.x + boxHalfWidth &&
+                                  mouse.y >= howPlayTop && mouse.y <= howPlayBottom);
 
         if (overHVH) {
             config.mode = GameMode::HumanVsHuman;
@@ -95,6 +121,11 @@ void MenuScene::handleEvent(const sf::Event& event) {
         if (overHVAI) {
             config.mode = GameMode::HumanVsAI;
             renderer.showMessage("Mode: Human vs AI", {255, 200, 100}, 1.5f);
+            return;
+        }
+
+        if (overHowPlay) {
+            manager.setScene(std::make_unique<HowToPlayScene>(manager), GameState::HowToPlay);
             return;
         }
     }
@@ -109,24 +140,26 @@ void MenuScene::render() {
 
     const float centerX = Render2D::getWindowWidth() / 2.0f;
     const float centerY = Render2D::getWindowHeight() / 2.0f;
+    const sf::Vector2f hvhCoor = HvsHCoor();
+    const sf::Vector2f hvaiCoor = HvsAICoor();
+    const sf::Vector2f howPlayCoor = HowPlayCoor();
 
     // Title
-    renderer.drawText("ENSTQuoridor 1.0", centerX, centerY - 250.0f, 48, sf::Color::White, 1);
-    renderer.drawText("Developed by Javier Tarazona & Liang Tianyi", centerX, centerY - 210.0f, 18, sf::Color::White, 1);
+    renderer.drawText("ENSTQuoridor 1.0", centerX, centerY - 350.0f, 48, sf::Color::White, 1);
+    renderer.drawText("Developed by Javier Tarazona & Liang Tianyi", centerX, centerY - 310.0f, 18, sf::Color::White, 1);
     
     // Game Mode Selection
-    renderer.drawText("Select Game Mode:", centerX, centerY - 150.0f, 24, sf::Color(200, 200, 200), 2);
-    renderer.drawText("(Type letter or number)", centerX, centerY - 100.0f, 24, sf::Color(200, 200, 200), 2);
+    renderer.drawText("Select Game Mode:", centerX, centerY - 200.0f, 24, sf::Color(200, 200, 200), 2);
     
     sf::Color hvhColor = config.isPvPMode() ? sf::Color(100, 255, 100) : sf::Color(150, 150, 150);
     sf::Color hvaiColor = config.isAIMode() ? sf::Color(255, 200, 100) : sf::Color(150, 150, 150);
     
-    renderer.drawText("[H] Human vs Human", centerX, centerY - 50.0f, 22, hvhColor, 3);
-    renderer.drawText("[A] Human vs AI", centerX, centerY - 15.0f, 22, hvaiColor, 3);
+    renderer.drawText("[H] Human vs Human", hvhCoor.x, hvhCoor.y, 22, hvhColor, 3);
+    renderer.drawText("[A] Human vs AI", hvaiCoor.x, hvaiCoor.y, 22, hvaiColor, 3);
     
     // Difficulty selection (only show if AI mode)
     if (config.isAIMode()) {
-        renderer.drawText("AI Difficulty:", centerX, centerY + 30.0f, 22, sf::Color(200, 200, 200), 2);
+        renderer.drawText("AI Difficulty:", centerX, centerY - 25.0f, 22, sf::Color(200, 200, 200), 2);
         
         std::string diffText;
         sf::Color diffColor;
@@ -136,15 +169,16 @@ void MenuScene::render() {
             case Difficulty::Hard:   diffText = "[3] Hard"; diffColor = sf::Color(255, 165, 0); break;
             case Difficulty::Hell:   diffText = "[4] Hell"; diffColor = sf::Color(255, 50, 50); break;
         }
-        renderer.drawText(diffText, centerX, centerY + 75.0f, 22, diffColor, 3);
-        renderer.drawText("Press keys 1,2,3 or 4 to change", centerX, centerY + 110.0f, 22, sf::Color(120, 120, 120), 3);
+        renderer.drawText(diffText, centerX, centerY + 20.0f, 22, diffColor, 3);
+        renderer.drawText("Press keys 1,2,3 or 4 to change AI difficulty", centerX, centerY + 55.0f, 22, sf::Color(120, 120, 120), 3);
     }
     
     // Instructions
-    renderer.drawText("Press Enter to Start", centerX, centerY + 160.0f, 24, sf::Color(200, 255, 200), 3);
-    renderer.drawText("Press Esc to Quit", centerX, centerY + 200.0f, 24, sf::Color(180, 180, 180), 3);
+    renderer.drawText("How to Play ?", howPlayCoor.x, howPlayCoor.y, 24, sf::Color(180, 180, 180), 2);
+    renderer.drawText("Press Enter to Start", centerX, centerY + 185.0f, 24, sf::Color(200, 255, 200), 3);
+    renderer.drawText("Press Esc to Quit", centerX, centerY + 225.0f, 24, sf::Color(180, 180, 180), 3);
 
-    renderer.drawLogo(centerX, centerY + 300.0f);
+    renderer.drawLogo(centerX, centerY + 350.0f);
     
     renderer.drawMessage();
     renderer.display();
