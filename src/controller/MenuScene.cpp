@@ -137,7 +137,7 @@ void MenuScene::render() {
             case Difficulty::Hell:   diffText = "[4] Hell"; diffColor = sf::Color(255, 50, 50); break;
         }
         renderer.drawText(diffText, centerX, centerY + 75.0f, 22, diffColor, 3);
-        renderer.drawText("Press 1-4 to change", centerX, centerY + 110.0f, 22, sf::Color(120, 120, 120), 3);
+        renderer.drawText("Press keys 1,2,3 or 4 to change", centerX, centerY + 110.0f, 22, sf::Color(120, 120, 120), 3);
     }
     
     // Instructions

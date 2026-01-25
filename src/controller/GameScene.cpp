@@ -20,7 +20,7 @@ GameScene::GameScene(SceneManager& manager, const GameConfig& gameConfig)
     std::string playerName = "Player " + std::to_string(currentPlayer + 1);
     
     if (config.isAIMode()) {
-        renderer.showMessage(playerName + " Turn (Human vs AI mode)", {255,255,255}, -1.0f);
+        renderer.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
     } else {
         renderer.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
     }
