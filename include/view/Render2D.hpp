@@ -58,6 +58,7 @@ public:
 private:
     sf::RenderWindow window;
     std::string fontsDir;
+    std::string assetsDir;
     sf::Font fontTitle1;
     sf::Font fontTitle2;
     sf::Font fontTitle3;
@@ -110,6 +111,7 @@ private:
 
     // Resolve fonts directory at runtime (package vs dev tree)
     std::string resolveFontsDir() const;
+    std::string resolveAssetsDir(const std::string& resolvedFontsDir) const;
 };
 
 } // namespace Quoridor

@@ -20,22 +20,30 @@ Render2D::Render2D()
     // sf::Style::Titlebar | sf::Style::Close = title bar + close button, NO resize capability
     window.setFramerateLimit(60);
     
-        // Resolve fonts directory based on runtime environment
-        fontsDir = resolveFontsDir();
+    // Resolve runtime asset roots and load fonts
+    fontsDir = resolveFontsDir();
+    assetsDir = resolveAssetsDir(fontsDir);
 
-        // Load all fonts (from resolved fontsDir)
-        loadFont(fontsDir + "/arial/ArialCEMTBlack.ttf", 0); // title1
-        loadFont(fontsDir + "/arial/ArialCEBoldItalic.ttf", 1); // title2
-        loadFont(fontsDir + "/arial/ARIALBD.TTF", 2); // title3
-        loadFont(fontsDir + "/arial/ARIAL.TTF", 3); // text
+    loadFont(fontsDir + "/arial/ArialCEMTBlack.ttf", 0); // title1
+    loadFont(fontsDir + "/arial/ArialCEBoldItalic.ttf", 1); // title2
+    loadFont(fontsDir + "/arial/ARIALBD.TTF", 2); // title3
+    loadFont(fontsDir + "/arial/ARIAL.TTF", 3); // text
     
-    // Load logo
-    if (logoTexture.loadFromFile(std::string(FONT_DIR) + "/../../assets/img/logo_ensta_zeb.png")) {
+    // Load logo from resolved assets path; fallback to developer tree if needed
+    namespace fs = std::filesystem;
+    fs::path logoPath = fs::path(assetsDir) / "img" / "logo_ensta_zeb.png";
+    if (logoTexture.loadFromFile(logoPath.generic_string())) {
         logoSprite.emplace(logoTexture);
         logoLoaded = true;
     } else {
-        std::cerr << "Error: Could not load logo from assets/img/logo_ensta_zeb.png" << std::endl;
-        logoLoaded = false;
+        fs::path fallbackLogo = fs::path(std::string(FONT_DIR)).parent_path() / "img" / "logo_ensta_zeb.png";
+        if (logoTexture.loadFromFile(fallbackLogo.generic_string())) {
+            logoSprite.emplace(logoTexture);
+            logoLoaded = true;
+        } else {
+            std::cerr << "Error: Could not load logo from assets/img/logo_ensta_zeb.png" << std::endl;
+            logoLoaded = false;
+        }
     }
 }
 
@@ -317,6 +325,34 @@ std::string Render2D::resolveFontsDir() const {
 
     // 3) Last resort: return ./assets/fonts even if not found, loadFont will fail visibly
     return std::string("assets/fonts");
+}
+
+std::string Render2D::resolveAssetsDir(const std::string& resolvedFontsDir) const {
+    namespace fs = std::filesystem;
+
+    // Prefer assets directory adjacent to the resolved fonts folder
+    try {
+        fs::path fontsPath(resolvedFontsDir);
+        fs::path assetsPath = fontsPath.parent_path();
+        if (fs::exists(assetsPath / "fonts")) {
+            return assetsPath.generic_string();
+        }
+    } catch (...) {
+        // ignore
+    }
+
+    // Fallback to developer tree relative to compile-time FONT_DIR
+    try {
+        fs::path devAssets = fs::path(std::string(FONT_DIR)).parent_path();
+        if (fs::exists(devAssets)) {
+            return devAssets.generic_string();
+        }
+    } catch (...) {
+        // ignore
+    }
+
+    // Last resort: assume ./assets next to working directory
+    return std::string("assets");
 }
 
 void Render2D::enforceFixedSize() {

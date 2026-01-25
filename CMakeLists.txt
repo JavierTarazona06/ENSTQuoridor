@@ -1,6 +1,15 @@
 cmake_minimum_required(VERSION 3.20)
 project(ENSTQuoridor VERSION 1.0 LANGUAGES CXX)
 
+# Force SFML shared libraries on Unix to avoid missing static config with vcpkg default triplet
+set(SFML_STATIC_LIBRARIES OFF CACHE BOOL "Use SFML shared libraries")
+
+if (WIN32)
+  set(SFML_COMPONENTS Graphics Window System Main)
+else()
+  set(SFML_COMPONENTS Graphics Window System Audio Network)
+endif()
+
 # Uses C++ 17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -9,7 +18,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Find SFML package
-find_package(SFML COMPONENTS Graphics Window System Main REQUIRED)
+find_package(SFML COMPONENTS ${SFML_COMPONENTS} REQUIRED)
 
 # Library for the model
 add_library(quoridor_model 
@@ -56,8 +65,13 @@ endif()
 add_subdirectory(tests)
 
 # ===== INSTALL RULES =====
-# Install executable to root of package
-install(TARGETS quoridor_game RUNTIME DESTINATION .)
+# Install executable (bin on Unix, root on Windows for legacy ZIP layout)
+if (WIN32)
+  set(QUORIDOR_RUNTIME_DEST ".")
+else()
+  set(QUORIDOR_RUNTIME_DEST "bin")
+endif()
+install(TARGETS quoridor_game RUNTIME DESTINATION ${QUORIDOR_RUNTIME_DEST})
 
 # Install assets folder alongside executable
 install(DIRECTORY assets/ DESTINATION assets)
@@ -100,8 +114,17 @@ if(WIN32)
 endif()
 
 # ===== CPACK CONFIGURATION =====
-set(CPACK_GENERATOR "ZIP")
-set(CPACK_PACKAGE_FILE_NAME "Quoridor-1.0-Windows")
-set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)  # No extra wrapper folder in ZIP
+if (WIN32)
+  set(CPACK_GENERATOR "ZIP")
+  set(CPACK_PACKAGE_FILE_NAME "Quoridor-1.0-Windows")
+elseif(UNIX AND NOT APPLE)
+  set(CPACK_GENERATOR "TGZ")
+  set(CPACK_PACKAGE_FILE_NAME "Quoridor-1.0-Linux")
+else()
+  set(CPACK_GENERATOR "DragNDrop")
+  set(CPACK_PACKAGE_FILE_NAME "Quoridor-1.0-macOS")
+endif()
+
+set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)  # No extra wrapper folder in archives
 
 include(CPack)
