@@ -359,7 +359,7 @@ rm -rf build/arm64-osx
 | Membre | GitHub |
 |--------| --------|
 | **Javier Tarazona**  |[@JavierTarazona06](https://github.com/JavierTarazona06) |
-| **Tianyi Liang** | [@TimmyLTY](https://github.com/JavierTarazona06) |
+| **Tianyi Liang** | [@TimmyLTY](https://github.com/TmmyLTY) |
 
 ---
 
