@@ -44,6 +44,9 @@ public:
 
     // Get window reference
     sf::RenderWindow& getWindow();
+    
+    // Enforce fixed window size (prevents DPI scaling when moving between monitors)
+    void enforceFixedSize();
 
     // Getters for constants
     static constexpr unsigned int getWindowWidth() { return WINDOW_WIDTH; }

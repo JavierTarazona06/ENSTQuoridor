@@ -4,7 +4,7 @@
 namespace Quoridor {
 
 Render2D::Render2D() 
-    : window(sf::VideoMode({WINDOW_WIDTH, WINDOW_HEIGHT}), "ENSTQuoridor"),
+    : window(sf::VideoMode({WINDOW_WIDTH, WINDOW_HEIGHT}), "ENSTQuoridor", sf::Style::Titlebar | sf::Style::Close),
       currentMessageText(""),
       currentMessageColor(sf::Color::Green),
       messageDuration(-1.0f),
@@ -15,7 +15,8 @@ Render2D::Render2D()
       hasBackgroundMessage(false),
       logoSprite(std::nullopt),
       logoLoaded(false) {
-    // Optional: Set frame rate limit for smoother rendering
+    // Set fixed window size (no resizing) to prevent scaling when moving between screens
+    // sf::Style::Titlebar | sf::Style::Close = title bar + close button, NO resize capability
     window.setFramerateLimit(60);
     
     // Load all fonts
@@ -284,6 +285,17 @@ void Render2D::drawHUD(const Board& board, const State& state) {
 
 sf::RenderWindow& Render2D::getWindow() {
     return window;
+}
+
+void Render2D::enforceFixedSize() {
+    // Get current window size
+    sf::Vector2u currentSize = window.getSize();
+    
+    // If size differs from target, reset it immediately
+    // This prevents DPI scaling when moving between monitors
+    if (currentSize.x != WINDOW_WIDTH || currentSize.y != WINDOW_HEIGHT) {
+        window.setSize({WINDOW_WIDTH, WINDOW_HEIGHT});
+    }
 }
 
 void Render2D::showMessage(const std::string& text, const Color& color, float duration) {
