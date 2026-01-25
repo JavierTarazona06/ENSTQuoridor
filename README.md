@@ -162,70 +162,6 @@ ctest --test-dir build/arm64-osx/tests -C Release
 
 ---
 
-## 📂 Structure du projet
-
-```
-ENSTQuoridor/
-├── CMakeLists.txt              # Configuration de build
-├── CMakePresets.json           # Presets spécifiques aux plateformes
-├── vcpkg.json                  # Dépendances (SFML, Catch2)
-├── README.md                   # Ce fichier
-│
-├── src/
-│   ├── app/main.cpp            # Point d'entrée
-│   ├── controller/             # Boucle de jeu, gestion des entrées, scènes
-│   │   ├── Game.cpp
-│   │   ├── InputHandler.cpp
-│   │   ├── MenuScene.cpp
-│   │   ├── GameScene.cpp
-│   │   └── GameOverScene.cpp
-│   ├── model/                  # Logique de jeu principale
-│   │   ├── Board.cpp           # Gestion de l'état du plateau
-│   │   ├── Rules.cpp           # Validation des mouvements/murs
-│   │   ├── State.cpp           # État du jeu
-│   │   ├── Pathfinder.cpp      # Recherche de chemin BFS
-│   │   └── AI.cpp              # Moteur IA Minimax
-│   └── view/                   # Rendu
-│       ├── Render2D.cpp
-│       └── GameView.cpp
-│
-├── include/                    # Fichiers d'en-tête (miroir de src/)
-├── assets/
-│   ├── fonts/arial/            # Fichiers de police
-│   └── img/                    # Images et icônes
-│
-├── tests/                      # Tests unitaires (Catch2)
-│   ├── test_board.cpp
-│   ├── test_rules.cpp
-│   ├── test_pathfinder.cpp
-│   ├── test_ai_core.cpp
-│   ├── test_minimax.cpp
-│   └── ...
-│
-├── scripts/
-│   ├── bootstrap.sh            # Script de build Linux/macOS
-│   ├── bootstrap.ps1           # Script de build Windows
-│   ├── package-macos.sh        # Packaging macOS
-│   ├── package-linux.sh        # Packaging Linux
-│   └── generate-icon.sh        # Génération d'icône
-│
-└── docs/
-    ├── AI_DOCU.md              # Documentation technique IA
-    ├── USER_GUIDE.md           # Manuel utilisateur
-    ├── installation/           # Guides de build/packaging
-    │   ├── INSTALLATION.md     # Guide d'installation
-    │   └── PACKAGING.md        # Packaging (Windows, Linux, macOS)
-    ├── tests/                  # Guides de tests
-    │   ├── GUIDE_TESTS.md      # Guide de création de tests
-    │   └── PVE_DEMO_GUIDE.md   # Guide Joueur vs IA
-    └── planning/               # Documents de conception
-        ├── architecture/       # Documents d'architecture
-        ├── exigences/          # Documents d'exigences
-        └── planification_quoridor.pdf
-```
-
----
-
 ## 📦 Packaging pour distribution
 
 
@@ -250,55 +186,7 @@ cpack -G ZIP
 # Sortie : dist/Quoridor-x86_64.tar.gz
 #          dist/Quoridor-x86_64.AppImage
 ```
----
 
-## 🤖 Système IA
-
-L'IA utilise **Minimax avec élagage Alpha-Bêta** et une fonction d'évaluation sophistiquée :
-
-### Facteurs d'évaluation
-
-| Facteur | Poids | Description |
-|---------|-------|-------------|
-| Différence de distance | ×10 | Comparaison du plus court chemin |
-| Bonus fin de partie | ×15 | Récompense non-linéaire proche de la victoire |
-| Avantage de murs | ×2 | Comparaison des murs restants |
-| Mobilité | ×3 | Options de mouvement disponibles |
-| Efficacité des murs | ×5 | Combien les murs bloquent l'adversaire |
-
-### Injection de bruit
-
-Pour créer des difficultés battables, l'IA ajoute une randomisation contrôlée :
-- Plus de bruit = plus d'"erreurs" = plus facile à battre
-- Plage de bruit : `[-N, +N]` ajouté aux scores d'évaluation
-- Les états terminaux (victoire/défaite) ne sont jamais affectés par le bruit
-
-Pour la documentation détaillée de l'IA, voir [docs/AI_DOCU.md](docs/AI_DOCU.md).
-
----
-
-## 🧪 Tests
-
-Le projet inclut 32 tests unitaires complets :
-
-| Catégorie | Tests | Couverture |
-|-----------|-------|------------|
-| Board | 8 | Initialisation, mouvement, murs |
-| Rules | 6 | Validation des mouvements, sauts, placement de murs |
-| Pathfinder | 3 | BFS, blocage de chemin |
-| AI | 5 | Niveaux de difficulté, correction du minimax |
-| View | 3 | Rendu, polices |
-| Input | 5 | Gestion souris/clavier |
-| State | 2 | Gestion de l'état du jeu |
-
-```bash
-# Exécuter tous les tests
-ctest --test-dir build/arm64-osx/tests
-
-# Exécuter une catégorie spécifique
-./build/arm64-osx/tests/test_all "[ai]"
-./build/arm64-osx/tests/test_all "[rules]"
-```
 
 ---
 
@@ -328,29 +216,6 @@ ctest --test-dir build/arm64-osx/tests
 | [Architecture](docs/planning/architecture/architecture_quoridor.pdf) | Architecture MVC du projet |
 | [Planification](docs/planning/planification_quoridor.pdf) | Planning des itérations |
 
----
-
-## 🛠️ Développement
-
-### Presets de build
-
-| Preset | Plateforme | Architecture |
-|--------|------------|--------------|
-| `x64-windows` | Windows | x64 |
-| `x64-linux` | Linux | x64 |
-| `arm64-osx` | macOS | Apple Silicon |
-| `x64-osx` | macOS | Intel |
-
-### Recompilation après modifications
-
-```bash
-# Recompiler seulement (après bootstrap initial)
-cmake --build build/arm64-osx --config Release
-
-# Recompilation propre
-rm -rf build/arm64-osx
-./scripts/bootstrap.sh Release
-```
 
 ---
 
