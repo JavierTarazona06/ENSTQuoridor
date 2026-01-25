@@ -85,9 +85,18 @@ if(WIN32)
     DESTINATION .
     OPTIONAL
   )
+
+  # Also copy all dependency DLLs from vcpkg's bin (freetype, libpng, zlib, brotli, bzip2, etc.)
+  # This ensures users won't miss transitive dependencies on fresh machines.
+  if (VCPKG_TARGET_TRIPLET)
+    set(VCPKG_BIN_DIR "${CMAKE_BINARY_DIR}/vcpkg_installed/${VCPKG_TARGET_TRIPLET}/bin")
+    if (EXISTS "${VCPKG_BIN_DIR}")
+      install(DIRECTORY "${VCPKG_BIN_DIR}/" DESTINATION . FILES_MATCHING PATTERN "*.dll")
+    endif()
+  endif()
   
   # Optional: Install MSVC runtime (uncomment if needed)
-  # include(InstallRequiredSystemLibraries)
+  include(InstallRequiredSystemLibraries)
 endif()
 
 # ===== CPACK CONFIGURATION =====

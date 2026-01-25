@@ -1,5 +1,6 @@
 #include "view/Render2D.hpp"
 #include <iostream>
+#include <filesystem>
 
 namespace Quoridor {
 
@@ -19,11 +20,14 @@ Render2D::Render2D()
     // sf::Style::Titlebar | sf::Style::Close = title bar + close button, NO resize capability
     window.setFramerateLimit(60);
     
-    // Load all fonts
-    loadFont(std::string(FONT_DIR) + "/arial/ArialCEMTBlack.ttf", 0); // title1
-    loadFont(std::string(FONT_DIR) + "/arial/ArialCEBoldItalic.ttf", 1); // title2
-    loadFont(std::string(FONT_DIR) + "/arial/ARIALBD.TTF", 2); // title3
-    loadFont(std::string(FONT_DIR) + "/arial/ARIAL.TTF", 3); // text
+        // Resolve fonts directory based on runtime environment
+        fontsDir = resolveFontsDir();
+
+        // Load all fonts (from resolved fontsDir)
+        loadFont(fontsDir + "/arial/ArialCEMTBlack.ttf", 0); // title1
+        loadFont(fontsDir + "/arial/ArialCEBoldItalic.ttf", 1); // title2
+        loadFont(fontsDir + "/arial/ARIALBD.TTF", 2); // title3
+        loadFont(fontsDir + "/arial/ARIAL.TTF", 3); // text
     
     // Load logo
     if (logoTexture.loadFromFile(std::string(FONT_DIR) + "/../../assets/img/logo_ensta_zeb.png")) {
@@ -285,6 +289,34 @@ void Render2D::drawHUD(const Board& board, const State& state) {
 
 sf::RenderWindow& Render2D::getWindow() {
     return window;
+}
+
+std::string Render2D::resolveFontsDir() const {
+    namespace fs = std::filesystem;
+
+    // 1) Try runtime relative: ./assets/fonts next to executable (usual for packaged zip)
+    try {
+        fs::path cwd = fs::current_path();
+        fs::path candidate = cwd / "assets" / "fonts";
+        if (fs::exists(candidate / "arial" / "ARIAL.TTF")) {
+            return candidate.generic_string();
+        }
+    } catch (...) {
+        // ignore
+    }
+
+    // 2) Fallback to compile-time FONT_DIR (developer tree)
+    try {
+        fs::path dev = fs::path(std::string(FONT_DIR));
+        if (fs::exists(dev / "arial" / "ARIAL.TTF")) {
+            return dev.generic_string();
+        }
+    } catch (...) {
+        // ignore
+    }
+
+    // 3) Last resort: return ./assets/fonts even if not found, loadFont will fail visibly
+    return std::string("assets/fonts");
 }
 
 void Render2D::enforceFixedSize() {
