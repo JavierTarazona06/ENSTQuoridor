@@ -236,3 +236,34 @@ chmod +x Quoridor-x86_64.AppImage
 ./Quoridor-x86_64.AppImage
 ```
 Some distributions require `libfuse2` to run AppImages.
+
+**AppImage Troubleshooting**
+- **Symptom:** Errors like "Cannot mount AppImage", "Can't open squashfs image: Bad address", or FUSE usage output when starting the AppImage.
+- **Cause:** Missing FUSE v2 support (`libfuse2`) or running in environments without FUSE (e.g., WSL).
+- **Fix (Ubuntu/Debian):**
+   ```bash
+   sudo apt update
+   sudo apt install -y libfuse2 squashfuse
+   # optional: ensure your user is in the fuse group
+   sudo usermod -aG fuse "$USER" && newgrp fuse
+   ```
+- **Fix (Fedora/RHEL/CentOS):**
+   ```bash
+   sudo dnf install -y fuse
+   # or
+   sudo yum install -y fuse
+   ```
+- **Fix (Arch/Manjaro):**
+   ```bash
+   sudo pacman -S fuse2
+   ```
+- **Fallback (no FUSE available):**
+   ```bash
+   cd dist
+   chmod +x Quoridor-x86_64.AppImage
+   ./Quoridor-x86_64.AppImage --appimage-extract
+   ./squashfs-root/AppRun
+   # or in one step
+   APPIMAGE_EXTRACT_AND_RUN=1 ./Quoridor-x86_64.AppImage
+   ```
+- **WSL note:** WSL does not support FUSE; use the tar.gz package or the extraction fallback above.
