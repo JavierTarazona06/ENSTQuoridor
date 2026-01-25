@@ -84,9 +84,6 @@ void GameView::render(Render2D& render, const Board& board, const State& state, 
     // Draw game mode and difficulty info box
     drawGameModeInfoBox(render, mode, difficulty);
 
-    // Draw logo
-    //render.drawLogo(std::nullopt, centerY - 200.0f);
-
     // Draw Victory Overlay if game is over
     if (state.getGameStatus() != GameStatus::Playing) {
         // Semi-transparent overlay

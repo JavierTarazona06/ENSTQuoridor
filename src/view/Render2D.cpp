@@ -374,8 +374,7 @@ void Render2D::showMessage(const std::string& text, const Color& color, float du
         backgroundMessageColor = currentMessageColor;
         hasBackgroundMessage = true;
     } else {
-        // Not preempting, so clear any saved background message
-        //this was commentted, check if needed
+        // Not preempting, clear any saved background message
         hasBackgroundMessage = false;
     }
     
