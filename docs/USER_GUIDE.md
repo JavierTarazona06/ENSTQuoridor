@@ -182,9 +182,9 @@ Lorsqu'un joueur atteint sa rangée objectif :
 
 ## 📚 Voir aussi
 
-- [Documentation IA](AI_Documentation.md) — Détails de l'algorithme
-- [Guide démo PVE](PVE_DEMO_GUIDE.md) — Guide Joueur vs IA
-- [Instructions d'installation](installation/game.md) — Compilation et exécution
+- [Documentation IA](AI_DOCU.md) — Détails de l'algorithme
+- [Guide démo PVE](tests/PVE_DEMO_GUIDE.md) — Guide Joueur vs IA
+- [Instructions d'installation](installation/INSTALLATION.md) — Compilation et exécution
 
 ---
 

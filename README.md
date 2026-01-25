@@ -210,10 +210,18 @@ ENSTQuoridor/
 │   └── generate-icon.sh        # Génération d'icône
 │
 └── docs/
-    ├── AI_Documentation.md     # Détails de l'algorithme IA
-    ├── PVE_DEMO_GUIDE.md       # Guide Joueur vs IA
+    ├── AI_DOCU.md              # Documentation technique IA
     ├── USER_GUIDE.md           # Manuel utilisateur
-    └── installation/           # Guides de build/packaging
+    ├── installation/           # Guides de build/packaging
+    │   ├── INSTALLATION.md     # Guide d'installation
+    │   └── PACKAGING.md        # Packaging (Windows, Linux, macOS)
+    ├── tests/                  # Guides de tests
+    │   ├── GUIDE_TESTS.md      # Guide de création de tests
+    │   └── PVE_DEMO_GUIDE.md   # Guide Joueur vs IA
+    └── planning/               # Documents de conception
+        ├── architecture/       # Documents d'architecture
+        ├── exigences/          # Documents d'exigences
+        └── planification_quoridor.pdf
 ```
 
 ---
@@ -265,7 +273,7 @@ Pour créer des difficultés battables, l'IA ajoute une randomisation contrôlé
 - Plage de bruit : `[-N, +N]` ajouté aux scores d'évaluation
 - Les états terminaux (victoire/défaite) ne sont jamais affectés par le bruit
 
-Pour la documentation détaillée de l'IA, voir [docs/AI_Documentation.md](docs/AI_Documentation.md).
+Pour la documentation détaillée de l'IA, voir [docs/AI_DOCU.md](docs/AI_DOCU.md).
 
 ---
 
@@ -296,15 +304,29 @@ ctest --test-dir build/arm64-osx/tests
 
 ## 📚 Documentation
 
+### Guides utilisateur
+
 | Document | Description |
 |----------|-------------|
-| [Guide démo PVE](docs/PVE_DEMO_GUIDE.md) | Comment jouer contre l'IA |
-| [Documentation IA](docs/AI_Documentation.md) | Détails de l'algorithme |
-| [Guide utilisateur](docs/USER_GUIDE.md) | Manuel complet |
-| [Guide d'installation](docs/installation/game.md) | Instructions de build |
-| [Packaging macOS](docs/installation/packaging-macos.md) | Création du .dmg |
-| [Exigences](docs/exigences/exigences_quoridor.pdf) | Spécification |
-| [Architecture](docs/arquitecture/architecture_quoridor.pdf) | Documents de conception |
+| [Guide utilisateur](docs/USER_GUIDE.md) | Manuel complet des contrôles et règles |
+| [Guide démo PVE](docs/tests/PVE_DEMO_GUIDE.md) | Comment jouer contre l'IA |
+| [Documentation IA](docs/AI_DOCU.md) | Architecture Minimax, heuristiques, difficulté |
+
+### Guides techniques
+
+| Document | Description |
+|----------|-------------|
+| [Guide d'installation](docs/installation/INSTALLATION.md) | Compilation et exécution |
+| [Packaging](docs/installation/PACKAGING.md) | Création de packages (Windows, Linux, macOS) |
+| [Guide de création de tests](docs/tests/GUIDE_TESTS.md) | Comment écrire des tests Catch2 |
+
+### Documents de conception
+
+| Document | Description |
+|----------|-------------|
+| [Exigences](docs/planning/exigences/exigences_quoridor.pdf) | Spécification fonctionnelle |
+| [Architecture](docs/planning/architecture/architecture_quoridor.pdf) | Architecture MVC du projet |
+| [Planification](docs/planning/planification_quoridor.pdf) | Planning des itérations |
 
 ---
 
