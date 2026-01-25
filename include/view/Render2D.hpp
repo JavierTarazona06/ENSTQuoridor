@@ -44,6 +44,9 @@ public:
 
     // Get window reference
     sf::RenderWindow& getWindow();
+    
+    // Enforce fixed window size (prevents DPI scaling when moving between monitors)
+    void enforceFixedSize();
 
     // Getters for constants
     static constexpr unsigned int getWindowWidth() { return WINDOW_WIDTH; }
@@ -54,6 +57,8 @@ public:
 
 private:
     sf::RenderWindow window;
+    std::string fontsDir;
+    std::string assetsDir;
     sf::Font fontTitle1;
     sf::Font fontTitle2;
     sf::Font fontTitle3;
@@ -103,6 +108,10 @@ private:
     static constexpr float MESSAGE_BOX_HEIGHT = 100.0f;
     static constexpr float MESSAGE_BOX_MARGIN_BOTTOM = 20.0f;
     static constexpr unsigned int MESSAGE_FONT_SIZE = 24;
+
+    // Resolve fonts directory at runtime (package vs dev tree)
+    std::string resolveFontsDir() const;
+    std::string resolveAssetsDir(const std::string& resolvedFontsDir) const;
 };
 
 } // namespace Quoridor

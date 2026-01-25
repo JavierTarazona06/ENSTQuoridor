@@ -456,7 +456,7 @@ private:
         } else {
             state.switchPlayer();
             // Show player turn message
-            renderer.showMessage("Player 1 Turn - Select pawn or press W for wall mode", {255, 255, 255}, -1.0f);
+            renderer.showMessage("Your turn - Select pawn or press W for wall mode", {255, 255, 255}, -1.0f);
         }
     }
 
