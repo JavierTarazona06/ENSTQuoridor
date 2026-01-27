@@ -123,4 +123,7 @@ _minted*
 texput.log
 latex.out/
 
+# But keep PDF documentation
+!docs/**/*.pdf
+
 dist/
