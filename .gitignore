@@ -122,3 +122,5 @@ _CPack_Packages/
 _minted*
 texput.log
 latex.out/
+
+dist/

@@ -104,7 +104,7 @@ ENSTQuoridor/
 
 ### Game Modes
 - **Human vs Human**: Local multiplayer on the same machine
-- **Human vs AI**: Challenge the computer at three difficulty levels
+- **Human vs AI**: Challenge the computer at four difficulty levels
 
 
 ### Controls
@@ -118,7 +118,7 @@ ENSTQuoridor/
 
 #### In-Game
 - **Mouse:**
-  - Click your pawn to select; click a destination cell to move.
+  - Click your pawn to select, then click a destination cell to move.
   - Click the selected pawn again to deselect.
 - **Keyboard:**
   - `W` — Toggle wall placement mode.
@@ -127,7 +127,6 @@ ENSTQuoridor/
   - `R` — Reset game.
   - `Esc` — Return to menu.
 
-See also the detailed PVE demo guide: [docs/PVE_DEMO_GUIDE.md](docs/PVE_DEMO_GUIDE.md)
 
 ---
 

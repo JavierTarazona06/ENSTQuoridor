@@ -168,4 +168,102 @@ If you want to distribute the application to users who don't have development to
 - SFML DLL files
 - Assets folder
 
-See the packaging documentation for instructions on creating distributable packages.
+### Creating a Distributable ZIP Package (Windows)
+
+First, build the Release version:
+
+```powershell
+# Configure (if not already done)
+cmake --preset x64-windows
+
+# Build Release
+scripts\bootstrap.ps1 -Config Release
+# Or just program
+cmake --build build\x64-windows --config Release
+```
+
+Then generate the portable ZIP package:
+
+```powershell
+cd build\x64-windows
+cpack -G ZIP -C Release
+```
+
+This creates `Quoridor-1.0-Windows.zip` containing:
+- `quoridor_game.exe`
+- SFML DLLs (`sfml-graphics-3.dll`, `sfml-window-3.dll`, `sfml-system-3.dll`, `sfml-audio-3.dll`)
+- `assets/` folder with fonts and images
+
+The ZIP can be distributed to users who can simply extract and double-click `quoridor_game.exe` to run the game.
+
+### Creating a Distributable Package (Linux)
+
+To generate end-user packages, run:
+
+```bash
+scripts/package-linux.sh
+```
+
+Recommended steps (tar.gz):
+1. Open a terminal and extract the archive from the repository root:
+   ```bash
+   cd dist
+   tar -xvzf Quoridor-x86_64.tar.gz
+   ```
+   This creates a new folder with the unpacked program.
+2. Enter the extracted folder:
+   ```bash
+   cd quoridor
+   ```
+3. List files and locate the executable:
+   ```bash
+   ls -l
+   ```
+   Look for a file without an extension or with `.sh`/`.bin` (examples: `Quoridor`, `run.sh`, `start.sh`).
+4. Grant execute permission if needed:
+   ```bash
+   chmod +x quoridor_game
+   ```
+   Replace `Quoridor` with the actual executable name.
+5. Run the program:
+   ```bash
+   ./quoridor_game
+   ```
+
+An `Quoridor-x86_64.AppImage` is also produced in `dist/`. Make it executable and run it:
+```bash
+chmod +x Quoridor-x86_64.AppImage
+./Quoridor-x86_64.AppImage
+```
+Some distributions require `libfuse2` to run AppImages.
+
+**AppImage Troubleshooting**
+- **Symptom:** Errors like "Cannot mount AppImage", "Can't open squashfs image: Bad address", or FUSE usage output when starting the AppImage.
+- **Cause:** Missing FUSE v2 support (`libfuse2`) or running in environments without FUSE (e.g., WSL).
+- **Fix (Ubuntu/Debian):**
+   ```bash
+   sudo apt update
+   sudo apt install -y libfuse2 squashfuse
+   # optional: ensure your user is in the fuse group
+   sudo usermod -aG fuse "$USER" && newgrp fuse
+   ```
+- **Fix (Fedora/RHEL/CentOS):**
+   ```bash
+   sudo dnf install -y fuse
+   # or
+   sudo yum install -y fuse
+   ```
+- **Fix (Arch/Manjaro):**
+   ```bash
+   sudo pacman -S fuse2
+   ```
+- **Fallback (no FUSE available):**
+   ```bash
+   cd dist
+   chmod +x Quoridor-x86_64.AppImage
+   ./Quoridor-x86_64.AppImage --appimage-extract
+   ./squashfs-root/AppRun
+   # or in one step
+   APPIMAGE_EXTRACT_AND_RUN=1 ./Quoridor-x86_64.AppImage
+   ```
+- **WSL note:** WSL does not support FUSE; use the tar.gz package or the extraction fallback above.

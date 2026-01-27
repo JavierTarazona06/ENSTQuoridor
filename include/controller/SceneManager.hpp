@@ -10,7 +10,8 @@ namespace Quoridor {
 enum class GameState {
     Menu,
     Playing,
-    GameOver
+    GameOver,
+    HowToPlay
 };
 
 class SceneManager {
