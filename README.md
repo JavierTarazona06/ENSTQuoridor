@@ -93,8 +93,8 @@ git clone https://github.com/JavierTarazona06/ENSTQuoridor.git
 cd ENSTQuoridor
 chmod +x scripts/bootstrap.sh
 ./scripts/bootstrap.sh Release
-./build/arm64-osx/quoridor_game   # Apple Silicon
-# ou : ./build/x64-osx/quoridor_game  # Mac Intel
+open ./build/arm64-osx/quoridor_game.app   # Apple Silicon
+# ou : open ./build/x64-osx/quoridor_game.app  # Mac Intel
 ```
 
 ### Exécution des tests

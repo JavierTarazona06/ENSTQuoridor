@@ -69,8 +69,12 @@ ctest --test-dir build/x64-linux/tests -C Debug
 
 **macOS**
 ```bash
-./build/arm64-osx/quoridor_game      # Apple Silicon
-./build/x64-osx/quoridor_game        # Intel
+open ./build/arm64-osx/quoridor_game.app      # Apple Silicon
+open ./build/x64-osx/quoridor_game.app        # Intel
+# Ou directement :
+./build/arm64-osx/quoridor_game.app/Contents/MacOS/quoridor_game
+./build/x64-osx/quoridor_game.app/Contents/MacOS/quoridor_game
+
 ctest --test-dir build/arm64-osx/tests -C Debug
 ./build/arm64-osx/tests/test_all [tags]
 # Variante x64 :
