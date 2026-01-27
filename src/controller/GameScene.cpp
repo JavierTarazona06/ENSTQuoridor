@@ -148,7 +148,7 @@ void GameScene::executeAITurn() {
     } else {
         // Switch back to human player
         state.switchPlayer();
-        renderer.showMessage("Your Turn (red pawn), select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
+        renderer.showMessage("Your Turn (red pawn), select it to start moving or press w to place wall", {255,255,255}, -1.0f);
     }
     
     aiThinking = false;

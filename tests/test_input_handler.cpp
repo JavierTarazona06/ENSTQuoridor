@@ -145,7 +145,7 @@ sf::Event createKeyEvent(sf::Keyboard::Key key) {
     return sf::Event(keyEvent);
 }
 
-TEST_CASE("InputHandler R key resets game when finished", "[input][reset]") {
+TEST_CASE("InputHandler Enter key resets game when finished", "[input][reset]") {
     Board board;
     State state;
     Rules rules;
@@ -153,7 +153,7 @@ TEST_CASE("InputHandler R key resets game when finished", "[input][reset]") {
     InputHandler inputHandler(board, state, rules, render);
     sf::RenderWindow window;
     
-    SECTION("R key resets game when Player1 won") {
+    SECTION("Enter key resets game when Player1 won") {
         // Set game status to Player1Won
         state.setGameStatus(GameStatus::Player1Won);
         
@@ -167,8 +167,8 @@ TEST_CASE("InputHandler R key resets game when finished", "[input][reset]") {
         REQUIRE(board.getPawnPosition(0).x == 5);
         REQUIRE(board.getPawnPosition(0).y == 3);
         
-        // Press R key
-        inputHandler.handleInput(createKeyEvent(sf::Keyboard::Key::R), window);
+        // Press Enter key
+        inputHandler.handleInput(createKeyEvent(sf::Keyboard::Key::Enter), window);
         
         // Verify game is reset
         REQUIRE(state.getGameStatus() == GameStatus::Playing);
@@ -183,24 +183,24 @@ TEST_CASE("InputHandler R key resets game when finished", "[input][reset]") {
         REQUIRE(p1.y == BOARD_SIZE - 1);
     }
     
-    SECTION("R key resets game when Player2 won") {
+    SECTION("Enter key resets game when Player2 won") {
         // Set game status to Player2Won
         state.setGameStatus(GameStatus::Player2Won);
         
         // Verify game is finished
         REQUIRE(state.getGameStatus() == GameStatus::Player2Won);
         
-        // Press R key
-        inputHandler.handleInput(createKeyEvent(sf::Keyboard::Key::R), window);
+        // Press Enter key
+        inputHandler.handleInput(createKeyEvent(sf::Keyboard::Key::Enter), window);
         
         // Verify game is reset
         REQUIRE(state.getGameStatus() == GameStatus::Playing);
         REQUIRE(state.getCurrentPlayer() == 0);
     }
     
-    SECTION("R key resets game at any time (including while playing)") {
-        // After view branch merge, R key now resets game at any time
-        // This is a design change: users can restart mid-game
+    SECTION("Enter key does not reset game while playing") {
+        // Enter key should only work when game is finished
+        // During gameplay, Enter should have no effect
         
         // Game is already in Playing state by default
         REQUIRE(state.getGameStatus() == GameStatus::Playing);
@@ -209,16 +209,16 @@ TEST_CASE("InputHandler R key resets game when finished", "[input][reset]") {
         board.movePawn(0, {5, 3});
         state.switchPlayer();
         
-        // Press R key - should reset the game
-        inputHandler.handleInput(createKeyEvent(sf::Keyboard::Key::R), window);
+        // Press Enter key - should NOT reset the game while playing
+        inputHandler.handleInput(createKeyEvent(sf::Keyboard::Key::Enter), window);
         
-        // Game SHOULD be reset (new behavior)
+        // Game should NOT be reset (pawn stays at modified position)
         Position p0 = board.getPawnPosition(0);
-        REQUIRE(p0.x == BOARD_SIZE / 2);  // Back to initial position
-        REQUIRE(p0.y == 0);
+        REQUIRE(p0.x == 5);  // Still at modified position
+        REQUIRE(p0.y == 3);
         
-        // Player should be reset to 0
-        REQUIRE(state.getCurrentPlayer() == 0);
+        // Player should still be 1
+        REQUIRE(state.getCurrentPlayer() == 1);
         REQUIRE(state.getGameStatus() == GameStatus::Playing);
     }
 }
