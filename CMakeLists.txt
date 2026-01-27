@@ -28,6 +28,7 @@ add_library(quoridor_model
     src/model/Rules.cpp
     src/model/AI.cpp
     src/view/Render2D.cpp
+    src/view/Button.cpp
     src/view/GameView.cpp
     src/controller/server.cpp
     src/controller/InputHandler.cpp
@@ -35,6 +36,7 @@ add_library(quoridor_model
     src/controller/MenuScene.cpp
     src/controller/GameScene.cpp
     src/controller/GameOverScene.cpp
+    src/controller/HowToPlayScene.cpp
     src/controller/Game.cpp
 )
 # Define FONT_DIR for font assets
@@ -47,8 +49,29 @@ target_link_libraries(quoridor_model PUBLIC
     SFML::System
 )
 
-# Create executable for the game (WIN32 hides console on Windows)
-add_executable(quoridor_game WIN32 src/app/main.cpp)
+# Create executable for the game
+# - WIN32 hides console on Windows
+# - MACOSX_BUNDLE creates .app bundle on macOS
+if(APPLE)
+    add_executable(quoridor_game MACOSX_BUNDLE src/app/main.cpp)
+    
+    # Configure macOS bundle properties
+    set_target_properties(quoridor_game PROPERTIES
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_BUNDLE_NAME "Quoridor"
+        MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+        MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "com.ensta.quoridor"
+        MACOSX_BUNDLE_ICON_FILE "quoridor.icns"
+        MACOSX_BUNDLE_COPYRIGHT "© 2026 ENSTA Paris"
+        MACOSX_BUNDLE_INFO_STRING "Quoridor Board Game"
+    )
+elseif(WIN32)
+    add_executable(quoridor_game WIN32 src/app/main.cpp)
+else()
+    add_executable(quoridor_game src/app/main.cpp)
+endif()
+
 target_link_libraries(quoridor_game PRIVATE 
     quoridor_model
     SFML::Graphics 
@@ -65,16 +88,32 @@ endif()
 add_subdirectory(tests)
 
 # ===== INSTALL RULES =====
-# Install executable (bin on Unix, root on Windows for legacy ZIP layout)
-if (WIN32)
-  set(QUORIDOR_RUNTIME_DEST ".")
+# Platform-specific installation destinations
+if(APPLE)
+    # macOS: Install bundle to Applications-like location
+    set(QUORIDOR_RUNTIME_DEST ".")
+    set(QUORIDOR_BUNDLE_DEST ".")
+    
+    # Install the .app bundle
+    install(TARGETS quoridor_game
+        BUNDLE DESTINATION ${QUORIDOR_BUNDLE_DEST}
+        RUNTIME DESTINATION ${QUORIDOR_RUNTIME_DEST}
+    )
+    
+    # Copy assets into the bundle's Resources folder
+    install(DIRECTORY assets/
+        DESTINATION "quoridor_game.app/Contents/Resources/assets"
+    )
+    
+elseif(WIN32)
+    set(QUORIDOR_RUNTIME_DEST ".")
+    install(TARGETS quoridor_game RUNTIME DESTINATION ${QUORIDOR_RUNTIME_DEST})
+    install(DIRECTORY assets/ DESTINATION assets)
 else()
-  set(QUORIDOR_RUNTIME_DEST "bin")
+    set(QUORIDOR_RUNTIME_DEST "bin")
+    install(TARGETS quoridor_game RUNTIME DESTINATION ${QUORIDOR_RUNTIME_DEST})
+    install(DIRECTORY assets/ DESTINATION assets)
 endif()
-install(TARGETS quoridor_game RUNTIME DESTINATION ${QUORIDOR_RUNTIME_DEST})
-
-# Install assets folder alongside executable
-install(DIRECTORY assets/ DESTINATION assets)
 
 # ===== INSTALL DEPENDENCIES FOR WINDOWS =====
 # Manually copy SFML and runtime DLLs needed for portable package
@@ -114,15 +153,33 @@ if(WIN32)
 endif()
 
 # ===== CPACK CONFIGURATION =====
-if (WIN32)
-  set(CPACK_GENERATOR "ZIP")
-  set(CPACK_PACKAGE_FILE_NAME "Quoridor-1.0-Windows")
-elseif(UNIX AND NOT APPLE)
-  set(CPACK_GENERATOR "TGZ")
-  set(CPACK_PACKAGE_FILE_NAME "Quoridor-1.0-Linux")
+set(CPACK_PACKAGE_NAME "Quoridor")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_VENDOR "ENSTA Paris")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Quoridor Board Game")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/README.md")
+
+if(WIN32)
+    set(CPACK_GENERATOR "ZIP")
+    set(CPACK_PACKAGE_FILE_NAME "Quoridor-${PROJECT_VERSION}-Windows-x64")
+elseif(APPLE)
+    set(CPACK_GENERATOR "DragNDrop")
+    set(CPACK_PACKAGE_FILE_NAME "Quoridor-${PROJECT_VERSION}-macOS")
+    
+    # DMG configuration
+    set(CPACK_DMG_VOLUME_NAME "Quoridor")
+    set(CPACK_DMG_FORMAT "UDBZ")  # Compressed format
+    
+    # Optional: Custom DMG background (uncomment if you have one)
+    # set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/assets/img/dmg_background.png")
+    
+    # Bundle configuration for CPack
+    set(CPACK_BUNDLE_NAME "Quoridor")
+    set(CPACK_BUNDLE_PLIST "${CMAKE_BINARY_DIR}/Info.plist")
+    set(CPACK_BUNDLE_ICON "${CMAKE_SOURCE_DIR}/assets/img/quoridor.icns")
 else()
-  set(CPACK_GENERATOR "DragNDrop")
-  set(CPACK_PACKAGE_FILE_NAME "Quoridor-1.0-macOS")
+    set(CPACK_GENERATOR "TGZ")
+    set(CPACK_PACKAGE_FILE_NAME "Quoridor-${PROJECT_VERSION}-Linux-x64")
 endif()
 
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)  # No extra wrapper folder in archives

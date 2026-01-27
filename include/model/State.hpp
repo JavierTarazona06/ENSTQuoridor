@@ -1,7 +1,9 @@
 #pragma once
 
 #include "model/Board.hpp"
+#include "model/PlayerId.hpp"
 #include <optional>
+#include <string>
 
 namespace Quoridor {
 
@@ -58,6 +60,12 @@ namespace Quoridor {
         // Wall preview for placement mode
         void setPreviewWall(const std::optional<Wall>& wall);
         std::optional<Wall> getPreviewWall() const;
+
+        /**
+         * @brief Gets the display name of the current player.
+         * @return std::string Player name (e.g., "Red" or "Blue")
+         */
+        std::string getPlayerName() const;
 
     private:
         int currentPlayer_; // 0 or 1

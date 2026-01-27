@@ -1,4 +1,5 @@
 #include "view/Render2D.hpp"
+#include "view/Button.hpp"
 #include <iostream>
 #include <filesystem>
 
@@ -295,6 +296,10 @@ void Render2D::drawHUD(const Board& board, const State& state) {
     drawText(statusText, hudX + HUD_BOX_WIDTH * 0.5f, section4Y + 26.0f, 16, statusColor, 2);
 }
 
+void Render2D::drawButton(Button& button) {
+    button.draw(window, fontText);
+}
+
 sf::RenderWindow& Render2D::getWindow() {
     return window;
 }
@@ -374,8 +379,7 @@ void Render2D::showMessage(const std::string& text, const Color& color, float du
         backgroundMessageColor = currentMessageColor;
         hasBackgroundMessage = true;
     } else {
-        // Not preempting, so clear any saved background message
-        //this was commentted, check if needed
+        // Not preempting, clear any saved background message
         hasBackgroundMessage = false;
     }
     

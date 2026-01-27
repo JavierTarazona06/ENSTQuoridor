@@ -30,6 +30,7 @@ public:
     void drawWalls(const Board& board);
     void drawWallPreview(const std::optional<Wall>& previewWall);
     void drawHUD(const Board& board, const State& state);
+    void drawButton(class Button& button);  // Forward declaration
 
     // Message box system
     void showMessage(const std::string& text, const Color& color, float duration = -1.0f);
@@ -84,8 +85,7 @@ private:
     static constexpr unsigned int WINDOW_WIDTH = 1050;
     static constexpr unsigned int WINDOW_HEIGHT = 900;
     static constexpr float CELL_SIZE = 60.0f;
-    static constexpr float GRID_OFFSET_X = WINDOW_WIDTH / 2.0f - (CELL_SIZE * BOARD_SIZE) / 2.0f; // Center the grid
-    //180.0f; //TODO/ Delete
+    static constexpr float GRID_OFFSET_X = WINDOW_WIDTH / 2.0f - (CELL_SIZE * BOARD_SIZE) / 2.0f;
     static constexpr float GRID_OFFSET_Y = 180.0f;
     static constexpr float PAWN_RADIUS = 20.0f;
     static constexpr sf::Color BOARD_COLOR = sf::Color(240, 217, 181); //Beige
