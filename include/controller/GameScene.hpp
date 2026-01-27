@@ -20,6 +20,10 @@ public:
     void update(float deltaTime) override;
     void render() override;
 
+    // Public action methods for button and keyboard input
+    void triggerHome();     // Go back to menu (ESC key / Home button)
+    void triggerRestart();  // Restart game (R key / Restart button)
+
 private:
     void checkForGameOver();
     void executeAITurn();

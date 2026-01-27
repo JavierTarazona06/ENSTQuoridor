@@ -28,6 +28,7 @@ add_library(quoridor_model
     src/model/Rules.cpp
     src/model/AI.cpp
     src/view/Render2D.cpp
+    src/view/Button.cpp
     src/view/GameView.cpp
     src/controller/server.cpp
     src/controller/InputHandler.cpp

@@ -12,19 +12,8 @@ void InputHandler::handleInput(const sf::Event& event, const sf::RenderWindow& w
     if (event.is<sf::Event::KeyPressed>()) {
         auto keyEvent = event.getIf<sf::Event::KeyPressed>();
         
-        // 'R' key - restart game at any time
-        if (keyEvent->code == sf::Keyboard::Key::R) {
-            board.resetGame();
-            state.resetGame();
-            currentMode = InputMode::MovePawn;
-            
-            // Display initial turn message
-            int currentPlayer = state.getCurrentPlayer();
-            Color playerColor = board.getPawnColor(currentPlayer);
-            std::string playerName = "Player " + std::to_string(currentPlayer + 1);
-            render.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
-            return;
-        }
+        // Note: 'R' key is now handled in GameScene to centralize restart logic
+        // and enable button-based restart as well
     }
     
     // If game is over, don't allow other actions

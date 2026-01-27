@@ -30,6 +30,7 @@ public:
     void drawWalls(const Board& board);
     void drawWallPreview(const std::optional<Wall>& previewWall);
     void drawHUD(const Board& board, const State& state);
+    void drawButton(class Button& button);  // Forward declaration
 
     // Message box system
     void showMessage(const std::string& text, const Color& color, float duration = -1.0f);

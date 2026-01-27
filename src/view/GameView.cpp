@@ -5,6 +5,12 @@
 
 namespace Quoridor {
 
+GameView::GameView()
+    : homeButton(15.0f, 15.0f, 80.0f, 35.0f, "Home", 16),
+      restartButton(Render2D::getWindowWidth() - 95.0f, 15.0f, 80.0f, 35.0f, "Restart", 16) {
+    // Buttons are initialized with positions in top-left and top-right corners
+}
+
 void GameView::render(Render2D& render, const Board& board, const State& state, GameMode mode, Difficulty difficulty) {
     // Draw title text
     float centerX = Render2D::getWindowWidth() * 0.5f;
@@ -84,6 +90,9 @@ void GameView::render(Render2D& render, const Board& board, const State& state, 
     // Draw game mode and difficulty info box
     drawGameModeInfoBox(render, mode, difficulty);
 
+    // Draw buttons
+    drawButtons(render);
+
     // Draw logo
     //render.drawLogo(std::nullopt, centerY - 200.0f);
 
@@ -160,6 +169,31 @@ void GameView::drawGameModeInfoBox(Render2D& render, GameMode mode, Difficulty d
         render.drawText("Difficulty: " + diffText, gridRightX + boxWidth / 2.0f, gridMiddleY + 2.0f, 16, diffColor, 0);
         render.drawText("Press 1-4 to change", gridRightX + boxWidth / 2.0f, gridMiddleY + 30.0f, 16, sf::Color(180, 180, 180), 0);
     }
+}
+
+void GameView::drawButtons(Render2D& render) {
+    // Draw Home and Restart buttons
+    render.drawButton(homeButton);
+    render.drawButton(restartButton);
+}
+
+bool GameView::handleButtonClick(float x, float y) {
+    // Check for home button click
+    if (homeButton.handleClick(x, y)) {
+        return true;
+    }
+    
+    // Check for restart button click
+    if (restartButton.handleClick(x, y)) {
+        return true;
+    }
+    
+    return false;
+}
+
+void GameView::updateButtonHover(float x, float y) {
+    homeButton.updateHover(x, y);
+    restartButton.updateHover(x, y);
 }
 
 } // namespace Quoridor
