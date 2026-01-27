@@ -55,7 +55,7 @@ void Button::draw(sf::RenderWindow& window, const sf::Font& font, const sf::Colo
     sf::FloatRect textBounds = buttonText.getLocalBounds();
     
     float centerX = shape.getPosition().x + shape.getSize().x / 2.0f;
-    float centerY = shape.getPosition().y + shape.getSize().y / 2.0f;
+    float centerY = (shape.getPosition().y + shape.getSize().y / 2.0f) - 3.0f;
     
     buttonText.setOrigin({textBounds.size.x / 2.0f, textBounds.size.y / 2.0f});
     buttonText.setPosition({centerX, centerY});

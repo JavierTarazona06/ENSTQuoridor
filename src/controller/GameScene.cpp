@@ -21,8 +21,7 @@ GameScene::GameScene(SceneManager& manager, const GameConfig& gameConfig)
     gameView.getHomeButton().setOnClick([this]() { this->triggerHome(); });
     gameView.getRestartButton().setOnClick([this]() { this->triggerRestart(); });
     
-    int currentPlayer = state.getCurrentPlayer();
-    std::string playerName = "Player " + std::to_string(currentPlayer + 1);
+    std::string playerName = state.getPlayerName();
     
     if (config.isAIMode()) {
         renderer.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
@@ -179,8 +178,7 @@ void GameScene::triggerRestart() {
     inputHandler.setInputMode(InputMode::MovePawn);
     
     // Display initial turn message
-    int currentPlayer = state.getCurrentPlayer();
-    std::string playerName = "Player " + std::to_string(currentPlayer + 1);
+    std::string playerName = state.getPlayerName();
     renderer.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
 }
 
