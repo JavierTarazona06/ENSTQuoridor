@@ -128,17 +128,22 @@ chmod +x scripts/package-macos.sh
 |---------|-------------|
 | `dist/Quoridor-1.0-macOS-arm64.dmg` | Image disque (Apple Silicon) |
 | `dist/Quoridor-1.0-macOS-x86_64.dmg` | Image disque (Intel) |
-| `build/arm64-osx/Quoridor.app` | Bundle d'application |
+| `dist/Quoridor-1.0-macOS-arm64.tar.gz` | Archive tar.gz (Apple Silicon) |
+| `dist/Quoridor-1.0-macOS-x86_64.tar.gz` | Archive tar.gz (Intel) |
+| `build/arm64-osx/Quoridor.app` | Bundle d'application (Apple Silicon) |
+| `build/x64-osx/Quoridor.app` | Bundle d'application (Intel) |
+
+> **Note** : Le script `package-macos.sh` renomme automatiquement `quoridor_game.app` en `Quoridor.app` pour une meilleure présentation.
 
 ### Structure du bundle .app
 
 ```
 Quoridor.app/
 ├── Contents/
-│   ├── Info.plist          # Métadonnées
+│   ├── Info.plist          # Métadonnées de l'application
 │   ├── MacOS/
-│   │   ├── Quoridor         # Script de lancement
-│   │   └── Quoridor_bin     # Exécutable
+│   │   ├── quoridor_game         # Script wrapper
+│   │   └── quoridor_game_bin     # Exécutable principal
 │   ├── Resources/
 │   │   └── assets/          # Polices, images
 │   └── Frameworks/
@@ -150,6 +155,12 @@ Quoridor.app/
 1. Double-cliquer sur le fichier `.dmg` pour le monter
 2. Glisser `Quoridor.app` vers le dossier Applications
 3. Éjecter le DMG
+
+> ⚠️ **Note Gatekeeper** : Si vous obtenez l'erreur "L'application est endommagée ou incomplète", exécutez :
+> ```bash
+> xattr -cr /Applications/Quoridor.app
+> ```
+> Ou clic droit sur l'application → "Ouvrir" pour contourner Gatekeeper.
 
 ### Étapes manuelles (optionnel)
 
@@ -214,75 +225,6 @@ xcrun notarytool submit Quoridor.dmg \
 xcrun stapler staple Quoridor.dmg
 ```
 
-<<<<<<< HEAD
-
-=======
----
-
-## 🐛 Dépannage
-
-### Windows : DLL manquantes
-
-1. Vérifiez que les DLLs SFML sont dans le même dossier que l'exécutable
-2. Ou ajoutez le répertoire `build/vcpkg_installed/x64-windows/bin/` au PATH
-
-### Linux : "cannot open shared object file"
-
-```bash
-export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-sudo ldconfig
-```
-
-### macOS : "L'application est endommagée"
-
-Gatekeeper bloque les applications non signées :
-
-```bash
-# Supprimer l'attribut de quarantaine
-xattr -cr /Applications/Quoridor.app
-```
-
-Ou clic droit → "Ouvrir" pour contourner Gatekeeper.
-
-### macOS : Bibliothèques manquantes
-
-1. Vérifiez que tous les dylibs sont dans `Frameworks/`
-2. Vérifiez les chemins : `otool -L Quoridor.app/Contents/MacOS/Quoridor_bin`
-3. Relancez le script de packaging
-
-### macOS : L'icône ne s'affiche pas
-
-```bash
-./scripts/generate-icon.sh
-./scripts/package-macos.sh Release
-```
-
----
-
-## 📁 Détails techniques macOS
-
-### Info.plist
-
-| Clé | Valeur | Description |
-|-----|--------|-------------|
-| `CFBundleIdentifier` | `com.ensta.quoridor` | Identifiant unique |
-| `CFBundleVersion` | `1.0.0` | Numéro de build |
-| `LSMinimumSystemVersion` | `11.0` | Version minimale macOS |
-| `NSHighResolutionCapable` | `true` | Support Retina |
-
-### Embarquement des bibliothèques
-
-SFML et ses dépendances sont embarquées dans `Frameworks/` :
-- `libsfml-graphics.dylib`
-- `libsfml-window.dylib`
-- `libsfml-system.dylib`
-- `libfreetype.dylib`
-
-Les chemins sont corrigés avec `install_name_tool` pour utiliser `@executable_path/../Frameworks/`.
->>>>>>> 7adae1584b9e53e610e93621fba84971fdbab7e6
-
----
-
 ## 📚 Voir aussi
 
 - [Guide d'installation](INSTALLATION.md) — Compilation et exécution
@@ -290,4 +232,4 @@ Les chemins sont corrigés avec `install_name_tool` pour utiliser `@executable_p
 
 ---
 
-**Dernière mise à jour** : 25 janvier 2026
+**Dernière mise à jour** : 27 janvier 2026

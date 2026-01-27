@@ -49,33 +49,51 @@ cmake --build "$BUILD_DIR" --config "$CONFIG" --parallel
 
 # Step 2: Create the .app bundle structure
 echo ""
-echo "[3/6] Creating .app bundle..."
+echo "[3/6] Preparing .app bundle..."
 
-# The executable is built directly, we need to create bundle structure
+# CMake already creates quoridor_game.app, we'll enhance it
+SOURCE_APP="$BUILD_DIR/quoridor_game.app"
+
+# Check if CMake created the app bundle
+if [[ ! -d "$SOURCE_APP" ]]; then
+    echo "ERROR: CMake did not create $SOURCE_APP"
+    echo "Expected bundle at: $SOURCE_APP"
+    exit 1
+fi
+
+# If we want a different name, copy it, otherwise work with existing
+if [[ "$APP_BUNDLE" != "$SOURCE_APP" ]]; then
+    rm -rf "$APP_BUNDLE"
+    cp -R "$SOURCE_APP" "$APP_BUNDLE"
+fi
+
 APP_CONTENTS="$APP_BUNDLE/Contents"
 APP_MACOS="$APP_CONTENTS/MacOS"
 APP_RESOURCES="$APP_CONTENTS/Resources"
 APP_FRAMEWORKS="$APP_CONTENTS/Frameworks"
 
-rm -rf "$APP_BUNDLE"
-mkdir -p "$APP_MACOS" "$APP_RESOURCES" "$APP_FRAMEWORKS"
+# Create directories if they don't exist
+mkdir -p "$APP_FRAMEWORKS"
+mkdir -p "$APP_RESOURCES"
 
-# Copy executable
-cp "$BUILD_DIR/quoridor_game" "$APP_MACOS/$APP_NAME"
+# Copy assets - always ensure assets directory exists in Resources
+if [[ ! -d "$APP_RESOURCES/assets" ]]; then
+    mkdir -p "$APP_RESOURCES/assets"
+    cp -R "$ROOT/assets/"* "$APP_RESOURCES/assets/"
+fi
 
-# Copy assets
-cp -R "$ROOT/assets" "$APP_RESOURCES/"
-
-# Copy icon if it exists
+# Copy icon if it exists (update if not already there)
 ICON_FILE="$ROOT/assets/img/quoridor.icns"
-if [[ -f "$ICON_FILE" ]]; then
-    cp "$ICON_FILE" "$APP_RESOURCES/quoridor.icns"
-else
-    # Try to generate icon
-    if [[ -x "$ROOT/scripts/generate-icon.sh" ]]; then
-        "$ROOT/scripts/generate-icon.sh" 2>/dev/null || true
-        if [[ -f "$ICON_FILE" ]]; then
-            cp "$ICON_FILE" "$APP_RESOURCES/quoridor.icns"
+if [[ ! -f "$APP_RESOURCES/quoridor.icns" ]]; then
+    if [[ -f "$ICON_FILE" ]]; then
+        cp "$ICON_FILE" "$APP_RESOURCES/quoridor.icns"
+    else
+        # Try to generate icon
+        if [[ -x "$ROOT/scripts/generate-icon.sh" ]]; then
+            "$ROOT/scripts/generate-icon.sh" 2>/dev/null || true
+            if [[ -f "$ICON_FILE" ]]; then
+                cp "$ICON_FILE" "$APP_RESOURCES/quoridor.icns"
+            fi
         fi
     fi
 fi
@@ -101,7 +119,7 @@ cat > "$APP_CONTENTS/Info.plist" << 'PLIST'
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleExecutable</key>
-    <string>Quoridor</string>
+    <string>quoridor_game</string>
     <key>CFBundleIconFile</key>
     <string>quoridor.icns</string>
     <key>LSMinimumSystemVersion</key>
@@ -160,6 +178,16 @@ fix_lib_path() {
 }
 
 # Fix the main executable
+EXECUTABLE="$APP_MACOS/quoridor_game"  # CMake uses the target name
+
+# Check if executable exists
+if [[ ! -f "$EXECUTABLE" ]]; then
+    echo "ERROR: Executable not found at $EXECUTABLE"
+    echo "Contents of $APP_MACOS:"
+    ls -la "$APP_MACOS"
+    exit 1
+fi
+
 if [[ -d "$APP_FRAMEWORKS" ]]; then
     for dylib in "$APP_FRAMEWORKS"/*.dylib; do
         if [[ -f "$dylib" ]]; then
@@ -183,28 +211,38 @@ fi
 # Add rpath to executable
 install_name_tool -add_rpath "@executable_path/../Frameworks" "$EXECUTABLE" 2>/dev/null || true
 
-# Step 5: Create wrapper script for assets path
+# Step 5: Create wrapper script for assets path (if not already done)
 echo ""
 echo "Creating launch wrapper..."
 
-# Rename the actual executable
-mv "$APP_MACOS/$APP_NAME" "$APP_MACOS/${APP_NAME}_bin"
+# Check if wrapper already exists
+if [[ ! -f "$APP_MACOS/quoridor_game_bin" ]]; then
+    # Rename the actual executable
+    mv "$EXECUTABLE" "$APP_MACOS/quoridor_game_bin"
 
-# Create wrapper script
-cat > "$APP_MACOS/$APP_NAME" << 'WRAPPER'
+    # Create wrapper script
+    cat > "$EXECUTABLE" << 'WRAPPER'
 #!/bin/bash
 # Wrapper script to set working directory for assets
 DIR="$(cd "$(dirname "$0")" && pwd)"
 RESOURCES="$(cd "$DIR/../Resources" && pwd)"
 cd "$RESOURCES"
-exec "$DIR/Quoridor_bin" "$@"
+exec "$DIR/quoridor_game_bin" "$@"
 WRAPPER
 
-chmod +x "$APP_MACOS/$APP_NAME"
+    chmod +x "$EXECUTABLE"
+fi
 
 # Step 6: Create DMG
 echo ""
 echo "[6/6] Creating DMG installer..."
+
+# Clear quarantine attributes and sign with ad-hoc signature
+echo "Clearing quarantine attributes..."
+xattr -cr "$APP_BUNDLE"
+
+echo "Signing with ad-hoc signature..."
+codesign --force --deep --sign - "$APP_BUNDLE" 2>/dev/null || echo "Warning: Ad-hoc signing failed (non-critical)"
 
 DMG_PATH="$DIST_DIR/$DMG_NAME.dmg"
 rm -f "$DMG_PATH"

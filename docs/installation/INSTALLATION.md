@@ -82,6 +82,11 @@ ctest --test-dir build/x64-osx/tests -C Debug
 ./build/x64-osx/tests/test_all [tags]
 ```
 
+> ⚠️ **Note Gatekeeper** : Si vous obtenez l'erreur "L'application est endommagée", exécutez :
+> ```bash
+> xattr -cr ./build/arm64-osx/quoridor_game.app
+> ```
+
 ---
 
 ## 📦 Distribution pour utilisateurs finaux
