@@ -11,6 +11,13 @@ void InputHandler::handleInput(const sf::Event& event, const sf::RenderWindow& w
     // Handle key pressed events
     if (event.is<sf::Event::KeyPressed>()) {
         auto keyEvent = event.getIf<sf::Event::KeyPressed>();
+
+        // Enter key - reset game when finished
+        if (keyEvent->code == sf::Keyboard::Key::Enter && state.getGameStatus() != GameStatus::Playing) {
+            board.resetGame();
+            state.resetGame();
+            return;
+        }
         
         // Note: 'R' key is now handled in GameScene to centralize restart logic
         // and enable button-based restart as well
