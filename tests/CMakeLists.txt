@@ -54,5 +54,6 @@ target_include_directories(test_pve_visual PRIVATE ${CMAKE_SOURCE_DIR}/include)
 # Need to compile view sources for this test
 target_sources(test_pve_visual PRIVATE
     ${CMAKE_SOURCE_DIR}/src/view/Render2D.cpp
+    ${CMAKE_SOURCE_DIR}/src/view/Button.cpp
     ${CMAKE_SOURCE_DIR}/src/view/GameView.cpp
 )

@@ -1,4 +1,6 @@
 #include "model/State.hpp"
+#include "model/PlayerId.hpp"
+#include <string>
 
 namespace Quoridor {
 
@@ -44,6 +46,14 @@ namespace Quoridor {
 
     std::optional<Wall> State::getPreviewWall() const {
         return previewWall_;
+    }
+
+    std::string State::getPlayerName() const {
+        int index = getCurrentPlayer();
+        if (index < 0 || index >= static_cast<int>(PLAYER_NAMES.size())) {
+            return "Unknown";
+        }
+        return std::string(PLAYER_NAMES[static_cast<std::size_t>(index)]);
     }
 
 } // namespace Quoridor

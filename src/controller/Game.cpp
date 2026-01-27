@@ -12,6 +12,10 @@ void Game::run() {
 
     while (renderer.isOpen()) {
         const float deltaTime = clock.restart().asSeconds();
+        
+        // Enforce fixed window size (prevents DPI scaling on multi-monitor setups)
+        renderer.enforceFixedSize();
+        
         processEvents();
         update(deltaTime);
         render();

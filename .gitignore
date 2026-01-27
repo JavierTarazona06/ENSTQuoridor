@@ -64,7 +64,7 @@ _deps/
 .idea/
 *.user
 .vcpkg/
-.DS_Store
+.DS_Storegit 
 
 # Package build artifacts
 _CPack_Packages/
@@ -122,3 +122,8 @@ _CPack_Packages/
 _minted*
 texput.log
 latex.out/
+
+# But keep PDF documentation
+!docs/**/*.pdf
+
+dist/

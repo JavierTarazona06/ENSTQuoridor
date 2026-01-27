@@ -16,11 +16,15 @@ GameScene::GameScene(SceneManager& manager, const GameConfig& gameConfig)
       config(gameConfig),
       aiThinking(false),
       aiDelayTimer(0.0f) {
-    int currentPlayer = state.getCurrentPlayer();
-    std::string playerName = "Player " + std::to_string(currentPlayer + 1);
+    
+    // Set up button callbacks
+    gameView.getHomeButton().setOnClick([this]() { this->triggerHome(); });
+    gameView.getRestartButton().setOnClick([this]() { this->triggerRestart(); });
+    
+    std::string playerName = state.getPlayerName();
     
     if (config.isAIMode()) {
-        renderer.showMessage(playerName + " Turn (Human vs AI mode)", {255,255,255}, -1.0f);
+        renderer.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
     } else {
         renderer.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
     }
@@ -35,8 +39,13 @@ void GameScene::handleEvent(const sf::Event& event) {
     if (event.is<sf::Event::KeyPressed>()) {
         const auto key = event.getIf<sf::Event::KeyPressed>()->code;
         if (key == sf::Keyboard::Key::Escape) {
-            renderer.showMessage("", {0,0,0}, 0.0f); // Clear message
-            manager.setScene(std::make_unique<MenuScene>(manager), GameState::Menu);
+            triggerHome();
+            return;
+        }
+        
+        // 'R' key - restart game
+        if (key == sf::Keyboard::Key::R) {
+            triggerRestart();
             return;
         }
         
@@ -71,6 +80,23 @@ void GameScene::handleEvent(const sf::Event& event) {
         state.getCurrentPlayer() == 1 && 
         state.getGameStatus() == GameStatus::Playing) {
         return; // Don't process human input during AI turn
+    }
+
+    // Handle mouse button pressed events (button clicks)
+    if (event.is<sf::Event::MouseButtonPressed>()) {
+        const auto mouseClick = event.getIf<sf::Event::MouseButtonPressed>();
+        if (mouseClick->button == sf::Mouse::Button::Left) {
+            // Only consume the event if a button was actually clicked
+            if (gameView.handleButtonClick(static_cast<float>(mouseClick->position.x), static_cast<float>(mouseClick->position.y))) {
+                return; // Button was clicked, don't pass to InputHandler
+            }
+        }
+    }
+
+    // Handle mouse move events (button hover)
+    if (event.is<sf::Event::MouseMoved>()) {
+        const auto mouseMoved = event.getIf<sf::Event::MouseMoved>();
+        gameView.updateButtonHover(static_cast<float>(mouseMoved->position.x), static_cast<float>(mouseMoved->position.y));
     }
 
     inputHandler.handleInput(event, renderer.getWindow());
@@ -122,7 +148,7 @@ void GameScene::executeAITurn() {
     } else {
         // Switch back to human player
         state.switchPlayer();
-        renderer.showMessage("Player 1 Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
+        renderer.showMessage("Your Turn (red pawn), select it to start moving or press w to place wall", {255,255,255}, -1.0f);
     }
     
     aiThinking = false;
@@ -139,6 +165,21 @@ void GameScene::applyAIMove(const Move& aiMove) {
         std::string msg = "AI placed " + orientStr + " wall";
         renderer.showMessage(msg, {150, 150, 255}, 1.5f);
     }
+}
+
+void GameScene::triggerHome() {
+    renderer.showMessage("", {0,0,0}, 0.0f); // Clear message
+    manager.setScene(std::make_unique<MenuScene>(manager), GameState::Menu);
+}
+
+void GameScene::triggerRestart() {
+    board.resetGame();
+    state.resetGame();
+    inputHandler.setInputMode(InputMode::MovePawn);
+    
+    // Display initial turn message
+    std::string playerName = state.getPlayerName();
+    renderer.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
 }
 
 } // namespace Quoridor

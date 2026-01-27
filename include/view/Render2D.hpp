@@ -30,6 +30,7 @@ public:
     void drawWalls(const Board& board);
     void drawWallPreview(const std::optional<Wall>& previewWall);
     void drawHUD(const Board& board, const State& state);
+    void drawButton(class Button& button);  // Forward declaration
 
     // Message box system
     void showMessage(const std::string& text, const Color& color, float duration = -1.0f);
@@ -44,6 +45,9 @@ public:
 
     // Get window reference
     sf::RenderWindow& getWindow();
+    
+    // Enforce fixed window size (prevents DPI scaling when moving between monitors)
+    void enforceFixedSize();
 
     // Getters for constants
     static constexpr unsigned int getWindowWidth() { return WINDOW_WIDTH; }
@@ -54,6 +58,8 @@ public:
 
 private:
     sf::RenderWindow window;
+    std::string fontsDir;
+    std::string assetsDir;
     sf::Font fontTitle1;
     sf::Font fontTitle2;
     sf::Font fontTitle3;
@@ -79,8 +85,7 @@ private:
     static constexpr unsigned int WINDOW_WIDTH = 1050;
     static constexpr unsigned int WINDOW_HEIGHT = 900;
     static constexpr float CELL_SIZE = 60.0f;
-    static constexpr float GRID_OFFSET_X = WINDOW_WIDTH / 2.0f - (CELL_SIZE * BOARD_SIZE) / 2.0f; // Center the grid
-    //180.0f; //TODO/ Delete
+    static constexpr float GRID_OFFSET_X = WINDOW_WIDTH / 2.0f - (CELL_SIZE * BOARD_SIZE) / 2.0f;
     static constexpr float GRID_OFFSET_Y = 180.0f;
     static constexpr float PAWN_RADIUS = 20.0f;
     static constexpr sf::Color BOARD_COLOR = sf::Color(240, 217, 181); //Beige
@@ -103,6 +108,10 @@ private:
     static constexpr float MESSAGE_BOX_HEIGHT = 100.0f;
     static constexpr float MESSAGE_BOX_MARGIN_BOTTOM = 20.0f;
     static constexpr unsigned int MESSAGE_FONT_SIZE = 24;
+
+    // Resolve fonts directory at runtime (package vs dev tree)
+    std::string resolveFontsDir() const;
+    std::string resolveAssetsDir(const std::string& resolvedFontsDir) const;
 };
 
 } // namespace Quoridor

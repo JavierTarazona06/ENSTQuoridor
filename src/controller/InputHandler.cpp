@@ -11,20 +11,16 @@ void InputHandler::handleInput(const sf::Event& event, const sf::RenderWindow& w
     // Handle key pressed events
     if (event.is<sf::Event::KeyPressed>()) {
         auto keyEvent = event.getIf<sf::Event::KeyPressed>();
-        
-        // 'R' key - restart game at any time
-        if (keyEvent->code == sf::Keyboard::Key::R) {
+
+        // Enter key - reset game when finished
+        if (keyEvent->code == sf::Keyboard::Key::Enter && state.getGameStatus() != GameStatus::Playing) {
             board.resetGame();
             state.resetGame();
-            currentMode = InputMode::MovePawn;
-            
-            // Display initial turn message
-            int currentPlayer = state.getCurrentPlayer();
-            Color playerColor = board.getPawnColor(currentPlayer);
-            std::string playerName = "Player " + std::to_string(currentPlayer + 1);
-            render.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
             return;
         }
+        
+        // Note: 'R' key is now handled in GameScene to centralize restart logic
+        // and enable button-based restart as well
     }
     
     // If game is over, don't allow other actions
@@ -48,8 +44,7 @@ void InputHandler::handleInput(const sf::Event& event, const sf::RenderWindow& w
                 currentMode = InputMode::MovePawn;
                 state.setPreviewWall(std::nullopt);
                 std::cout << "Movement mode activated (Press W to place walls)" << std::endl;
-                int currentPlayer = state.getCurrentPlayer();
-                std::string playerName = "Player " + std::to_string(currentPlayer + 1);
+                std::string playerName = state.getPlayerName();
                 render.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
             }
         }
@@ -160,12 +155,11 @@ void InputHandler::handleMouseClick(int pixelX, int pixelY) {
             state.switchPlayer();
             
             // Display turn message for next player
-            int nextPlayer = state.getCurrentPlayer();
-            if (gameMode == GameMode::HumanVsAI && nextPlayer == 1) {
+            int turnPlayer = state.getCurrentPlayer();
+            std::string playerName = state.getPlayerName();
+            if (gameMode == GameMode::HumanVsAI && turnPlayer == 1) {
                 render.showMessage("AI is thinking...", {255, 200, 100}, -1.0f);
             } else {
-                Color playerColor = board.getPawnColor(nextPlayer);
-                std::string playerName = "Player " + std::to_string(nextPlayer + 1);
                 render.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
             }
             
@@ -198,8 +192,7 @@ void InputHandler::handleMouseClick(int pixelX, int pixelY) {
             // Check if we clicked on the same pawn (deselect)
             if (clickedPos == currentPos) {
                 state.setSelectedPawn(std::nullopt);
-                int nextPlayer = state.getCurrentPlayer();
-                std::string playerName = "Player " + std::to_string(nextPlayer + 1);
+                std::string playerName = state.getPlayerName();
                 render.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
                 return;
             }
@@ -215,24 +208,23 @@ void InputHandler::handleMouseClick(int pixelX, int pixelY) {
                 if (rules.checkVictory(board, currentPlayer)) {
                     if (currentPlayer == 0) {
                         state.setGameStatus(GameStatus::Player1Won);
-                        std::cout << "Player 1 (Top) wins!" << std::endl;
-                        render.showMessage("Player 1 Wins!", {255,255,255}, -1.0f);
+                        std::cout << "Red Player (Top) wins!" << std::endl;
+                        render.showMessage("Red Player Wins!", {255,255,255}, -1.0f);
                     } else {
                         state.setGameStatus(GameStatus::Player2Won);
-                        std::cout << "Player 2 (Bottom) wins!" << std::endl;
-                        render.showMessage("Player 2 Wins!", {255,255,255}, -1.0f);
+                        std::cout << "Blue Player (Bottom) wins!" << std::endl;
+                        render.showMessage("Blue Player Wins!", {255,255,255}, -1.0f);
                     }
                 } else {
                     // Only switch player if no one has won yet
                     state.switchPlayer();
                     
-                    // Display turn message for next player
-                    int nextPlayer = state.getCurrentPlayer();
-                    if (gameMode == GameMode::HumanVsAI && nextPlayer == 1) {
+                    // Display turn message for player
+                    int turnPlayer = state.getCurrentPlayer();
+                    std::string playerName = state.getPlayerName();
+                    if (gameMode == GameMode::HumanVsAI && turnPlayer == 1) {
                         render.showMessage("AI is thinking...", {255, 200, 100}, -1.0f);
                     } else {
-                        Color playerColor = board.getPawnColor(nextPlayer);
-                        std::string playerName = "Player " + std::to_string(nextPlayer + 1);
                         render.showMessage(playerName + " Turn, select pawn to start moving or press w to place wall", {255,255,255}, -1.0f);
                     }
                 }
