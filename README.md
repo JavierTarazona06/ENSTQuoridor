@@ -1,5 +1,7 @@
 # ENSTQuoridor
 
+<sub>*Javier Tarazona & Tianyi Liang - 2026*</sub>
+
 Implémentation d'un jeu de plateau stratégique en C++ avec SFML 3.0, proposant des adversaires IA à quatre niveaux de difficulté et une architecture MVC propre.
 
 **Stack technologique** : C++ 17, SFML 3.0, CMake 3.20+, Catch2  
@@ -28,13 +30,19 @@ Implémentation d'un jeu de plateau stratégique en C++ avec SFML 3.0, proposant
 
 Ce projet est une implémentation moderne en C++ proposant :
 - Modes **Humain vs Humain** et **Humain vs IA**
+
 - **Quatre niveaux de difficulté IA** : Facile, Normal, Difficile, Hell
+
 - **Architecture MVC propre** pour la maintenabilité et la testabilité
+
 - **Support multiplateforme** (Windows, Linux, macOS)
+
 - **Algorithmes avancés** : Minimax avec élagage alpha-beta, recherche de chemin BFS
 
 **Équipe** : Tarazona Javier, Liang Tianyi
+
 **Cours** : IN204 - Programmation Orientée Objet, ENSTA Paris
+
 **Date de soutenance** : 29 janvier 2026
 
 ___
