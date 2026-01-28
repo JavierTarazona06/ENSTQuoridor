@@ -13,6 +13,7 @@ Implémentation d'un jeu de plateau stratégique en C++ avec SFML 3.0, proposant
 - [À propos](#à-propos)
 - [Téléchargement](#téléchargement)
 - [Conception, architecture et structure du code](#conception-architecture-et-structure-du-code)
+- [Diagrammes UML](#diagrammes-uml)
 - [Fonctionnalités](#fonctionnalités)
 - [Comment jouer](#comment-jouer)
 - [Démarrage rapide](#démarrage-rapide)
