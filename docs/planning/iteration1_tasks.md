@@ -4,7 +4,7 @@
 
 ---
 
-## 📋 Trello Board Columns
+## Trello Board Columns
 - **To Do**
 - **In Progress**
 - **Testing/Review**
@@ -12,7 +12,7 @@
 
 ---
 
-## 🎯 Sprint Goals
+## Sprint Goals
 - Set up development environment (CMake, SFML, Git)
 - Implement basic MVC architecture
 - Display 9×9 board with SFML
@@ -21,7 +21,7 @@
 
 ---
 
-## 📝 Tasks Breakdown
+## Tasks Breakdown
 
 ### Infrastructure Setup
 
@@ -297,7 +297,7 @@
 
 ---
 
-## ✅ Definition of Done (Iteration 1)
+## Definition of Done (Iteration 1)
 
 - [ ] All tasks marked as "Done" in Trello
 - [ ] Code compiles without errors on Windows
@@ -311,7 +311,7 @@
 
 ---
 
-## 🚀 Next Steps (Iteration 2 Preview)
+## Next Steps (Iteration 2 Preview)
 
 - Implement wall placement
 - Add jump mechanics (jumping over opponent)
@@ -329,4 +329,4 @@
 
 ---
 
-**Good luck, Javier and Tianyi! Let's build a solid foundation! 🎮**
+**Good luck, Javier and Tianyi! Let's build a solid foundation!**

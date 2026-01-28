@@ -4,7 +4,7 @@
 
 ---
 
-## 📋 À faire
+## À faire
 
 ### L4.1 Packaging
 
@@ -64,9 +64,9 @@
   - Captures d'écran
   - **Estimation** : 1h
 
-- [X] **[DOC-03] Documentation technique IA**
+- **[DOC-03] Documentation technique IA**
   - Architecture Minimax, heuristiques, paramètres difficulté
-  - ✅ **Terminé** : `docs/AI_Documentation.md`
+  - **Terminé** : `docs/AI_Documentation.md`
 
 - [ ] **[DOC-04] Diagramme UML classes**
   - Générer diagramme MVC (Model/View/Controller)
@@ -128,13 +128,13 @@
 
 ---
 
-## 🔄 En cours
+## En cours
 
 *(Déplacer les tâches ici une fois commencées)*
 
 ---
 
-## ✅ Terminé
+## Terminé
 
 - [x] **[DOC-03] Documentation technique IA** — `docs/AI_Documentation.md`
 - [x] **[UI-05] GameConfig struct** — Encapsulation mode + difficulté

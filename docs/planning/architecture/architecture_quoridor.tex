@@ -13,7 +13,7 @@
 \geometry{margin=2.5cm}
 
 \title{Proposition d'architecture pour Quoridor (C++/SFML)}
-\author{Équipe Quoridor}
+\author{Équipe: Tarazona Javier, Liang Tianyi}
 \date{Novembre 2025}
 
 \begin{document}
@@ -97,45 +97,9 @@ ENSTQuoridor/
 \section*{Build multi-plateforme}
 \textbf{Outil}: CMake (>= 3.20), C++20, SFML (\textasciitilde{}2.6). Dépendances via vcpkg ou Conan, ou SFML installé localement.
 
-\subsection*{CMake (extrait minimal)}
-\begin{verbatim}
-cmake_minimum_required(VERSION 3.20)
-project(Quoridor CXX)
-set(CMAKE_CXX_STANDARD 20)
-
-find_package(SFML 2.6 REQUIRED COMPONENTS system window graphics audio)
-
-add_executable(quoridor
-  src/app/main.cpp
-  src/controller/Game.cpp
-  src/controller/InputHandler.cpp
-  src/model/Board.cpp src/model/Rules.cpp src/model/State.cpp
-  src/model/Pathfinder.cpp src/model/AI.cpp
-  src/view/Renderer2D.cpp src/view/ResourceCache.cpp)
-target_include_directories(quoridor PRIVATE include)
-target_link_libraries(quoridor PRIVATE sfml-system sfml-window sfml-graphics sfml-audio)
-
-# Installation simple (Windows/Linux):
-install(TARGETS quoridor RUNTIME DESTINATION bin)
-install(DIRECTORY assets/ DESTINATION bin/assets)
-
-# macOS: produire un .app
-set_target_properties(quoridor PROPERTIES MACOSX_BUNDLE TRUE)
-install(TARGETS quoridor BUNDLE DESTINATION .)
-install(DIRECTORY assets/ DESTINATION Quoridor.app/Contents/Resources/assets)
-\end{verbatim}
-
-\subsection*{Commandes type}
-\begin{verbatim}
-# Générique
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build --config Release
-cmake --install build --config Release --prefix out
-\end{verbatim}
-
 \section*{Packaging et exécutables cliquables}
 
-\subsection*{Stratégie de distribution recommandée}
+\subsection*{Stratégie de distribution conçue}
 Pour garantir une expérience utilisateur optimale (\textit{télécharger et double-cliquer}), le projet produira trois artefacts autonomes, un par plateforme:
 
 \begin{enumerate}[leftmargin=1.6cm]

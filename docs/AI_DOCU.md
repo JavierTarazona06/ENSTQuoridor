@@ -4,7 +4,7 @@ Ce document décrit l'architecture et l'implémentation de l'algorithme IA du je
 
 ---
 
-## 📋 Vue d'ensemble
+## Vue d'ensemble
 
 | Aspect | Détail |
 |--------|--------|
@@ -16,7 +16,7 @@ Ce document décrit l'architecture et l'implémentation de l'algorithme IA du je
 
 ---
 
-## 🎯 Niveaux de difficulté
+## Niveaux de difficulté
 
 L'IA propose quatre niveaux de difficulté, contrôlés par deux paramètres :
 - **Profondeur** : Nombre de coups analysés à l'avance
@@ -49,7 +49,7 @@ namespace DifficultyConfig {
 
 ---
 
-## 🔄 Boucle de décision
+## Boucle de décision
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -101,7 +101,7 @@ Move AI::getBestMove(Board& board, State& state, Difficulty difficulty) {
 
 ---
 
-## 🌳 Algorithme Minimax avec Alpha-Bêta
+## Algorithme Minimax avec Alpha-Bêta
 
 ### Principe
 
@@ -171,7 +171,7 @@ int AI::minimax(Board board, int depth, int α, int β,
 
 ---
 
-## 📊 Fonction d'évaluation
+## Fonction d'évaluation
 
 La fonction `evaluate()` évalue la qualité d'une position pour un joueur. Elle combine cinq facteurs pondérés.
 
@@ -242,7 +242,7 @@ score -= my_wall_penalty * WALL_EFFECTIVENESS;
 
 ---
 
-## 🎲 Système de bruit
+## Système de bruit
 
 Le bruit permet de créer des niveaux de difficulté battables en simulant des "erreurs" humaines.
 
@@ -302,7 +302,7 @@ $$P(X > \Delta) = \frac{(2n - \Delta)^2}{8n^2} \quad \text{pour } 0 \leq \Delta 
 
 ---
 
-## 🧩 Génération des coups
+## Génération des coups
 
 ### Mouvements de pion
 
@@ -360,7 +360,7 @@ vector<Wall> getRelevantWalls(Board& board, int player) {
 
 ---
 
-## 📈 Complexité et performances
+## Complexité et performances
 
 ### Complexité temporelle
 
@@ -425,7 +425,7 @@ namespace DifficultyConfig {
 
 ---
 
-## 📁 Fichiers de référence
+## Fichiers de référence
 
 | Fichier | Description |
 |---------|-------------|

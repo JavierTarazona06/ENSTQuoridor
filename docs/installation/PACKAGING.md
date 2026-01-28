@@ -4,7 +4,7 @@ Ce guide explique comment créer des packages distribuables de Quoridor pour Win
 
 ---
 
-## 📋 Vue d'ensemble
+## Vue d'ensemble
 
 | Plateforme | Format | Script | Sortie |
 |------------|--------|--------|--------|
@@ -14,7 +14,7 @@ Ce guide explique comment créer des packages distribuables de Quoridor pour Win
 
 ---
 
-## 🪟 Windows (.zip)
+## Windows (.zip)
 
 ### Prérequis
 
@@ -54,7 +54,7 @@ Le fichier `Quoridor-1.0-Windows.zip` contient :
 
 ---
 
-## 🐧 Linux (.tar.gz, .AppImage)
+## Linux (.tar.gz, .AppImage)
 
 ### Prérequis
 
@@ -107,7 +107,7 @@ chmod +x Quoridor-x86_64.AppImage
 
 ---
 
-## 🍎 macOS (.dmg, .app)
+## macOS (.dmg, .app)
 
 ### Prérequis
 
@@ -156,7 +156,7 @@ Quoridor.app/
 2. Glisser `Quoridor.app` vers le dossier Applications
 3. Éjecter le DMG
 
-> ⚠️ **Note Gatekeeper** : Si vous obtenez l'erreur "L'application est endommagée ou incomplète", exécutez :
+> **Note Gatekeeper** : Si vous obtenez l'erreur "L'application est endommagée ou incomplète", exécutez :
 > ```bash
 > xattr -cr /Applications/Quoridor.app
 > ```
@@ -195,7 +195,7 @@ Le script détecte automatiquement l'architecture de votre Mac.
 
 ---
 
-## 🔐 Signature et notarisation (macOS)
+## Signature et notarisation (macOS)
 
 ### Signature du code (optionnel)
 
@@ -225,7 +225,7 @@ xcrun notarytool submit Quoridor.dmg \
 xcrun stapler staple Quoridor.dmg
 ```
 
-## 📚 Voir aussi
+## Voir aussi
 
 - [Guide d'installation](INSTALLATION.md) — Compilation et exécution
 - [Guide utilisateur](../USER_GUIDE.md) — Manuel utilisateur complet

@@ -4,13 +4,13 @@ Ce guide explique les contrôles clavier et souris pour la version actuelle du j
 
 ---
 
-## 📖 Vue d'ensemble
+## Vue d'ensemble
 
 **Quoridor** est un jeu de stratégie à deux joueurs sur un plateau 9×9. Chaque joueur contrôle un pion et dispose de 10 murs. L'objectif est d'atteindre la rangée opposée avant l'adversaire, tout en respectant la règle fondamentale : toujours laisser au moins un chemin valide pour chaque joueur.
 
 ---
 
-## 🎮 Contrôles de base
+## Contrôles de base
 
 | Entrée | Utilisation |
 |--------|-------------|
@@ -19,7 +19,7 @@ Ce guide explique les contrôles clavier et souris pour la version actuelle du j
 
 ---
 
-## 🧭 Modes de jeu
+## Modes de jeu
 
 | Mode | Description |
 |------|-------------|
@@ -37,7 +37,7 @@ Ce guide explique les contrôles clavier et souris pour la version actuelle du j
 
 ---
 
-## 🗺️ Contrôles du menu
+## Contrôles du menu
 
 | Touche | Action |
 |--------|--------|
@@ -49,7 +49,7 @@ Ce guide explique les contrôles clavier et souris pour la version actuelle du j
 
 ---
 
-## 🕹️ Interactions détaillées
+## Interactions détaillées
 
 ### 1. Mode déplacement de pion (par défaut)
 
@@ -119,10 +119,10 @@ Dans ce mode, vous pouvez placer des obstacles sur le plateau.
 - Appuyez à nouveau sur **`W`** pour retourner manuellement au mode déplacement
 
 #### Règles de placement
-- ❌ Ne peut pas chevaucher un mur existant
-- ❌ Ne peut pas croiser un mur existant (forme en +)
-- ❌ Ne peut pas bloquer complètement le chemin d'un joueur
-- ✅ Doit toujours laisser au moins un chemin vers l'objectif pour chaque joueur
+- Ne peut pas chevaucher un mur existant
+- Ne peut pas croiser un mur existant (forme en +)
+- Ne peut pas bloquer complètement le chemin d'un joueur
+- Doit toujours laisser au moins un chemin vers l'objectif pour chaque joueur
 
 ---
 
@@ -136,7 +136,7 @@ Dans ce mode, vous pouvez placer des obstacles sur le plateau.
 
 ---
 
-## 🏆 Conditions de victoire
+## Conditions de victoire
 
 | Joueur | Position de départ | Objectif |
 |--------|-------------------|----------|
@@ -150,7 +150,7 @@ Lorsqu'un joueur atteint sa rangée objectif :
 
 ---
 
-## 💡 Conseils stratégiques
+## Conseils stratégiques
 
 ### Débutants (Facile/Normal)
 - Concentrez-vous sur l'avancement de votre pion
@@ -169,7 +169,7 @@ Lorsqu'un joueur atteint sa rangée objectif :
 
 ---
 
-## ⚠️ Dépannage
+## Dépannage
 
 | Problème | Solution |
 |----------|----------|
@@ -180,7 +180,7 @@ Lorsqu'un joueur atteint sa rangée objectif :
 
 ---
 
-## 📚 Voir aussi
+## Voir aussi
 
 - [Documentation IA](AI_DOCU.md) — Détails de l'algorithme
 - [Guide démo PVE](tests/PVE_DEMO_GUIDE.md) — Guide Joueur vs IA
