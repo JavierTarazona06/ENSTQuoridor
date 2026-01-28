@@ -8,6 +8,22 @@ Implémentation d'un jeu de plateau stratégique en C++ avec SFML 3.0, proposant
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)
 ![Tests](https://img.shields.io/badge/tests-32%20réussis-brightgreen.svg)
 
+## Table des matières
+
+- [À propos](#à-propos)
+- [Téléchargement](#téléchargement)
+- [Conception, architecture et structure du code](#conception-architecture-et-structure-du-code)
+- [Fonctionnalités](#fonctionnalités)
+- [Comment jouer](#comment-jouer)
+- [Démarrage rapide](#démarrage-rapide)
+- [Packaging pour distribution](#packaging-pour-distribution)
+- [Documentation](#documentation)
+- [Équipe](#équipe)
+- [Licence](#licence)
+- [Remerciements](#remerciements)
+
+---
+
 ## À propos
 
 **Quoridor** est un jeu de stratégie à deux joueurs sur un plateau 9×9. Les joueurs jouent à tour de rôle en déplaçant leur pion d'une case ou en plaçant un mur entre les cases. L'objectif est d'atteindre la rangée opposée tout en respectant la règle fondamentale : toujours laisser au moins un chemin valide pour chaque joueur vers son objectif.
@@ -65,6 +81,16 @@ Téléchargez la version précompilée correspondant à votre système d'exploit
 
 ---
 
+## Conception, architecture et structure du code
+
+| Document | Description |
+|----------|-------------|
+| [Exigences](docs/planning/exigences/exigences_quoridor.pdf) | Spécification fonctionnelle |
+| [Architecture](docs/planning/architecture/architecture_quoridor.pdf) | Structure du code et Architecture MVC du projet |
+| [Planification](docs/planning/planification_quoridor.pdf) | Planning des itérations |
+
+---
+
 ## Fonctionnalités
 
 ### Gameplay
@@ -93,6 +119,59 @@ Téléchargez la version précompilée correspondant à votre système d'exploit
 - **32 tests unitaires** couvrant les règles, la recherche de chemin et l'IA (framework Catch2)
 - **Packaging multiplateforme** : ZIP (Windows), DMG (macOS), AppImage/TGZ (Linux)
 - **Rendu 2D basé sur SFML 3.0** avec interface utilisateur réactive
+
+---
+
+## Comment jouer
+
+### Modes de jeu
+
+| Mode | Description |
+|------|-------------|
+| **Humain vs Humain** | Deux joueurs sur la même machine, jouant à tour de rôle |
+| **Humain vs IA** | Jouer contre l'ordinateur au niveau de difficulté choisi |
+
+### Contrôles
+
+#### Menu principal
+| Touche | Action |
+|--------|--------|
+| `H` | Sélectionner mode Humain vs Humain |
+| `A` | Sélectionner mode Humain vs IA |
+| `1` / `2` / `3` / `4` | Sélectionner difficulté IA : Facile / Normal / Difficile / Enfer |
+| `Entrée` | Démarrer la partie |
+| `Échap` | Quitter l'application |
+
+#### Contrôles en jeu
+| Entrée | Action |
+|--------|--------|
+| **Clic gauche sur pion** | Sélectionner votre pion |
+| **Clic gauche sur case** | Se déplacer vers cette case (si valide) |
+| **Clic sur pion sélectionné** | Désélectionner le pion |
+| `W` | Basculer en mode placement de mur |
+| `O` | Tourner le mur (horizontal ↔ vertical) |
+| `R` | Réinitialiser / Recommencer la partie |
+| `1`-`4` | Changer la difficulté IA en cours de partie |
+| `Échap` | Retourner au menu |
+
+### Règles du jeu
+
+1. **Objectif** : Être le premier à atteindre la rangée opposée
+   - Joueur 1 (Blanc) : Commence en haut, objectif rangée du bas
+   - Joueur 2 (Noir) : Commence en bas, objectif rangée du haut
+
+2. **À chaque tour, choisir une action** :
+   - **Déplacer le pion** : Une case orthogonalement (haut/bas/gauche/droite)
+   - **Placer un mur** : Bloque le passage entre deux cases
+
+3. **Sauts** :
+   - Si l'adversaire est adjacent, vous pouvez sauter par-dessus
+   - Si le saut direct est bloqué, le saut diagonal est autorisé
+
+4. **Règles des murs** :
+   - Chaque joueur dispose de **10 murs**
+   - Les murs couvrent 2 cases et ne peuvent pas se chevaucher
+   - **Doit toujours laisser un chemin** pour les deux joueurs vers leurs objectifs
 
 ---
 
@@ -151,59 +230,6 @@ ctest --test-dir build/arm64-osx/tests -C Release
 
 ---
 
-## Comment jouer
-
-### Modes de jeu
-
-| Mode | Description |
-|------|-------------|
-| **Humain vs Humain** | Deux joueurs sur la même machine, jouant à tour de rôle |
-| **Humain vs IA** | Jouer contre l'ordinateur au niveau de difficulté choisi |
-
-### Contrôles
-
-#### Menu principal
-| Touche | Action |
-|--------|--------|
-| `H` | Sélectionner mode Humain vs Humain |
-| `A` | Sélectionner mode Humain vs IA |
-| `1` / `2` / `3` / `4` | Sélectionner difficulté IA : Facile / Normal / Difficile / Enfer |
-| `Entrée` | Démarrer la partie |
-| `Échap` | Quitter l'application |
-
-#### Contrôles en jeu
-| Entrée | Action |
-|--------|--------|
-| **Clic gauche sur pion** | Sélectionner votre pion |
-| **Clic gauche sur case** | Se déplacer vers cette case (si valide) |
-| **Clic sur pion sélectionné** | Désélectionner le pion |
-| `W` | Basculer en mode placement de mur |
-| `O` | Tourner le mur (horizontal ↔ vertical) |
-| `R` | Réinitialiser / Recommencer la partie |
-| `1`-`4` | Changer la difficulté IA en cours de partie |
-| `Échap` | Retourner au menu |
-
-### Règles du jeu
-
-1. **Objectif** : Être le premier à atteindre la rangée opposée
-   - Joueur 1 (Blanc) : Commence en haut, objectif rangée du bas
-   - Joueur 2 (Noir) : Commence en bas, objectif rangée du haut
-
-2. **À chaque tour, choisir une action** :
-   - **Déplacer le pion** : Une case orthogonalement (haut/bas/gauche/droite)
-   - **Placer un mur** : Bloque le passage entre deux cases
-
-3. **Sauts** :
-   - Si l'adversaire est adjacent, vous pouvez sauter par-dessus
-   - Si le saut direct est bloqué, le saut diagonal est autorisé
-
-4. **Règles des murs** :
-   - Chaque joueur dispose de **10 murs**
-   - Les murs couvrent 2 cases et ne peuvent pas se chevaucher
-   - **Doit toujours laisser un chemin** pour les deux joueurs vers leurs objectifs
-
----
-
 ## Packaging pour distribution
 
 
@@ -249,14 +275,6 @@ cpack -G ZIP
 | [Guide d'installation](docs/installation/INSTALLATION.md) | Compilation et exécution |
 | [Packaging](docs/installation/PACKAGING.md) | Création de packages (Windows, Linux, macOS) |
 | [Guide de création de tests](docs/tests/GUIDE_TESTS.md) | Comment écrire des tests Catch2 |
-
-### Documents de conception
-
-| Document | Description |
-|----------|-------------|
-| [Exigences](docs/planning/exigences/exigences_quoridor.pdf) | Spécification fonctionnelle |
-| [Architecture](docs/planning/architecture/architecture_quoridor.pdf) | Architecture MVC du projet |
-| [Planification](docs/planning/planification_quoridor.pdf) | Planning des itérations |
 
 
 ---
