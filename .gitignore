@@ -54,6 +54,8 @@ CTestTestfile.cmake
 _deps/
 *.cmake
 !CMakeLists.txt
+vcpkg_installed/
+build-ninja/
 
 # IDE and editor files
 .vscode/

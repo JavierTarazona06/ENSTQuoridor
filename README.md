@@ -98,6 +98,21 @@ Téléchargez la version précompilée correspondant à votre système d'exploit
 
 ---
 
+## Diagrammes UML
+
+Les diagrammes UML suivants illustrent l'architecture du projet généré avec clang-uml et PlantUML.
+
+### Diagramme du modèle (couche métier)
+![Model Class Diagram](docs/uml/model_class_diagram.png)
+
+### Diagramme du contrôleur (couche logique)
+![Controller Class Diagram](docs/uml/controller_class_diagram.png)
+
+### Diagramme de la vue (couche présentation)
+![View Class Diagram](docs/uml/view_class_diagram.png)
+
+---
+
 ## Fonctionnalités
 
 ### Gameplay

@@ -1,0 +1,186 @@
+@startuml
+title ENSTQuoridor - Model Layer
+class "Quoridor::Position" as C_0011483762380414953613
+class C_0011483762380414953613 {
++operator==(const Position & other) const : bool
+__
++x : int
++y : int
+}
+class "Quoridor::Color" as C_0010031757832495548485
+class C_0010031757832495548485 {
+__
++b : unsigned char
++g : unsigned char
++r : unsigned char
+}
+enum "Quoridor::Orientation" as C_0013108370731220351348
+enum C_0013108370731220351348 {
+Horizontal
+Vertical
+}
+class "Quoridor::Wall" as C_0013381003456146571882
+class C_0013381003456146571882 {
++operator==(const Wall & other) const : bool
+__
++orientation : Orientation
++pos : Position
+}
+class "Quoridor::Cell" as C_0006529001353455631682
+class C_0006529001353455631682 {
+__
++x : int
++y : int
+}
+class "Quoridor::Board" as C_0001647847377100416466
+class C_0001647847377100416466 {
++Board() : void
+..
++getPawnColor(int playerIndex) const : Color
++getPawnPosition(int playerIndex) const : Position
++getWalls() const : const std::vector<Wall> &
++getWallsRemaining(int playerIndex) const : int
+{static} +isInBounds(int row, int col) : bool
+{static} +isPositionValid(const Position & pos) : bool
++isWallAt(const Position & pos, Orientation orientation) const : bool
+{static} -isWallPlacementValid(const Position & pos) : bool
++movePawn(int playerIndex, const Position & newPos) : void
++placeWall(const Wall & wall, int playerIndex) : void
++resetGame() : void
++setPawnPosition(int player, int row, int col) : void
+__
+-grid_ : std::array<std::array<Cell,BOARD_SIZE>,BOARD_SIZE>
+-pawnColors_ : std::array<Color,NUM_PLAYERS>
+-pawnPositions_ : std::array<Position,NUM_PLAYERS>
+-placedWalls_ : std::vector<Wall>
+-wallsRemaining_ : std::array<int,NUM_PLAYERS>
+}
+enum "Quoridor::PlayerId" as C_0011857049642369807494
+enum C_0011857049642369807494 {
+Red
+Blue
+}
+enum "Quoridor::GameStatus" as C_0013205072747160482210
+enum C_0013205072747160482210 {
+Playing
+Player1Won
+Player2Won
+}
+enum "Quoridor::GameMode" as C_0006959575705377086515
+enum C_0006959575705377086515 {
+HumanVsHuman
+HumanVsAI
+}
+class "Quoridor::State" as C_0002559026540545676727
+class C_0002559026540545676727 {
++State() : void
+..
++getCurrentPlayer() const : int
++getGameStatus() const : GameStatus
++getPlayerName() const : std::string
++getPreviewWall() const : std::optional<Wall>
++getSelectedPawn() const : std::optional<Position>
++resetGame() : void
++setGameStatus(GameStatus status) : void
++setPreviewWall(const std::optional<Wall> & wall) : void
++setSelectedPawn(std::optional<Position> pos) : void
++switchPlayer() : void
+__
+-currentPlayer_ : int
+-previewWall_ : std::optional<Wall>
+-selectedPawn_ : std::optional<Position>
+-status_ : GameStatus
+}
+enum "Quoridor::Difficulty" as C_0004445364806186166919
+enum C_0004445364806186166919 {
+Easy
+Normal
+Hard
+Hell
+}
+class "Quoridor::Move" as C_0005496810013710134479
+class C_0005496810013710134479 {
++operator==(const Move & other) const : bool
+..
+{static} +createPawnMove(Position pos) : Move
+{static} +createWallMove(Wall w) : Move
++isPawnMove() const : bool
++isWallPlacement() const : bool
+__
++pawnDest : Position
++type : Type
++wall : Wall
+}
+enum "Quoridor::Move::Type" as C_0003622661219709976173
+enum C_0003622661219709976173 {
+PawnMove
+WallPlacement
+}
+class "Quoridor::AI" as C_0007691390371826889952
+class C_0007691390371826889952 {
++AI() = default : void
++~AI() = default : void
+..
++evaluate(const Board & board, int playerIndex) : int
+-evaluateWithNoise(const Board & board, int playerIndex, int noiseLevel) : int
+-getAllValidMoves(const Board & board, int currentPlayerIndex) : std::vector<Move>
++getBestMove(const Board & board, const State & state, Difficulty difficulty) : Move
+-getRandomMove(const Board & board, int playerIndex) : Move
+-getValidPawnMoves(const Board & board, int playerIndex) : std::vector<Position>
+-getValidWallPlacements(const Board & board, int playerIndex) : std::vector<Wall>
+-minimax(Board board, int depth, int alpha, int beta, bool maximizingPlayer, int playerIndex, int noiseLevel = 0) : int
+__
+}
+class "Quoridor::Rules" as C_0003162468194685895845
+class C_0003162468194685895845 {
+{static} +checkVictory(const Board & board, int player) : bool
+{static} -isPathBlockedByWall(const Board & board, int fromRow, int fromCol, int toRow, int toCol, const Wall * extraWall = nullptr) : bool
+{static} +isValidMove(const Board & board, int player, int fromRow, int fromCol, int toRow, int toCol) : bool
+{static} +isValidWallPlacement(const Board & board, const Wall & wall, int playerIndex) : bool
+__
+}
+class "Quoridor::Pathfinder" as C_0000302635817486085801
+class C_0000302635817486085801 {
+{static} +getShortestPath(const Board & board, int playerIndex) : std::vector<Position>
+{static} +getShortestPathDistance(const Board & board, int playerIndex) : int
+{static} +hasPathToGoal(const Board & board, int playerIndex, const Wall & hypotheticalWall) : bool
+{static} +hasPathToGoal(const Board & board, int playerIndex) : bool
+__
+}
+class "Quoridor::Node" as C_0003703871486010196846
+class C_0003703871486010196846 {
++operator>(const Node & other) const : bool
+__
++f_score : int
++pos : Position
+}
+C_0013381003456146571882 o-- C_0011483762380414953613 : +pos
+C_0013381003456146571882 o-- C_0013108370731220351348 : +orientation
+C_0001647847377100416466 ..> C_0013108370731220351348
+C_0001647847377100416466 o-- C_0006529001353455631682 : -grid_
+C_0001647847377100416466 o-- C_0011483762380414953613 : -pawnPositions_
+C_0001647847377100416466 o-- C_0010031757832495548485 : -pawnColors_
+C_0001647847377100416466 o-- C_0013381003456146571882 : -placedWalls_
+C_0002559026540545676727 o-- C_0013205072747160482210 : -status_
+C_0002559026540545676727 o-- C_0011483762380414953613 : -selectedPawn_
+C_0002559026540545676727 o-- C_0013381003456146571882 : -previewWall_
+C_0005496810013710134479 o-- C_0003622661219709976173 : +type
+C_0005496810013710134479 o-- C_0011483762380414953613 : +pawnDest
+C_0005496810013710134479 o-- C_0013381003456146571882 : +wall
+C_0003622661219709976173 --+ C_0005496810013710134479
+C_0007691390371826889952 ..> C_0001647847377100416466
+C_0007691390371826889952 ..> C_0002559026540545676727
+C_0007691390371826889952 ..> C_0004445364806186166919
+C_0007691390371826889952 ..> C_0005496810013710134479
+C_0007691390371826889952 ..> C_0011483762380414953613
+C_0007691390371826889952 ..> C_0013381003456146571882
+C_0003162468194685895845 ..> C_0001647847377100416466
+C_0003162468194685895845 ..> C_0013381003456146571882
+C_0000302635817486085801 ..> C_0001647847377100416466
+C_0000302635817486085801 ..> C_0013381003456146571882
+C_0000302635817486085801 ..> C_0011483762380414953613
+C_0003703871486010196846 o-- C_0011483762380414953613 : +pos
+
+'Generated with clang-uml, version 0.6.2
+'LLVM version clang version 20.1.7 (https://github.com/llvm/llvm-project.git 6146a88f60492b520a36f8f8f3231e15f3cc6082)
+@enduml
