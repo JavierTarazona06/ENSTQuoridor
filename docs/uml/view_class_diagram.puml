@@ -1,0 +1,129 @@
+@startuml
+title ENSTQuoridor - View Layer
+class "Quoridor::Button" as C_0015140658266461199322
+class C_0015140658266461199322 {
++Button(float x, float y, float width, float height, const std::string & text, unsigned int fontSize = 18) : void
+..
++draw(sf::RenderWindow & window, const sf::Font & font, const sf::Color & textColor = sf::Color::White) : void
++getBounds() const : sf::FloatRect
++handleClick(float x, float y) : bool
++isHovering() const : bool
++isPointInside(float x, float y) const : bool
++setOnClick(std::function<void ()> callback) : void
++setPosition(float x, float y) : void
++updateHover(float x, float y) : void
+__
+{static} -BORDER_COLOR : const sf::Color
+{static} -BORDER_THICKNESS : const float
+{static} -HOVER_BORDER_COLOR : const sf::Color
+{static} -HOVER_COLOR : const sf::Color
+{static} -IDLE_COLOR : const sf::Color
+-fontSize : unsigned int
+-hovering : bool
+-onClick : std::function<void ()>
+-shape : sf::RectangleShape
+-text : std::string
+}
+class "Quoridor::Render2D" as C_0013813652925440115544
+class C_0013813652925440115544 {
++Render2D() : void
++~Render2D() : void
+..
++clear() : void
++close() : void
++display() : void
++drawButton(class Button & button) : void
++drawGrid() : void
++drawHUD(const Board & board, const State & state) : void
++drawLogo(std::optional<float> logoX = std::nullopt, std::optional<float> logoY = std::nullopt) : void
++drawMessage() : void
++drawPawn(const Board & board, int playerNumber) : void
++drawText(const std::string & text, float x, float y, unsigned int fontSize, const sf::Color & color, int fontType = 3) : void
++drawWallPreview(const std::optional<Wall> & previewWall) : void
++drawWalls(const Board & board) : void
++enforceFixedSize() : void
+{static} +getCellSize() constexpr : float
+{static} +getGridOffsetX() constexpr : float
+{static} +getGridOffsetY() constexpr : float
++getWindow() : sf::RenderWindow &
+{static} +getWindowHeight() constexpr : unsigned int
+{static} +getWindowWidth() constexpr : unsigned int
++isOpen() const : bool
++loadFont(const std::string & fontPath, int fontType) : bool
++pollEvent() : std::optional<sf::Event>
+-resolveAssetsDir(const std::string & resolvedFontsDir) const : std::string
+-resolveFontsDir() const : std::string
++showMessage(const std::string & text, const Color & color, float duration = -1.0f) : void
++updateMessage(float deltaTime) : void
+__
+{static} -BOARD_COLOR : const sf::Color
+{static} -CELL_SIZE : const float
+{static} -GRID_OFFSET_X : const float
+{static} -GRID_OFFSET_Y : const float
+{static} -HUD_BACKGROUND_COLOR : const sf::Color
+{static} -HUD_BORDER_COLOR : const sf::Color
+{static} -HUD_BORDER_THICKNESS : const float
+{static} -HUD_BOX_HEIGHT : const float
+{static} -HUD_BOX_WIDTH : const float
+{static} -MESSAGE_BOX_HEIGHT : const float
+{static} -MESSAGE_BOX_MARGIN_BOTTOM : const float
+{static} -MESSAGE_BOX_WIDTH : const float
+{static} -MESSAGE_FONT_SIZE : const unsigned int
+{static} -PAWN_RADIUS : const float
+{static} -WALL_COLOR : const sf::Color
+{static} -WALL_OUTLINE_COLOR : const sf::Color
+{static} -WALL_PREVIEW_COLOR : const sf::Color
+{static} -WALL_THICKNESS : const float
+{static} -WINDOW_HEIGHT : const unsigned int
+{static} -WINDOW_WIDTH : const unsigned int
+-assetsDir : std::string
+-backgroundMessageColor : sf::Color
+-backgroundMessageText : std::string
+-currentMessageColor : sf::Color
+-currentMessageText : std::string
+-fontText : sf::Font
+-fontTitle1 : sf::Font
+-fontTitle2 : sf::Font
+-fontTitle3 : sf::Font
+-fontsDir : std::string
+-hasBackgroundMessage : bool
+-logoLoaded : bool
+-logoSprite : std::optional<sf::Sprite>
+-logoTexture : sf::Texture
+-messageActive : bool
+-messageDuration : float
+-messageElapsed : float
+-window : sf::RenderWindow
+}
+abstract "Quoridor::View" as C_0007211084009136299323
+abstract C_0007211084009136299323 {
++~View() = default : void
+..
+{abstract} +render(Render2D & render, const Board & board, const State & state, GameMode mode = GameMode::HumanVsHuman, Difficulty difficulty = Difficulty::Normal) = 0 : void
+__
+}
+class "Quoridor::GameView" as C_0014430959833387935089
+class C_0014430959833387935089 {
++GameView() : void
+..
+-drawButtons(Render2D & render) : void
+-drawGameModeInfoBox(Render2D & render, GameMode mode, Difficulty difficulty) : void
++getHomeButton() : Button &
++getRestartButton() : Button &
++handleButtonClick(float x, float y) : bool
++render(Render2D & render, const Board & board, const State & state, GameMode mode = GameMode::HumanVsHuman, Difficulty difficulty = Difficulty::Normal) : void
++updateButtonHover(float x, float y) : void
+__
+-homeButton : Button
+-restartButton : Button
+}
+C_0013813652925440115544 ..> C_0015140658266461199322
+C_0007211084009136299323 ..> C_0013813652925440115544
+C_0014430959833387935089 ..> C_0013813652925440115544
+C_0014430959833387935089 o-- C_0015140658266461199322 : -homeButton
+C_0014430959833387935089 o-- C_0015140658266461199322 : -restartButton
+C_0007211084009136299323 <|-- C_0014430959833387935089
+
+'Generated with clang-uml, version 0.6.2
+'LLVM version clang version 20.1.7 (https://github.com/llvm/llvm-project.git 6146a88f60492b520a36f8f8f3231e15f3cc6082)
+@enduml

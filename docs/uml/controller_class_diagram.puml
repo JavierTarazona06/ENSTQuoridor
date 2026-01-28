@@ -1,0 +1,191 @@
+@startuml
+title ENSTQuoridor - Controller Layer
+abstract "Quoridor::Scene" as C_0005393075269010760834
+abstract C_0005393075269010760834 {
++~Scene() = default : void
+..
+{abstract} +handleEvent(const sf::Event & event) = 0 : void
+{abstract} +render() = 0 : void
+{abstract} +update(float deltaTime) = 0 : void
+__
+}
+enum "Quoridor::GameState" as C_0016581732416057654741
+enum C_0016581732416057654741 {
+Menu
+Playing
+GameOver
+HowToPlay
+}
+class "Quoridor::SceneManager" as C_0000441239040493973945
+class C_0000441239040493973945 {
++SceneManager(Render2D & renderer) : void
+..
++getRenderer() const : Render2D &
++getState() const : GameState
++handleEvent(const sf::Event & event) : void
++render() : void
++setScene(std::unique_ptr<Scene> scene, GameState state) : void
++update(float deltaTime) : void
+__
+-activeScene : std::unique_ptr<Scene>
+-currentState : GameState
+-renderer : Render2D &
+}
+class "Quoridor::MenuScene" as C_0013719473220749022659
+class C_0013719473220749022659 {
++MenuScene(SceneManager & manager) : void
++~MenuScene() = default : void
+..
++handleEvent(const sf::Event & event) : void
++render() : void
++update(float deltaTime) : void
+__
+-config : GameConfig
+-manager : SceneManager &
+-renderer : Render2D &
+}
+class "Quoridor::Game" as C_0007190477576698725696
+class C_0007190477576698725696 {
++Game() : void
++~Game() = default : void
+..
+-processEvents() : void
+-render() : void
++run() : void
+-update(float deltaTime) : void
+__
+-renderer : Render2D
+-sceneManager : SceneManager
+}
+class "Quoridor::GameOverScene" as C_0017326925323585559738
+class C_0017326925323585559738 {
++GameOverScene(SceneManager & manager, GameStatus result, const GameConfig & config = GameConfig()) : void
++~GameOverScene() = default : void
+..
++handleEvent(const sf::Event & event) : void
++render() : void
++update(float deltaTime) : void
+__
+-config : GameConfig
+-manager : SceneManager &
+-renderer : Render2D &
+-result : GameStatus
+}
+enum "Quoridor::InputMode" as C_0006780217209083591485
+enum C_0006780217209083591485 {
+MovePawn
+PlaceWall
+}
+class "Quoridor::InputHandler" as C_0003394134506113999302
+class C_0003394134506113999302 {
++InputHandler(Board & board, State & state, Rules & rules, Render2D & render, GameMode mode = GameMode::HumanVsHuman) : void
++~InputHandler() = default : void
+..
++getInputMode() const : InputMode
++handleInput(const sf::Event & event, const sf::RenderWindow & window) : void
+-handleMouseClick(int pixelX, int pixelY) : void
+-handleMouseMove(int pixelX, int pixelY) : void
+-pixelToGrid(int pixelX, int pixelY, int & row, int & col) const : bool
++setInputMode(InputMode mode) : void
+__
+-board : Board &
+-currentMode : InputMode
+-gameMode : GameMode
+-render : Render2D &
+-rules : Rules &
+-state : State &
+}
+class "Quoridor::GameScene" as C_0014700660849247843752
+class C_0014700660849247843752 {
++GameScene(SceneManager & manager, const GameConfig & config = GameConfig()) : void
++~GameScene() = default : void
+..
+-applyAIMove(const Move & aiMove) : void
+-checkForGameOver() : void
+-executeAITurn() : void
++handleEvent(const sf::Event & event) : void
++render() : void
++triggerHome() : void
++triggerRestart() : void
++update(float deltaTime) : void
+__
+{static} -AI_DELAY : const float
+-aiDelayTimer : float
+-aiThinking : bool
+-board : Board
+-config : GameConfig
+-gameView : GameView
+-inputHandler : InputHandler
+-manager : SceneManager &
+-renderer : Render2D &
+-rules : Rules
+-state : State
+}
+class "Quoridor::HowToPlayScene" as C_0000239429565187562241
+class C_0000239429565187562241 {
++HowToPlayScene(SceneManager & manager) : void
++~HowToPlayScene() = default : void
+..
+-goHome() : void
++handleEvent(const sf::Event & event) : void
+-initializePages() : void
+-nextPage() : void
+-previousPage() : void
++render() : void
+-resolveImagePath(const std::string & relative) const : std::string
++update(float deltaTime) : void
+__
+{static} -IMAGE_HEIGHT : const float
+{static} -IMAGE_WIDTH : const float
+-currentImageLoaded : bool
+-currentPageIndex : size_t
+-imageSprite : std::optional<sf::Sprite>
+-imageTexture : sf::Texture
+-manager : SceneManager &
+-pages : std::vector<Page>
+-renderer : Render2D &
+}
+class "Quoridor::HowToPlayScene::Page" as C_0016099680419490913700
+class C_0016099680419490913700 {
+__
++content : std::vector<std::string>
++imagePath : std::optional<std::string>
++title : std::string
+}
+class "Quoridor::Server" as C_0016577016767841838821
+class C_0016577016767841838821 {
++Server() : void
++~Server() : void
+..
+-handleEvents() : void
+-render() : void
++startGame() : void
+-update(float deltaTime) : void
+__
+-board_ : Board
+-clock_ : sf::Clock
+-current_view_ : std::unique_ptr<View>
+-inputHandler_ : InputHandler
+-render_ : Render2D
+-rules_ : Rules
+-state_ : State
+}
+C_0000441239040493973945 o-- C_0005393075269010760834 : -activeScene
+C_0000441239040493973945 o-- C_0016581732416057654741 : -currentState
+C_0013719473220749022659 --> C_0000441239040493973945 : -manager
+C_0005393075269010760834 <|-- C_0013719473220749022659
+C_0007190477576698725696 o-- C_0000441239040493973945 : -sceneManager
+C_0017326925323585559738 --> C_0000441239040493973945 : -manager
+C_0005393075269010760834 <|-- C_0017326925323585559738
+C_0003394134506113999302 o-- C_0006780217209083591485 : -currentMode
+C_0014700660849247843752 --> C_0000441239040493973945 : -manager
+C_0014700660849247843752 o-- C_0003394134506113999302 : -inputHandler
+C_0005393075269010760834 <|-- C_0014700660849247843752
+C_0000239429565187562241 --> C_0000441239040493973945 : -manager
+C_0005393075269010760834 <|-- C_0000239429565187562241
+C_0016099680419490913700 --+ C_0000239429565187562241
+C_0016577016767841838821 o-- C_0003394134506113999302 : -inputHandler_
+
+'Generated with clang-uml, version 0.6.2
+'LLVM version clang version 20.1.7 (https://github.com/llvm/llvm-project.git 6146a88f60492b520a36f8f8f3231e15f3cc6082)
+@enduml

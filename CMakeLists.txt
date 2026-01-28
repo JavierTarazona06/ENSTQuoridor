@@ -17,8 +17,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Export compile commands for IntelliSense
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Find SFML package
-find_package(SFML COMPONENTS ${SFML_COMPONENTS} REQUIRED)
+# Find SFML package (version 3 required for vcpkg SFML 3.x)
+find_package(SFML 3 COMPONENTS ${SFML_COMPONENTS} REQUIRED)
 
 # Library for the model
 add_library(quoridor_model 
