@@ -4,13 +4,13 @@ Ce document explique comment compiler et exécuter la démo visuelle PVE (Player
 
 ---
 
-## 📋 Vue d'ensemble
+## Vue d'ensemble
 
 Le `test_pve_visual` est un exécutable autonome qui permet de jouer au Quoridor contre l'IA en utilisant l'interface graphique existante. Cette démo est conçue pour vérifier le fonctionnement du moteur IA sans modifier le code du projet principal.
 
 ---
 
-## 🔨 Compilation de la démo
+## Compilation de la démo
 
 Le `test_pve_visual` est compilé automatiquement avec tous les autres targets lors de l'exécution des scripts de bootstrap.
 
@@ -83,7 +83,7 @@ cmake --build build/arm64-osx --target test_pve_visual
 
 ---
 
-## ▶️ Exécution de la démo
+## Exécution de la démo
 
 ### Emplacements des exécutables
 
@@ -107,7 +107,7 @@ cmake --build build/arm64-osx --target test_pve_visual
 
 ---
 
-## 🎮 Contrôles du jeu
+## Contrôles du jeu
 
 ### Mode déplacement (par défaut)
 
@@ -144,7 +144,7 @@ cmake --build build/arm64-osx --target test_pve_visual
 
 ---
 
-## 🎯 Système de difficulté
+## Système de difficulté
 
 La difficulté de l'IA est contrôlée par deux facteurs :
 
@@ -173,7 +173,7 @@ La difficulté de l'IA est contrôlée par deux facteurs :
 
 ---
 
-## 📜 Règles du jeu
+## Règles du jeu
 
 - **Joueur 1 (Humain)** : Pion rouge, commence en haut, objectif rangée du bas
 - **Joueur 2 (IA)** : Pion bleu, commence en bas, objectif rangée du haut
@@ -183,7 +183,7 @@ La difficulté de l'IA est contrôlée par deux facteurs :
 
 ---
 
-## 🔧 Détails techniques
+## Détails techniques
 
 ### Architecture
 
@@ -228,7 +228,7 @@ tests/
 
 ---
 
-## 🐛 Dépannage
+## Dépannage
 
 ### Problèmes généraux
 
@@ -291,7 +291,7 @@ Essayez de baisser le niveau de difficulté (appuyez sur `1` ou `2`). Le mode En
 
 ---
 
-## ✅ Liste de vérification
+## Liste de vérification
 
 Utilisez cette démo pour vérifier :
 
@@ -304,7 +304,7 @@ Utilisez cette démo pour vérifier :
 
 ---
 
-## 📚 Voir aussi
+## Voir aussi
 
 - [Guide d'installation](../installation/INSTALLATION.md) — Instructions de compilation et d'exécution
 - [Guide utilisateur](../USER_GUIDE.md) — Guide utilisateur complet

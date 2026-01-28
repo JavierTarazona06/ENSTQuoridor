@@ -4,7 +4,7 @@ Ce guide explique comment créer de nouveaux tests unitaires pour le projet ENST
 
 ---
 
-## 📋 Prérequis
+## Prérequis
 
 - Catch2 est déjà intégré au projet via vcpkg
 - Tous les fichiers de test sont situés dans le répertoire `tests/`
@@ -12,7 +12,7 @@ Ce guide explique comment créer de nouveaux tests unitaires pour le projet ENST
 
 ---
 
-## 📝 Étape 1 : Créer un nouveau fichier de test
+## Étape 1 : Créer un nouveau fichier de test
 
 Créez un nouveau fichier `.cpp` dans le répertoire `tests/` en suivant la convention de nommage `test_<composant>.cpp`.
 
@@ -53,7 +53,7 @@ TEST_CASE("Validation du composant", "[moncomposant][validation]") {
 
 ---
 
-## 📁 Étape 2 : Ajouter le fichier de test à CMakeLists.txt
+## Étape 2 : Ajouter le fichier de test à CMakeLists.txt
 
 Ouvrez `tests/CMakeLists.txt` et ajoutez votre nouveau fichier de test à la commande `add_executable`.
 
@@ -78,7 +78,7 @@ add_executable(test_all
 
 ---
 
-## 🔨 Étape 3 : Recompiler le projet
+## Étape 3 : Recompiler le projet
 
 Après avoir ajouté votre fichier de test, recompilez le projet :
 
@@ -88,7 +88,7 @@ Et exécutez ce dont vous avez besoin.
 
 ---
 
-## 📚 Macros de test Catch2
+## Macros de test Catch2
 
 ### Structure des tests
 - **`TEST_CASE("description", "[tags]")`** — Définit un cas de test
@@ -111,7 +111,7 @@ Et exécutez ce dont vous avez besoin.
 
 ---
 
-## ✅ Bonnes pratiques
+## Bonnes pratiques
 
 1. **Utilisez des noms de test descriptifs** — Clarifiez ce qui est testé
 2. **Utilisez des tags** — Organisez les tests avec des tags comme `[board]`, `[rules]`, `[integration]`
@@ -122,7 +122,7 @@ Et exécutez ce dont vous avez besoin.
 
 ---
 
-## 📖 Exemple : Fichier de test complet
+## Exemple : Fichier de test complet
 
 ```cpp
 #include <catch2/catch_test_macros.hpp>
@@ -163,7 +163,7 @@ TEST_CASE("Détection de collision de mur", "[mur][collision]") {
 
 ---
 
-## 🔗 Ressources supplémentaires
+## Ressources supplémentaires
 
 - [Documentation Catch2](https://github.com/catchorg/Catch2/tree/devel/docs)
 - [Tutoriel Catch2](https://github.com/catchorg/Catch2/blob/devel/docs/tutorial.md)
@@ -171,7 +171,7 @@ TEST_CASE("Détection de collision de mur", "[mur][collision]") {
 
 ---
 
-## 🐛 Dépannage
+## Dépannage
 
 **Tests non découverts par CTest :**
 - Assurez-vous que CMakeLists.txt inclut votre fichier de test

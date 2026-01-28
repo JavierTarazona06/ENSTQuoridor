@@ -4,7 +4,7 @@
 
 ---
 
-## 🎯 Objectifs de l'itération
+## Objectifs de l'itération
 - Implémenter IA Minimax/Négamax avec élagage alpha-beta
 - Créer une heuristique d'évaluation pertinente
 - Intégrer 3 niveaux de difficulté (Facile, Normal, Difficile)
@@ -13,7 +13,7 @@
 
 ---
 
-## 📝 Liste des Tâches (Format GitHub Issues)
+## Liste des Tâches (Format GitHub Issues)
 
 ### Modèle (IA & Logique)
 

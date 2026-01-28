@@ -289,21 +289,21 @@ Ajouter au guide utilisateur les instructions pour placer des murs, changer de m
 
 ## Critères de succès de l'itération
 
-✅ Partie jouable de A à Z en mode local (2 humains)  
-✅ Victoire détectée et affichée  
-✅ Tous les cas de règles validés par tests unitaires (>20 tests)  
-✅ Aucun placement de mur ne peut bloquer définitivement un joueur  
-✅ Interface claire avec HUD et messages d'erreur
+Partie jouable de A à Z en mode local (2 humains)
+Victoire détectée et affichée
+Tous les cas de règles validés par tests unitaires (>20 tests)
+Aucun placement de mur ne peut bloquer définitivement un joueur
+Interface claire avec HUD et messages d'erreur
 
 ---
 
 ## Risques identifiés
 
-⚠️ **Complexité validation murs + pathfinding**  
+**Complexité validation murs + pathfinding**  
 → Mitigation: Implémenter BFS simple d'abord; tester cas par cas; prévoir debug intensif
 
-⚠️ **Performance pathfinding en temps réel**  
+**Performance pathfinding en temps réel**  
 → Mitigation: Optimiser BFS (early exit), limiter recherche à zone pertinente
 
-⚠️ **Intégration UI/UX (mode placement murs)**  
+**Intégration UI/UX (mode placement murs)**  
 → Mitigation: Prototyper rapidement, tester avec utilisateur réel, itérer sur feedback

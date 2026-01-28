@@ -1,6 +1,6 @@
 # INSTALLATION
 
-## 📋 Prérequis (développeurs)
+## Prérequis (développeurs)
 
 **Windows**
 - Git : https://git-scm.com/download/win
@@ -19,7 +19,7 @@
 
 ---
 
-## 🔨 Compilation depuis les sources
+## Compilation depuis les sources
 
 ### Configuration complète (Windows)
 ```powershell
@@ -50,7 +50,7 @@ cmake --build build/x64-osx     --config Debug    # macOS Intel
 
 ---
 
-## 📂 Emplacements des exécutables et tests
+## Emplacements des exécutables et tests
 
 **Windows**
 ```powershell
@@ -82,14 +82,14 @@ ctest --test-dir build/x64-osx/tests -C Debug
 ./build/x64-osx/tests/test_all [tags]
 ```
 
-> ⚠️ **Note Gatekeeper** : Si vous obtenez l'erreur "L'application est endommagée", exécutez :
+> **Note Gatekeeper** : Si vous obtenez l'erreur "L'application est endommagée", exécutez :
 > ```bash
 > xattr -cr ./build/arm64-osx/quoridor_game.app
 > ```
 
 ---
 
-## 📦 Distribution pour utilisateurs finaux
+## Distribution pour utilisateurs finaux
 
 ### ZIP Windows
 ```powershell
@@ -112,7 +112,7 @@ Voir `PACKAGING.md` pour créer le `.app` et le `.dmg`.
 
 ---
 
-## 🐛 Dépannage
+## Dépannage
 - « Could not find toolchain file » : vérifier `VCPKG_ROOT` ou relancer le bootstrap.
 - Échec de build : supprimer le dossier build concerné puis rebootstrap.
 - Vérifier SFML : `cmake --preset <preset>` doit afficher `-- Found SFML ...`.
