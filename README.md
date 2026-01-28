@@ -2,11 +2,9 @@
 
 Implémentation d'un jeu de plateau stratégique en C++ avec SFML 3.0, proposant des adversaires IA à quatre niveaux de difficulté et une architecture MVC propre.
 
-![C++](https://img.shields.io/badge/C%2B%2B-17-blue.svg)
-![SFML](https://img.shields.io/badge/SFML-3.0-green.svg)
-![CMake](https://img.shields.io/badge/CMake-3.20+-orange.svg)
-![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)
-![Tests](https://img.shields.io/badge/tests-32%20réussis-brightgreen.svg)
+**Stack technologique** : C++ 17, SFML 3.0, CMake 3.20+, Catch2  
+**Plateforme** : Windows, Linux, macOS  
+**Tests** : 32 tests réussis
 
 ## Table des matières
 
@@ -33,13 +31,14 @@ Ce projet est une implémentation moderne en C++ proposant :
 - **Quatre niveaux de difficulté IA** : Facile, Normal, Difficile, Hell
 - **Architecture MVC propre** pour la maintenabilité et la testabilité
 - **Support multiplateforme** (Windows, Linux, macOS)
-- **Algorithmes avancés** : Minimax avec élagage α-β, recherche de chemin BFS
+- **Algorithmes avancés** : Minimax avec élagage alpha-beta, recherche de chemin BFS
 
-**Équipe** : Tarazona Javier, Liang Tianyi  
-**Cours** : IN204 - Programmation Orientée Objet, ENSTA Paris  
+**Équipe** : Tarazona Javier, Liang Tianyi
+**Cours** : IN204 - Programmation Orientée Objet, ENSTA Paris
 **Date de soutenance** : 29 janvier 2026
 
----
+___
+
 ## Téléchargement
 
 Téléchargez la version précompilée correspondant à votre système d'exploitation :
@@ -49,7 +48,7 @@ Téléchargez la version précompilée correspondant à votre système d'exploit
 2. Décompresser le fichier ZIP
 3. Double-cliquer sur `quoridor_game.exe` pour lancer le jeu
 
-### Linux – Option 1 (Archive tarball)
+### Linux - Option 1 (Archive tarball)
 1. Télécharger l'archive : [Quoridor-x86_64.tar.gz](https://drive.google.com/file/d/1OGYdsSgqNY2CStJ42CZEiv55WCPeKPO5/view?usp=sharing)
 2. Extraire l'archive :
    ```bash
@@ -59,7 +58,7 @@ Téléchargez la version précompilée correspondant à votre système d'exploit
    ./quoridor_game
    ```
 
-### Linux – Option 2 (AppImage)
+### Linux - Option 2 (AppImage)
 1. Télécharger l'exécutable : [Quoridor-x86_64.AppImage](https://drive.google.com/file/d/15AUrpt4Ch7_89Wr6YaKj3MkLzHVtPkYn/view?usp=sharing)
 2. Rendre exécutable et lancer :
    ```bash
@@ -112,7 +111,7 @@ Téléchargez la version précompilée correspondant à votre système d'exploit
 | **Difficile** | 2 | ±3 | ~5% erreurs, nécessite une planification soignée |
 | **Enfer** | 4 | 0 | Jeu parfait, défi niveau expert |
 
-- **Performance optimisée** : Facile/Normal ~150μs, Difficile ~800μs, Enfer ~10ms par coup
+- **Performance optimisée** : Facile/Normal ~150us, Difficile ~800us, Enfer ~10ms par coup
 
 ### Technique
 - **Architecture MVC** : Modèle (logique de jeu), Vue (rendu SFML), Contrôleur (entrées/boucle de jeu)
@@ -149,7 +148,7 @@ Téléchargez la version précompilée correspondant à votre système d'exploit
 | **Clic gauche sur case** | Se déplacer vers cette case (si valide) |
 | **Clic sur pion sélectionné** | Désélectionner le pion |
 | `W` | Basculer en mode placement de mur |
-| `O` | Tourner le mur (horizontal ↔ vertical) |
+| `O` | Tourner le mur (horizontal <-> vertical) |
 | `R` | Réinitialiser / Recommencer la partie |
 | `1`-`4` | Changer la difficulté IA en cours de partie |
 | `Échap` | Retourner au menu |
